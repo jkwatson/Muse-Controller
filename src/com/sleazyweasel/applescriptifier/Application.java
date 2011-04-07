@@ -6,6 +6,7 @@ public enum Application {
     PULSAR("Pulsar", "com.rogueamoeba.Pulsar", true, true, true, true, false, false),
     ITUNES("iTunes", "com.apple.iTunes", false, true, true, true, false, false),
     PANDORAONE("Pandora", "com.pandora.desktop.FB9956FD96E03239939108614098AD95535EE674.1", false, true, true, false, true, true),
+    RDIO("Rdio", "com.rdio.desktop", false, true, true, true, false, false),
     OTHER("Other", "unknown", false, false, false, false, false, false);
 
 
@@ -72,6 +73,8 @@ public enum Application {
                 return new ITunesSupport(appleScriptTemplate);
             case PANDORAONE:
                 return new PandoraOneSupport(appleScriptTemplate);
+            case RDIO:
+                return new RdioSupport(appleScriptTemplate);
             default:
                 return null;
         }
