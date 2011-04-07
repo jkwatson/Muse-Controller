@@ -1,0 +1,16 @@
+  tell application "Airfoil"
+	set results to {}
+	set myspeakers to get every speaker
+	repeat with currentSpeaker in myspeakers
+		set conn to connected of currentSpeaker
+		set volum to volume of currentSpeaker
+		set nm to name of currentSpeaker
+		set spkId to id of currentSpeaker
+		set json to "{\"id\":\"" & spkId & "\",\"name\":\"" & nm & "\",\"connected\":" & conn & ",\"volume\":" & volum & "}"
+		copy json to the end of results
+	end repeat
+	set AppleScript's text item delimiters to ","
+	set returnValue to results as text
+	set AppleScript's text item delimiters to ""
+	get "{\"app\":\"Airfoil\",\"state\":{\"running\":true,\"speakers\":[" & returnValue & "]}}"
+ end tell

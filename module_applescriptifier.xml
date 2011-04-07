@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_applescriptifier" default="compile.module.applescriptifier">
+    <dirname property="module.applescriptifier.basedir" file="${ant.file.module_applescriptifier}"/>
+
+    <property name="module.jdk.home.applescriptifier" value="${project.jdk.home}"/>
+    <property name="module.jdk.bin.applescriptifier" value="${project.jdk.bin}"/>
+    <property name="module.jdk.classpath.applescriptifier" value="${project.jdk.classpath}"/>
+
+    <property name="compiler.args.applescriptifier" value="${compiler.args}"/>
+
+    <property name="applescriptifier.output.dir"
+              value="${module.applescriptifier.basedir}/out/production/applescriptifier"/>
+    <property name="applescriptifier.testoutput.dir"
+              value="${module.applescriptifier.basedir}/out/test/applescriptifier"/>
+
+    <path id="applescriptifier.module.bootclasspath">
+        <!-- Paths to be included in compilation bootclasspath -->
+    </path>
+
+    <path id="applescriptifier.module.production.classpath">
+        <path refid="${module.jdk.classpath.applescriptifier}"/>
+        <pathelement location="${basedir}/../../../../System/Library/Java/Extensions/dns_sd.jar"/>
+        <path refid="library.aslib.classpath"/>
+        <pathelement location="${basedir}/resources"/>
+    </path>
+
+    <path id="applescriptifier.runtime.production.module.classpath">
+        <pathelement location="${applescriptifier.output.dir}"/>
+        <pathelement location="${basedir}/../../../../System/Library/Java/Extensions/dns_sd.jar"/>
+        <path refid="library.aslib.classpath"/>
+        <pathelement location="${basedir}/resources"/>
+    </path>
+
+    <path id="applescriptifier.module.classpath">
+        <path refid="${module.jdk.classpath.applescriptifier}"/>
+        <pathelement location="${applescriptifier.output.dir}"/>
+        <pathelement location="${basedir}/../../../../System/Library/Java/Extensions/dns_sd.jar"/>
+        <path refid="library.aslib.classpath"/>
+        <pathelement location="${basedir}/resources"/>
+    </path>
+
+    <path id="applescriptifier.runtime.module.classpath">
+        <pathelement location="${applescriptifier.testoutput.dir}"/>
+        <pathelement location="${applescriptifier.output.dir}"/>
+        <pathelement location="${basedir}/../../../../System/Library/Java/Extensions/dns_sd.jar"/>
+        <path refid="library.aslib.classpath"/>
+        <pathelement location="${basedir}/resources"/>
+    </path>
+
+
+    <patternset id="excluded.from.module.applescriptifier">
+        <patternset refid="ignored.files"/>
+    </patternset>
+
+    <patternset id="excluded.from.compilation.applescriptifier">
+        <patternset refid="excluded.from.module.applescriptifier"/>
+    </patternset>
+
+    <path id="applescriptifier.module.sourcepath">
+        <dirset dir="${module.applescriptifier.basedir}">
+            <include name="src"/>
+        </dirset>
+    </path>
+
+
+    <target name="compile.module.applescriptifier"
+            depends="compile.module.applescriptifier.production,compile.module.applescriptifier.tests"
+            description="Compile module applescriptifier"/>
+
+    <target name="compile.module.applescriptifier.production"
+            description="Compile module applescriptifier; production classes">
+        <mkdir dir="${applescriptifier.output.dir}"/>
+        <javac destdir="${applescriptifier.output.dir}" debug="${compiler.debug}"
+               nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true"
+               executable="${module.jdk.bin.applescriptifier}/javac">
+            <compilerarg line="${compiler.args.applescriptifier}"/>
+            <bootclasspath refid="applescriptifier.module.bootclasspath"/>
+            <classpath refid="applescriptifier.module.production.classpath"/>
+            <src refid="applescriptifier.module.sourcepath"/>
+            <patternset refid="excluded.from.compilation.applescriptifier"/>
+        </javac>
+
+        <copy todir="${applescriptifier.output.dir}">
+            <fileset dir="${module.applescriptifier.basedir}/src">
+                <patternset refid="compiler.resources"/>
+                <type type="file"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="compile.module.applescriptifier.tests" depends="compile.module.applescriptifier.production"
+            description="compile module applescriptifier; test classes" unless="skip.tests"/>
+
+    <target name="clean.module.applescriptifier" description="cleanup module">
+        <delete dir="${applescriptifier.output.dir}"/>
+        <delete dir="${applescriptifier.testoutput.dir}"/>
+    </target>
+
+
+    <target name="jar" depends="compile.module.applescriptifier.production">
+        <jar basedir="${applescriptifier.output.dir}" jarfile="applescriptifier.jar">
+            <fileset dir="resources"/>
+        </jar>
+    </target>
+
+    <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler"/>
+
+    <target name="bundle" depends="jar">
+        <mkdir dir="release"/>
+        <jarbundler dir="release"
+                    name="Muse Controller"
+                    mainclass="com.sleazyweasel.applescriptifier.Main"
+                    icon="icons/AppIcon.icns"
+                    bundleid="com.sleazyweasel.MuseController"
+                    build="${BUILD_NUMBER}"
+                    version="${BUILD_NUMBER}"
+                >
+            <jarfilelist id="mainjar" dir="." files="applescriptifier.jar"/>
+            <jarfileset dir="lib"/>
+            <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
+        </jarbundler>
+    </target>
+
+    <target name="bundle-and-sign" depends="bundle-sparkle">
+        <exec executable="codesign">
+            <arg value="-f"/>
+            <arg value="-s"/>
+            <arg value="John Watson Code Signing Cert"/>
+            <arg value="release/Muse Controller.app"/>
+        </exec>
+    </target>
+
+    <!-- Create a MacOSX application package with Sparkle support,
+     invoked with "ant macosx-sparkle" -->
+    <target name="bundle-sparkle" depends="bundle"
+            description="Create an .app package for MacOSX with Sparkle support">
+
+        <!-- Set this property value to the directory where your
+    application package has been created (when you invoked
+    the "ant macosx" target -->
+        <property name="macosx.app"
+                  value="release"/>
+
+        <!-- Set this property value to your application name.
+  Do not include the .app extension -->
+        <property name="app.name"
+                  value="Muse Controller"/>
+
+        <!-- Set this property value to your application resource
+directory (where is located your Sparkle jar, the
+Zip of the Sparkle framework and the public key) -->
+        <property name="app.resrc"
+                  value="resources"/>
+
+        <!-- Set this property value to your native library
+      directory (where is located your Sparkle JNI library,
+      e.g. lib/native/) -->
+        <property name="app.native"
+                  value="lib/native"/>
+
+        <!-- This property is set to the path where are stored
+     the files inside the .app package. You should not need
+     to change it -->
+        <property name="app.internal"
+                  value="Contents/Resources/Java"/>
+
+        <!-- This property is set to the path where are the
+ Sparkle framework will be stored inside the package.
+ You should not need to change it -->
+        <property name="sparkle.path"
+                  value="Contents/Frameworks/Sparkle.framework"/>
+
+        <!-- Create the native library directory in the package -->
+        <mkdir dir="${macosx.app}/${app.name}.app/${app.internal}/${app.native}"/>
+
+        <!-- Add the Sparkle bundle and JNI to the application package -->
+        <!--<copy file="${app.resrc}/sparkle.jar"-->
+        <!--todir="${macosx.app}/${app.name}.app/${app.internal}/${app.resrc}"/>-->
+        <!--<copy file="${app.native}/libsparkle_init.dylib" todir="${macosx.app}/${app.name}.app/${app.internal}/${app.native}"/>-->
+        <copy file="${app.native}/libsparkle_init.dylib" todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
+
+        <!-- Add the public key file to the application bundle -->
+        <copy file="${app.resrc}/dsa_pub.pem"
+              todir="${macosx.app}/${app.name}.app/Contents/Resources/"/>
+
+        <!-- The Info.plist file inside the .app package must be updated
+with several Sparkle properties. Set the SUFeedURL property
+to the URL where your appcast XML file is located -->
+        <replace file="${macosx.app}/${app.name}.app/Contents/Info.plist">
+            <replacetoken><![CDATA[<key>CFBundleName</key>]]></replacetoken>
+            <replacevalue><![CDATA[<key>SUCheckAtStartup</key>
+    <string>YES</string>
+    <key>SUScheduledCheckInterval</key>
+    <string>86400</string>
+    <key>SUPublicDSAKeyFile</key>
+    <string>dsa_pub.pem</string>
+    <key>SUFeedURL</key>
+    <string>http://www.musecontrol.com/sparkle/appcast.xml</string>
+    <key>SUShowReleaseNotes</key>
+    <string>YES</string>
+    <key>CFBundleName</key>]]></replacevalue>
+        </replace>
+
+        <!-- The Sparkle Framework must also be copied in the
+      application package -->
+        <mkdir dir="${macosx.app}/${app.name}.app/Contents/Frameworks"/>
+        <unzip src="${app.resrc}/Sparkle.framework.zip"
+               dest="${macosx.app}/${app.name}.app/Contents/Frameworks"/>
+
+        <!-- The Ant unzip task does not preserve symlinks, so we
+      recreate them -->
+        <symlink link="${macosx.app}/${app.name}.app/${sparkle.path}/Versions/Current"
+                 resource="./A"/>
+        <symlink
+                link="${macosx.app}/${app.name}.app/${sparkle.path}/Headers"
+                resource="./Versions/Current/Headers"/>
+        <symlink
+                link="${macosx.app}/${app.name}.app/${sparkle.path}/Resources"
+                resource="./Versions/Current/Resources"/>
+        <symlink
+                link="${macosx.app}/${app.name}.app/${sparkle.path}/Sparkle"
+                resource="./Versions/Current/Sparkle"/>
+        <symlink
+                link="${macosx.app}/${app.name}.app/${sparkle.path}/Resources/fr_CA.lproj"
+                resource="./fr.lproj"/>
+
+        <!-- Restore the file permissions to the Sparkle relaunch tool -->
+        <chmod file="${macosx.app}/${app.name}.app/${sparkle.path}/Resources/relaunch"
+               perm="ugo+rx">
+        </chmod>
+    </target>
+
+</project>

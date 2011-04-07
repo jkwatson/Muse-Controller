@@ -1,0 +1,14 @@
+on run argv
+tell application "Airfoil"
+  set speakerId to item 1 of argv
+  set onstate to get connected of every speaker whose id is speakerId
+
+  if (onstate) then
+    disconnect from (every speaker whose id is speakerId)
+    repeat while (connected of every speaker whose id is speakerId)
+      delay 0.5
+    end repeat
+  end if
+
+end tell
+end run

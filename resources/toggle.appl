@@ -1,0 +1,23 @@
+on run argv
+tell application "Airfoil"
+	set thename to item 1 of argv
+	set thespeakers to get every speaker
+	repeat with myspeaker in thespeakers
+		if (name of myspeaker is thename) then
+			if (connected of myspeaker) then
+				disconnect from myspeaker
+				repeat while (connected of myspeaker)
+					delay 0.5
+				end repeat
+			else
+				connect to myspeaker
+				repeat while not (connected of myspeaker)
+					delay 0.5
+				end repeat
+			end if
+			exit repeat
+		end if
+	end repeat
+	get connected of myspeaker
+end tell
+end run

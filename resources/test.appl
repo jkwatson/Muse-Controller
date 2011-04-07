@@ -1,0 +1,6 @@
+tell application "System Events" to set runningState to the count of (processes whose name is "Airfoil")
+if (runningState = 0) then
+  get "off"
+else
+  tell application "Airplay" to quit
+end if

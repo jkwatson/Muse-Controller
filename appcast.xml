@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+   <channel>
+      <title>Muse Controller Changelog</title>
+      <link>http://www.musecontrol.com/sparkle/appcast.xml</link>
+      <description>Most recent changes with links to updates.</description>
+      <language>en</language>
+         <item>
+            <title>Version 2.1 (initial Sparkle support)</title>
+            <description><![CDATA[
+                <h2>New Features</h2>
+                    <h3>Sparkle Support for Updates</h3>
+                    <h3>Basic PandoraOne Support from the Airfoil screen</h3>
+                ]]></description>
+            <pubDate>Sun, 03 May 2011 19:20:11 +0000</pubDate>
+            <enclosure url="http://www.musecontrol.com/downloads/MuseController2.1.dmg" sparkle:version="2.1" length="3270055" type="application/octet-stream" sparkle:dsaSignature="MC0CFQD0/tI8airZma2R9YAR+B39gguR4gIUJ09h5BKPokDp9u7u3XL9hRyvfhY=" />
+         </item>
+
+   </channel>
+</rss>

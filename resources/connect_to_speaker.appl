@@ -1,0 +1,21 @@
+on run argv
+dorun(item 1 of argv)
+end run
+
+on dorun(speakerId)
+tell application "Airfoil"
+  set onstate to get connected of every speaker whose id is speakerId
+  set trycount to 0
+  if (not onstate) then
+    connect to (every speaker whose id is speakerId)
+    repeat while (not (connected of every speaker whose id is speakerId) and (trycount < 8))
+      delay 0.5
+      set trycount to trycount + 1
+    end repeat
+  end if
+  if (trycount = 8) then
+    return "failed"
+  end if
+
+end tell
+end dorun
