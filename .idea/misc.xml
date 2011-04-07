@@ -34,5 +34,39 @@
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
+  <component name="SvnBranchConfigurationManager">
+    <option name="myConfigurationMap">
+      <map>
+        <entry key="$PROJECT_DIR$">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="file:///svnroot/applescriptifier/branches">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="file:///svnroot/applescriptifier/tags">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="file:///svnroot/applescriptifier/branches" />
+                  <option value="file:///svnroot/applescriptifier/tags" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="file:///svnroot/applescriptifier/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="mySupportsUserInfoFilter" value="true" />
+  </component>
 </project>
 
