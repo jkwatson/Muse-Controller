@@ -70,8 +70,8 @@
     <target name="compile.module.applescriptifier.production"
             description="Compile module applescriptifier; production classes">
         <mkdir dir="${applescriptifier.output.dir}"/>
-        <javac destdir="${applescriptifier.output.dir}" debug="${compiler.debug}"
-               nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true"
+        <javac destdir="${applescriptifier.output.dir}" debug="${compiler.debug}" target="1.5"
+               nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" 
                executable="${module.jdk.bin.applescriptifier}/javac">
             <compilerarg line="${compiler.args.applescriptifier}"/>
             <bootclasspath refid="applescriptifier.module.bootclasspath"/>
@@ -207,6 +207,10 @@ to the URL where your appcast XML file is located -->
         <unzip src="${app.resrc}/Sparkle.framework.zip"
                dest="${macosx.app}/${app.name}.app/Contents/Frameworks"/>
 
+        <delete file="${macosx.app}/${app.name}.app/${sparkle.path}/Versions/Current"/>
+        <delete file="${macosx.app}/${app.name}.app/${sparkle.path}/Headers"/>
+        <delete file="${macosx.app}/${app.name}.app/${sparkle.path}/Resources"/>
+        <delete file="${macosx.app}/${app.name}.app/${sparkle.path}/Sparkle"/>
         <!-- The Ant unzip task does not preserve symlinks, so we
       recreate them -->
         <symlink link="${macosx.app}/${app.name}.app/${sparkle.path}/Versions/Current"
@@ -220,9 +224,9 @@ to the URL where your appcast XML file is located -->
         <symlink
                 link="${macosx.app}/${app.name}.app/${sparkle.path}/Sparkle"
                 resource="./Versions/Current/Sparkle"/>
-        <symlink
-                link="${macosx.app}/${app.name}.app/${sparkle.path}/Resources/fr_CA.lproj"
-                resource="./fr.lproj"/>
+        <!--<symlink-->
+                <!--link="${macosx.app}/${app.name}.app/${sparkle.path}/Resources/fr_CA.lproj"-->
+                <!--resource="./fr.lproj"/>-->
 
         <!-- Restore the file permissions to the Sparkle relaunch tool -->
         <chmod file="${macosx.app}/${app.name}.app/${sparkle.path}/Resources/relaunch"

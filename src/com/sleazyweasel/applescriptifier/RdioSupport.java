@@ -16,7 +16,7 @@ public class RdioSupport implements ApplicationSupport {
     }
 
     public void previous() {
-        appleScriptTemplate.executeKeyCode(Application.RDIO, AppleScriptTemplate.RIGHT_ARROW);
+        appleScriptTemplate.executeKeyCode(Application.RDIO, AppleScriptTemplate.LEFT_ARROW);
     }
 
     public void thumbsUp() {
