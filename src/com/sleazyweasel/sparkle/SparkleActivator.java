@@ -30,7 +30,11 @@ public class SparkleActivator
      */    
     static {
 //        System.load("/Users/john/projects/applescriptifier/lib/native/libsparkle_init.dylib");
-        System.loadLibrary("sparkle_init");
+        try {
+            System.loadLibrary("sparkle_init");
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     /**
