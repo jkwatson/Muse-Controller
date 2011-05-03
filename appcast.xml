@@ -12,8 +12,27 @@
                     <h3>Sparkle Support for Updates</h3>
                     <h3>Basic PandoraOne Support from the Airfoil screen</h3>
                 ]]></description>
-            <pubDate>Sun, 03 May 2011 19:20:11 +0000</pubDate>
+            <pubDate>Sun, 03 Apr 2011 19:20:11 +0000</pubDate>
             <enclosure url="http://www.musecontrol.com/downloads/MuseController2.1.dmg" sparkle:version="2.1" length="3270055" type="application/octet-stream" sparkle:dsaSignature="MC0CFQD0/tI8airZma2R9YAR+B39gguR4gIUJ09h5BKPokDp9u7u3XL9hRyvfhY=" />
+         </item>
+
+         <item>
+            <title>Version 2.2.0</title>
+            <description><![CDATA[
+                <h2>New Features</h2>
+                    <h3>Support for PandoraBoy channels with non-ascii characters in them</h3>
+                ]]></description>
+            <pubDate>Sun, 24 Apr 2011 18:20:11 +0800</pubDate>
+            <enclosure url="http://www.musecontrol.com/downloads/MuseController2.2.0.dmg" sparkle:version="2.2.0" length="3270055" type="application/octet-stream" sparkle:dsaSignature="MCwCFEGAFJDEty+bIxqD49lteWM/hrrwAhQbS8tmwjNNUh/iyoVyUsB7dIokDg==" />
+         </item>
+         <item>
+            <title>Version 2.2.1</title>
+            <description><![CDATA[
+                <h2>New Features</h2>
+                    <h3>Minor internal updates. Nothing that should affect functionality.</h3>
+                ]]></description>
+            <pubDate>Mon, 25 Apr 2011 20:20:11 +0800</pubDate>
+            <enclosure url="http://www.musecontrol.com/downloads/MuseController2.2.1.dmg" sparkle:version="2.2.1" length="3270055" type="application/octet-stream" sparkle:dsaSignature="MCwCFBAnMTIJkBooYkDWoODKTchlc+pjAhQcL4K46GF20ceY+TDpnzyuPujgPA==" />
          </item>
 
    </channel>

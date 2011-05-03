@@ -25,7 +25,8 @@ public class PandoraBoyServlet extends HttpServlet {
         response.addHeader("Cache-Control", "post-check=0, pre-check=0");
         // Set standard HTTP/1.0 no-cache header.
         response.setHeader("Pragma", "no-cache");
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=utf-8");
+        response.setCharacterEncoding("UTF-8");
         String pathInfo = req.getPathInfo();
         if (pathInfo.startsWith("/status")) {
             appendStatus(response);
@@ -98,7 +99,9 @@ public class PandoraBoyServlet extends HttpServlet {
         String uglyStuff = appleScriptTemplate.execute(Application.PANDORABOY, "get player state");
         status.put("status", uglyStuff.contains("play") ? "playing" : "stopped");
         status.put("version", ControlServlet.CURRENT_VERSION);
-        response.getWriter().append(new Gson().toJson(status));
+        String json = new Gson().toJson(status);
+        System.out.println("json = " + json);
+        response.getWriter().append(json);
 
         response.setStatus(HttpServletResponse.SC_OK);
     }

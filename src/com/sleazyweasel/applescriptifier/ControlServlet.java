@@ -37,7 +37,8 @@ public class ControlServlet extends HttpServlet {
         response.addHeader("Cache-Control", "post-check=0, pre-check=0");
         // Set standard HTTP/1.0 no-cache header.
         response.setHeader("Pragma", "no-cache");
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=utf-8");
+        response.setCharacterEncoding("UTF-8");
         String pathInfo = req.getPathInfo();
         if (pathInfo.startsWith("/apps")) {
             Map<String, Object> results = new HashMap<String, Object>();

@@ -27,7 +27,8 @@ public class AirfoilServlet extends HttpServlet {
         response.addHeader("Cache-Control", "post-check=0, pre-check=0");
         // Set standard HTTP/1.0 no-cache header.
         response.setHeader("Pragma", "no-cache");
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=utf-8");
+        response.setCharacterEncoding("UTF-8");
         String pathInfo = req.getPathInfo();
 
         if (pathInfo.equals("/status")) {
