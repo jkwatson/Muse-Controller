@@ -12,7 +12,7 @@ import java.util.*;
 public class PandoraBoyServlet extends HttpServlet {
 
     private static final String QUICK_MIX_STATION_CODE = "QuickMix";
-    private final AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateImpl();
+    private final AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
     private final PandoraBoySupport pandoraBoySupport = new PandoraBoySupport(appleScriptTemplate);
 
     @Override
@@ -100,7 +100,6 @@ public class PandoraBoyServlet extends HttpServlet {
         status.put("status", uglyStuff.contains("play") ? "playing" : "stopped");
         status.put("version", ControlServlet.CURRENT_VERSION);
         String json = new Gson().toJson(status);
-        System.out.println("json = " + json);
         response.getWriter().append(json);
 
         response.setStatus(HttpServletResponse.SC_OK);

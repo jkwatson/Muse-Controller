@@ -11,11 +11,7 @@ public interface AppleScriptTemplate {
     public static int UP_ARROW = 126;
     public static int DOWN_ARROW = 125;
 
-    <T> T execute(CharSequence script, String... args);
-
     <T> T execute(Application application, String... scriptLines);
-
-    <T> T execute(Application application, List<String> args, String... scriptLines);
 
     boolean isRunning(Application application);
 

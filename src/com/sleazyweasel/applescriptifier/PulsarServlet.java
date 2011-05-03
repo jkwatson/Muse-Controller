@@ -3,19 +3,17 @@ package com.sleazyweasel.applescriptifier;
 import com.google.gson.Gson;
 
 import javax.imageio.ImageIO;
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
 public class PulsarServlet extends HttpServlet {
 
-    private final AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateImpl();
+    private final AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
     private final PulsarSupport pulsarSupport = new PulsarSupport(appleScriptTemplate);
 
     @Override

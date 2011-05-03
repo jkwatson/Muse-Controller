@@ -15,7 +15,7 @@ public class AirfoilServlet extends HttpServlet {
     private static final String CURRENT_SOURCE_KEY = "currentSource";
     private static final String NAME_KEY = "name";
     private static final String STATE_KEY = "state";
-    private AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateImpl();
+    private AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
@@ -125,8 +125,8 @@ public class AirfoilServlet extends HttpServlet {
     }
 
     private void updateSpeakerVolume(HttpServletResponse response, String speakerId, float vol) throws IOException {
-        String setScript = "tell application \"Airfoil\"\n\tset the volume of (every speaker whose id is \"" + speakerId + "\") to " + vol + "\nend tell";
-        appleScriptTemplate.execute(setScript);
+        String setScript = "set the volume of (every speaker whose id is \"" + speakerId + "\") to " + vol + "";
+        appleScriptTemplate.execute(Application.AIRFOIL, setScript);
         appendRunningStatus(response, getRunningStatus());
     }
 

@@ -4,7 +4,7 @@ import javax.script.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class AppleScriptTemplateImpl implements AppleScriptTemplate {
+public class ScriptEngineAppleScriptTemplate implements AppleScriptTemplate {
 
 
     private ScriptEngine getEngine() {

@@ -2,7 +2,6 @@ package com.sleazyweasel.applescriptifier;
 
 import com.google.gson.Gson;
 
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,16 +16,12 @@ public class ControlServlet extends HttpServlet {
 
     public static final String CURRENT_VERSION = "2.0";
 
-    private AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateImpl();
+    private AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
 
     private List<String> applications = new ArrayList<String>();
 
-    public ControlServlet() {
-    }
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
-
         updateApplications();
 
         // Set to expire far in the past.
