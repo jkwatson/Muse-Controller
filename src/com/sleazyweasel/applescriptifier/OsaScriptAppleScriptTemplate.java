@@ -46,7 +46,7 @@ public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
     }
 
     public <T> T execute(Application applicationName, String... scriptLines) {
-        ArrayList<String> commands = new ArrayList<String>();
+        List<String> commands = new ArrayList<String>();
         commands.add("tell application \"" + applicationName.getName() + "\"");
         for (int i = 0; i < scriptLines.length; i++) {
             String scriptLine = scriptLines[i];
@@ -86,16 +86,12 @@ public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
         execute(application, "activate", "tell application \"System Events\" to keystroke \"" + keyStroke + "\"");
     }
 
-    public void executeKeyCode(Application application, int keyCode) {
-        execute(application, "activate", "tell application \"System Events\" to key code " + keyCode);
+    public void executeKeyStrokeWithCommandKey(Application application, String keyStroke) {
+        execute(application, "activate", "tell application \"System Events\" to keystroke \"" + keyStroke + "\" using command down");
     }
 
-    private Bindings setArgs(List<String> args, ScriptEngine engine) {
-        Bindings bindings = engine.getContext().getBindings(ScriptContext.ENGINE_SCOPE);
-        bindings.put("javax_script_function", "dorun");
-        //todo support more than one arg!
-        bindings.put(ScriptEngine.ARGV, args.get(0));
-        return bindings;
+    public void executeKeyCode(Application application, int keyCode) {
+        execute(application, "activate", "tell application \"System Events\" to key code " + keyCode);
     }
 
 }

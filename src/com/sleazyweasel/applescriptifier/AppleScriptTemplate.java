@@ -21,5 +21,7 @@ public interface AppleScriptTemplate {
 
     void executeKeyStroke(Application application, String keyStroke);
 
+    void executeKeyStrokeWithCommandKey(Application application, String keyStroke);
+
     void executeKeyCode(Application application, int keyCode);
 }

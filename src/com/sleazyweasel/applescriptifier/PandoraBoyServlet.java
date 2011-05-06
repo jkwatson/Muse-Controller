@@ -56,6 +56,9 @@ public class PandoraBoyServlet extends HttpServlet {
             String stationName = req.getParameter("station");
             appleScriptTemplate.execute(Application.PANDORABOY, "create station \"" + stationName + "\"");
         }
+        else if (pathInfo.startsWith("/reset")) {
+            appleScriptTemplate.executeKeyStrokeWithCommandKey(Application.PANDORABOY, "r");
+        }
         else {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }

@@ -88,6 +88,10 @@ public class ScriptEngineAppleScriptTemplate implements AppleScriptTemplate {
         execute(application, "activate", "tell application \"System Events\" to keystroke \"" + keyStroke + "\"");
     }
 
+    public void executeKeyStrokeWithCommandKey(Application application, String keyStroke) {
+        execute(application, "activate", "tell application \"System Events\" to keystroke \"" + keyStroke + "\" using command down");
+    }
+
     public void executeKeyCode(Application application, int keyCode) {
         execute(application, "activate", "tell application \"System Events\" to key code " + keyCode);
     }
