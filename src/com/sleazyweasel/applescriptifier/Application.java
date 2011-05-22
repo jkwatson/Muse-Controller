@@ -1,15 +1,16 @@
 package com.sleazyweasel.applescriptifier;
 
 public enum Application {
-    AIRFOIL("Airfoil", "com.rogueamoeba.Airfoil", true, false, false, false, false, false),
-    PANDORABOY("PandoraBoy", "com.frozensilicon.PandoraBoy", true, true, true, false, true, true),
-    PULSAR("Pulsar", "com.rogueamoeba.Pulsar", true, true, true, true, false, false),
-    ITUNES("iTunes", "com.apple.iTunes", false, true, true, true, false, false),
-    PANDORAONE("Pandora", "com.pandora.desktop.FB9956FD96E03239939108614098AD95535EE674.1", false, true, true, false, true, true),
-    RDIO("Rdio", "com.rdio.desktop", false, true, true, true, false, false),
-    OTHER("Other", "unknown", false, false, false, false, false, false);
+    AIRFOIL("Airfoil", "Airfoil", "com.rogueamoeba.Airfoil", true, false, false, false, false, false),
+    PANDORABOY("PandoraBoy", "PandoraBoy", "com.frozensilicon.PandoraBoy", true, true, true, false, true, true),
+    PULSAR("Pulsar", "Pulsar", "com.rogueamoeba.Pulsar", true, true, true, true, false, false),
+    ITUNES("iTunes", "iTunes", "com.apple.iTunes", false, true, true, true, false, false),
+    PANDORAONE("Pandora", "Pandora", "com.pandora.desktop.FB9956FD96E03239939108614098AD95535EE674.1", false, true, true, false, true, true),
+    RDIO("Rdio", "Rdio", "com.rdio.desktop", false, true, true, true, false, false),
+    PIANOBAR("iTerm", "Pianobar", "net.sourceforge.iTerm", true, true, true, false, true, true),
+    OTHER("Other", "Other", "unknown", false, false, false, false, false, false);
 
-
+    private String displayName;
     private String name;
     private String identifier;
     private boolean fullSupport;
@@ -19,8 +20,9 @@ public enum Application {
     private boolean thumbsUpSupport;
     private boolean thumbsDownSupport;
 
-    Application(String name, String identifier, boolean fullSupport, boolean playPauseSupport, boolean nextSupport, boolean previousSupport, boolean thumbsUpSupport, boolean thumbsDownSupport) {
+    Application(String name, String displayName, String identifier, boolean fullSupport, boolean playPauseSupport, boolean nextSupport, boolean previousSupport, boolean thumbsUpSupport, boolean thumbsDownSupport) {
         this.name = name;
+        this.displayName = displayName;
         this.identifier = identifier;
         this.fullSupport = fullSupport;
         this.playPauseSupport = playPauseSupport;
@@ -34,10 +36,13 @@ public enum Application {
         return name;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
     public String getIdentifier() {
         return identifier;
     }
-
 
     public boolean hasFullSupport() {
         return fullSupport;
@@ -75,6 +80,8 @@ public enum Application {
                 return new PandoraOneSupport(appleScriptTemplate);
             case RDIO:
                 return new RdioSupport(appleScriptTemplate);
+            case PIANOBAR:
+                return new PianobarSupport(appleScriptTemplate);
             default:
                 return null;
         }

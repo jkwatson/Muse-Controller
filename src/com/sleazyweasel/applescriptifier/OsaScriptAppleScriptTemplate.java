@@ -3,10 +3,7 @@ package com.sleazyweasel.applescriptifier;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,6 +68,14 @@ public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
     }
 
     public boolean applicationExists(Application application) {
+                //this is a bad, bad hack. fix it.
+        if (application.equals(Application.PIANOBAR)) {
+            String userHome = System.getProperty("user.home");
+            File pianoBarConfigDirectory = new File(userHome + "/.config/pianobar");
+            if (!pianoBarConfigDirectory.isDirectory()) {
+                return false;
+            }
+        }
         String[] query = new String[]{"try",
                 "  tell application \"Finder\"",
                 "    return application file id \"" + application.getIdentifier() + "\"",

@@ -8,7 +8,12 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
+import java.io.File;
 import java.net.InetAddress;
 
 import static com.apple.dnssd.DNSSD.register;
@@ -36,16 +41,27 @@ public class Main {
         context.addServlet(new ServletHolder(new AirfoilServlet()), "/airfoil/*");
         context.addServlet(new ServletHolder(new PandoraBoyServlet()), "/pandoraboy/*");
         context.addServlet(new ServletHolder(new PulsarServlet()), "/pulsar/*");
+        context.addServlet(new ServletHolder(new PianobarServlet()), "/pianobar/*");
         context.addServlet(new ServletHolder(new ControlServlet()), "/control/*");
 
         server.start();
 
         new JFrame().pack();
 
+//        Class.forName("com.sun.media.codec.audio.mp3.JavaDecoder");
+//
+//        File file = new File("/Users/john/Downloads/05 Always In The Season.mp3");
+//        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
+//        AudioFileFormat audioFileFormat = AudioSystem.getAudioFileFormat(file);
+//        System.out.println("audioFileFormat = " + audioFileFormat);
+//        Clip clip = AudioSystem.getClip();
+//        clip.open(audioInputStream);
+//        clip.start();
+
         try {
             new SparkleActivator().start();
         } catch (Throwable e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
 

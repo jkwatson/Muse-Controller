@@ -45,13 +45,13 @@ public class ControlServlet extends HttpServlet {
 
     private synchronized void updateApplications() {
         for (Application application : Application.values()) {
-            if (applications.contains(application.getName()) || !application.hasFullSupport()) {
+            if (applications.contains(application.getDisplayName()) || !application.hasFullSupport()) {
                 continue;
             }
             System.out.println("checking: " + application);
             if (appleScriptTemplate.applicationExists(application)) {
                 System.out.println("adding: " + application);
-                applications.add(application.getName());
+                applications.add(application.getDisplayName());
             }
         }
     }
