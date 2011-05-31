@@ -9,12 +9,12 @@ public class PianobarSupport implements ApplicationSupport {
 
     public void playPause() {
         activatePianoBar();
-        template.executeKeyStroke(Application.PIANOBAR, "p");
+        template.executeKeyStroke(Application.MUSECONTROLLER, "p");
     }
 
     public void next() {
         activatePianoBar();
-        template.executeKeyStroke(Application.PIANOBAR, "n");
+        template.executeKeyStroke(Application.MUSECONTROLLER, "n");
     }
 
     public void previous() {
@@ -22,23 +22,23 @@ public class PianobarSupport implements ApplicationSupport {
 
     public void thumbsUp() {
         activatePianoBar();
-        template.executeKeyStroke(Application.PIANOBAR, "+");
+        template.executeKeyStroke(Application.MUSECONTROLLER, "+");
     }
 
     public void thumbsDown() {
         activatePianoBar();
-        template.executeKeyStroke(Application.PIANOBAR, "-");
+        template.executeKeyStroke(Application.MUSECONTROLLER, "-");
     }
 
     public void activatePianoBar() {
-        String result = template.execute(Application.PIANOBAR, "tell current terminal", "get name of current session", "end tell");
+        String result = template.execute(Application.MUSECONTROLLER, "tell current terminal", "get name of current session", "end tell");
         if ("Pianobar".equals(result)) {
             return;
         }
         try {
-            template.execute(Application.PIANOBAR, "tell current terminal", "select session \"Pianobar\"", "end tell");
+            template.execute(Application.MUSECONTROLLER, "tell current terminal", "select session \"Pianobar\"", "end tell");
         } catch (Exception e) {
-            template.execute(Application.PIANOBAR, "tell current terminal", "launch session \"Pianobar\"", "end tell");
+            template.execute(Application.MUSECONTROLLER, "tell current terminal", "launch session \"Pianobar\"", "end tell");
             waitForPianobarStartup();
         }
     }
@@ -55,13 +55,13 @@ public class PianobarSupport implements ApplicationSupport {
             } catch (InterruptedException e) {
                 break;
             }
-            tries ++;
+            tries++;
         }
     }
 
 
     public String getCurrentScreenContents(AppleScriptTemplate template) {
-        String rawContents = template.execute(Application.PIANOBAR,
+        String rawContents = template.execute(Application.MUSECONTROLLER,
                 "tell current terminal",
                 "tell current session",
                 "get contents",

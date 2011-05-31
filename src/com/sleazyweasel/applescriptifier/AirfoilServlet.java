@@ -6,7 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +16,11 @@ public class AirfoilServlet extends HttpServlet {
     private static final String NAME_KEY = "name";
     private static final String STATE_KEY = "state";
     private AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
+    private final NativePianobarSupport pianobarSupport;
+
+    public AirfoilServlet(NativePianobarSupport pianobarSupport) {
+        this.pianobarSupport = pianobarSupport;
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
@@ -53,7 +58,7 @@ public class AirfoilServlet extends HttpServlet {
                 selectApplicationAudioSource(sourceId, response);
             } else if (pathInfo.startsWith("/playpause")) {
                 Map<String, Object> runningStatus = getRunningStatus();
-                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus);
+                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
                 if (applicationSupport != null) {
                     applicationSupport.playPause();
                 }
@@ -61,7 +66,7 @@ public class AirfoilServlet extends HttpServlet {
 
             } else if (pathInfo.startsWith("/next")) {
                 Map<String, Object> runningStatus = getRunningStatus();
-                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus);
+                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
                 if (applicationSupport != null) {
                     applicationSupport.next();
                 }
@@ -69,14 +74,14 @@ public class AirfoilServlet extends HttpServlet {
 
             } else if (pathInfo.startsWith("/previous")) {
                 Map<String, Object> runningStatus = getRunningStatus();
-                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus);
+                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
                 if (applicationSupport != null) {
                     applicationSupport.previous();
                 }
                 appendRunningStatus(response, runningStatus);
             } else if (pathInfo.startsWith("/thumbsup")) {
                 Map<String, Object> runningStatus = getRunningStatus();
-                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus);
+                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
                 if (applicationSupport != null) {
                     applicationSupport.thumbsUp();
                 }
@@ -84,25 +89,23 @@ public class AirfoilServlet extends HttpServlet {
 
             } else if (pathInfo.startsWith("/thumbsdown")) {
                 Map<String, Object> runningStatus = getRunningStatus();
-                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus);
+                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
                 if (applicationSupport != null) {
                     applicationSupport.thumbsDown();
                 }
                 appendRunningStatus(response, runningStatus);
-            }
-
-            else {
+            } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
         }
     }
 
-    private ApplicationSupport getCurrentApplicationSupport(Map<String, Object> runningStatus) {
+    private ApplicationSupport getCurrentApplicationSupport(Map<String, Object> runningStatus, NativePianobarSupport pianobarSupport) {
         Map<String, Object> state = (Map<String, Object>) runningStatus.get(STATE_KEY);
         Map<String, Object> currentSource = (Map<String, Object>) state.get(CURRENT_SOURCE_KEY);
         String sourceName = (String) currentSource.get(NAME_KEY);
         Application currentApplication = Application.forName(sourceName);
-        return currentApplication.getApplicationSupport(appleScriptTemplate);
+        return currentApplication.getApplicationSupport(appleScriptTemplate, pianobarSupport);
     }
 
     private void selectApplicationAudioSource(String sourceId, HttpServletResponse response) throws IOException {
@@ -150,7 +153,7 @@ public class AirfoilServlet extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
-    private Map<String,Object> getRunningStatus() throws IOException {
+    private Map<String, Object> getRunningStatus() throws IOException {
         Map<String, Object> output = new HashMap<String, Object>();
         output.put("app", Application.AIRFOIL.getName());
         Map<String, Object> stateMap = new HashMap<String, Object>();

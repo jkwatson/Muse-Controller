@@ -1,8 +1,5 @@
 package com.sleazyweasel.applescriptifier;
 
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -68,8 +65,8 @@ public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
     }
 
     public boolean applicationExists(Application application) {
-                //this is a bad, bad hack. fix it.
-        if (application.equals(Application.PIANOBAR)) {
+        //this is a bad, bad hack. fix it.
+        if (application.equals(Application.MUSECONTROLLER)) {
             String userHome = System.getProperty("user.home");
             File pianoBarConfigDirectory = new File(userHome + "/.config/pianobar");
             if (!pianoBarConfigDirectory.isDirectory()) {

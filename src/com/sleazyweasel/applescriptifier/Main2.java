@@ -1,33 +1,42 @@
 package com.sleazyweasel.applescriptifier;
 
-import java.io.IOException;
+import java.io.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Main2 {
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        ScriptEngineAppleScriptTemplate template = new ScriptEngineAppleScriptTemplate();
-
-        String result = template.execute(Application.PIANOBAR, "tell current terminal", "get name of current session", "end tell");
-        System.out.println("result = " + result);
-
-        System.exit(0);
-
-        try {
-            template.execute(Application.PIANOBAR, "tell current terminal", "select session \"Pianobar\"", "end tell");
-        } catch (Exception e) {
-            template.execute(Application.PIANOBAR, "tell current terminal", "launch session \"Pianobar\"", "end tell");
-            waitForPianobarStartup(template);
-            template.executeKeyStroke(Application.PIANOBAR, "\n");
+        final AtomicBoolean stop = new AtomicBoolean(false);
+        Process process = Runtime.getRuntime().exec("/opt/local/bin/pianobar");
+        final InputStream inputStream = process.getInputStream();
+        OutputStream outputStream = process.getOutputStream();
+        Thread t = new Thread(new Runnable() {
+            public void run() {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                try {
+                    while ((line = reader.readLine()) != null) {
+                        System.out.println(line);
+                        if (stop.get()) {
+                            break;
+                        }
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException("blah!", e);
+                }
+            }
+        });
+        t.start();
+        Reader reader = new InputStreamReader(System.in);
+        int character;
+        while ((character = System.in.read()) != -1) {
+            outputStream.write(character);
+            outputStream.flush();
         }
 
-        template.executeKeyStrokeWithCommandKey(Application.PIANOBAR, "k");
-        template.executeKeyStroke(Application.PIANOBAR, "i");
-        String results = getCurrentScreenContents(template);
+        System.out.println("done");
 
-        String[] lines = results.split("\n");
-        for (String line : lines) {
-            System.out.println(line);
-        }
+        process.waitFor();
     }
 
     private static void waitForPianobarStartup(AppleScriptTemplate appleScriptTemplate) {
@@ -42,18 +51,18 @@ public class Main2 {
             } catch (InterruptedException e) {
                 break;
             }
-            tries ++;
+            tries++;
         }
     }
 
 
     private static String getCurrentScreenContents(AppleScriptTemplate template) {
-        return template.execute(Application.PIANOBAR,
-                    "tell current terminal",
-                    "tell current session",
-                    "get contents",
-                    "end tell",
-                    "end tell");
+        return template.execute(Application.MUSECONTROLLER,
+                "tell current terminal",
+                "tell current session",
+                "get contents",
+                "end tell",
+                "end tell");
     }
 
 

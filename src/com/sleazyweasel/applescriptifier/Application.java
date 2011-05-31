@@ -7,7 +7,7 @@ public enum Application {
     ITUNES("iTunes", "iTunes", "com.apple.iTunes", false, true, true, true, false, false),
     PANDORAONE("Pandora", "Pandora", "com.pandora.desktop.FB9956FD96E03239939108614098AD95535EE674.1", false, true, true, false, true, true),
     RDIO("Rdio", "Rdio", "com.rdio.desktop", false, true, true, true, false, false),
-    PIANOBAR("iTerm", "Pianobar", "net.sourceforge.iTerm", true, true, true, false, true, true),
+    MUSECONTROLLER("Muse Controller", "Muse Controller", "com.sleazyweasel.MuseController", true, true, true, false, true, true),
     OTHER("Other", "Other", "unknown", false, false, false, false, false, false);
 
     private String displayName;
@@ -68,8 +68,8 @@ public enum Application {
         return thumbsDownSupport;
     }
 
-    public ApplicationSupport getApplicationSupport(AppleScriptTemplate appleScriptTemplate) {
-        switch(this) {
+    public ApplicationSupport getApplicationSupport(AppleScriptTemplate appleScriptTemplate, NativePianobarSupport pianobarSupport) {
+        switch (this) {
             case PANDORABOY:
                 return new PandoraBoySupport(appleScriptTemplate);
             case PULSAR:
@@ -80,8 +80,8 @@ public enum Application {
                 return new PandoraOneSupport(appleScriptTemplate);
             case RDIO:
                 return new RdioSupport(appleScriptTemplate);
-            case PIANOBAR:
-                return new PianobarSupport(appleScriptTemplate);
+            case MUSECONTROLLER:
+                return pianobarSupport;
             default:
                 return null;
         }

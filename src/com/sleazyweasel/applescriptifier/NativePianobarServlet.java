@@ -14,9 +14,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PianobarServlet extends HttpServlet {
-    private final AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
-    private final PianobarSupport pianobarSupport = new PianobarSupport(appleScriptTemplate);
+public class NativePianobarServlet extends HttpServlet {
+    private final NativePianobarSupport pianobarSupport;
+
+    public NativePianobarServlet(NativePianobarSupport pianobarSupport) {
+        this.pianobarSupport = pianobarSupport;
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
@@ -36,24 +39,56 @@ public class PianobarServlet extends HttpServlet {
             pianobarSupport.playPause();
         } else if (pathInfo.startsWith("/thumbsup")) {
             pianobarSupport.thumbsUp();
-            appleScriptTemplate.executeKeyStroke(Application.MUSECONTROLLER, "i");
+            pianobarSupport.sendKeyStroke('i');
         } else if (pathInfo.startsWith("/thumbsdown")) {
             pianobarSupport.thumbsDown();
         } else if (pathInfo.startsWith("/next")) {
             pianobarSupport.next();
         } else if (pathInfo.startsWith("/keyStroke")) {
-            appleScriptTemplate.executeKeyStroke(Application.MUSECONTROLLER, req.getParameter("key"));
+            pianobarSupport.sendKeyStroke(req.getParameter("key").charAt(0));
+            sleep();
         } else if (pathInfo.startsWith("/textEntry")) {
             String text = req.getParameter("text");
-            if (text != null) {
+            System.out.println("text = ***" + text + "***");
+            if (text != null && text.length() != 0) {
                 if (text.length() == 1 && !Character.isDigit(text.charAt(0))) {
-                    appleScriptTemplate.executeKeyStroke(Application.MUSECONTROLLER, text);
+                    pianobarSupport.sendKeyStroke(text.charAt(0));
                 } else {
                     sendTextCommand(text);
                 }
+            } else {
+                sendTextCommand("\n");
             }
+            sleep();
+        } else if (pathInfo.startsWith("/albumArt")) {
+            String url = "http://url";
+            Map<String, String> responseData = new HashMap<String, String>(1);
+
+            Map<String, Object> currentData = new HashMap<String, Object>();
+            populateResponseData(currentData);
+
+            String title = (String) currentData.get("title");
+            System.out.println("title = " + title);
+            if (title != null && title.length() > 0) {
+                url = getAlbumArtUrl();
+            }
+
+            responseData.put("albumArtUrl", url);
+            response.getWriter().append(new Gson().toJson(responseData));
+            return;
         }
+
         appendStatus(response);
+    }
+
+    private String getAlbumArtUrl() {
+        pianobarSupport.activatePianoBar();
+        pianobarSupport.sendKeyStroke('$');
+        pause();
+        String currentScreenContents = pianobarSupport.getCurrentScreenContents();
+        String substring = currentScreenContents.substring(currentScreenContents.lastIndexOf("coverArt:\t") + 10);
+        String[] lines = substring.split("\n");
+        return lines[0];
     }
 
     private void pause() {
@@ -66,7 +101,7 @@ public class PianobarServlet extends HttpServlet {
 
     private void appendScreenContents(HttpServletResponse response) throws IOException {
         Map<String, String> responseData = new HashMap<String, String>();
-        String currentScreenContents = pianobarSupport.getCurrentScreenContents(appleScriptTemplate);
+        String currentScreenContents = pianobarSupport.getCurrentScreenContents();
         responseData.put("screen", currentScreenContents);
         responseData.put("inputRequested", extractInputRequested(currentScreenContents));
 
@@ -78,16 +113,21 @@ public class PianobarServlet extends HttpServlet {
     }
 
     private void appendStatus(HttpServletResponse response, Map<String, Object> responseData) throws IOException {
+        populateResponseData(responseData);
+        response.getWriter().append(new Gson().toJson(responseData));
+    }
+
+    private void populateResponseData(Map<String, Object> responseData) {
         pianobarSupport.activatePianoBar();
 
-        String currentScreenContents = pianobarSupport.getCurrentScreenContents(appleScriptTemplate);
+        String currentScreenContents = pianobarSupport.getCurrentScreenContents();
         String[] lines = currentScreenContents.split("\n");
         boolean inputRequested = "YES".equals(extractInputRequested(currentScreenContents));
 
         int lastStationEntryPoint = currentScreenContents.lastIndexOf("|>  Station");
         if (lastStationEntryPoint < 0 && !inputRequested) {
             sendTextCommand("i");
-            currentScreenContents = pianobarSupport.getCurrentScreenContents(appleScriptTemplate);
+            currentScreenContents = pianobarSupport.getCurrentScreenContents();
             lastStationEntryPoint = currentScreenContents.lastIndexOf("|>  Station");
         }
         responseData.put("screen", currentScreenContents);
@@ -120,12 +160,11 @@ public class PianobarServlet extends HttpServlet {
                     stations = Collections.emptyMap();
                 }
                 responseData.put("stations", stations);
-                responseData.put("inputType ", "stationSelection");
+                responseData.put("inputType", "stationSelection");
             }
         }
 
         responseData.put("inputRequested", inputRequested ? "YES" : "NO");
-        response.getWriter().append(new Gson().toJson(responseData));
     }
 
     private void sleep() {
@@ -183,13 +222,22 @@ public class PianobarServlet extends HttpServlet {
     }
 
     String extractInputRequested(String screenContents) {
+//        String substring = screenContents.substring(screenContents.length() - 10);
+//        byte[] bytes = substring.getBytes();
+//        for (byte aByte : bytes) {
+//            System.out.println("aByte = " + aByte);
+//        }
+
+//        if (screenContents.endsWith("[?] Select station: \n")) {
+//            return "NO";
+//        }
         String[] lines = screenContents.split("\\n");
         String lastLine = lines[lines.length - 1];
         return lastLine.startsWith("[?]") ? "YES" : "NO";
     }
 
     private void sendTextCommand(String command) {
-        appleScriptTemplate.execute(Application.MUSECONTROLLER, "tell current terminal", "tell current session", "write text \"" + command + "\"", "end tell", "end tell");
+        pianobarSupport.sendTextCommand(command);
     }
 
     Map<Integer, String> parseStationList(String stationData) {

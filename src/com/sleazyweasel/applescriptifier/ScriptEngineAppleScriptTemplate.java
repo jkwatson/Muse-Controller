@@ -75,14 +75,14 @@ public class ScriptEngineAppleScriptTemplate implements AppleScriptTemplate {
 
     public boolean applicationExists(Application application) {
         //this is a bad, bad hack. fix it.
-        if (application.equals(Application.PIANOBAR)) {
+        if (application.equals(Application.MUSECONTROLLER)) {
             String userHome = System.getProperty("user.home");
             File pianoBarConfigDirectory = new File(userHome + "/.config/pianobar");
             if (!pianoBarConfigDirectory.isDirectory()) {
                 return false;
             }
         }
-        
+
         String query = "try\n" +
                 "  tell application \"Finder\"\n" +
                 "    return application file id \"" + application.getIdentifier() + "\"\n" +
