@@ -1,10 +1,9 @@
 package com.sleazyweasel.applescriptifier;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class NativePianobarSupport implements ApplicationSupport {
 
@@ -101,7 +100,7 @@ public class NativePianobarSupport implements ApplicationSupport {
                                 continue;
                             }
 
-                            System.out.print(Character.valueOf((char) character));
+//                            System.out.print(Character.valueOf((char) character));
                             data.add((char) character);
                         }
                     } catch (IOException e) {
@@ -171,5 +170,31 @@ public class NativePianobarSupport implements ApplicationSupport {
         } catch (IOException e) {
             throw new RuntimeException("text command failed", e);
         }
+    }
+
+    public List<String> getDataFromFile() {
+        List<String> contents = new ArrayList<String>();
+        BufferedReader bufferedReader = null;
+        try {
+            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream("/tmp/pianobar_data")));
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                contents.add(line);
+            }
+
+        } catch (FileNotFoundException e) {
+            //well, then, we just return an empty list, don't we?
+        } catch (IOException e) {
+            //not sure what to do here yet.
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    //nothing to see here, move along.
+                }
+            }
+        }
+        return contents;
     }
 }

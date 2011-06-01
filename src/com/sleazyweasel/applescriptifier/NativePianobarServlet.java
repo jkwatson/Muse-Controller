@@ -7,12 +7,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class NativePianobarServlet extends HttpServlet {
     private final NativePianobarSupport pianobarSupport;
@@ -49,7 +46,10 @@ public class NativePianobarServlet extends HttpServlet {
             sleep();
         } else if (pathInfo.startsWith("/textEntry")) {
             String text = req.getParameter("text");
-            System.out.println("text = ***" + text + "***");
+            //trim the user data to protect against buffer overflows in pianobar.
+            if (text.length() > 100) {
+                text = text.substring(0, 100);
+            }
             if (text != null && text.length() != 0) {
                 if (text.length() == 1 && !Character.isDigit(text.charAt(0))) {
                     pianobarSupport.sendKeyStroke(text.charAt(0));
@@ -65,10 +65,9 @@ public class NativePianobarServlet extends HttpServlet {
             Map<String, String> responseData = new HashMap<String, String>(1);
 
             Map<String, Object> currentData = new HashMap<String, Object>();
-            populateResponseData(currentData);
+            populateResponseDataFromFile(currentData);
 
             String title = (String) currentData.get("title");
-            System.out.println("title = " + title);
             if (title != null && title.length() > 0) {
                 url = getAlbumArtUrl();
             }
@@ -82,30 +81,24 @@ public class NativePianobarServlet extends HttpServlet {
     }
 
     private String getAlbumArtUrl() {
-        pianobarSupport.activatePianoBar();
-        pianobarSupport.sendKeyStroke('$');
-        pause();
-        String currentScreenContents = pianobarSupport.getCurrentScreenContents();
-        String substring = currentScreenContents.substring(currentScreenContents.lastIndexOf("coverArt:\t") + 10);
-        String[] lines = substring.split("\n");
-        return lines[0];
+        //todo consider doing something along the lines below to try to dig for other images.
+//        valueFromDataFile = valueFromDataFile.replace("130W", "500W");
+//        valueFromDataFile = valueFromDataFile.replace("130H", "434H");
+        return getValueFromDataFile("coverArt=");
     }
 
-    private void pause() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            //we're done.
+    private String getValueFromDataFile(String key) {
+        List<String> dataFromFile = pianobarSupport.getDataFromFile();
+        return getValueFromDataFile(key, dataFromFile);
+    }
+
+    private String getValueFromDataFile(String key, List<String> dataFromFile) {
+        for (String line : dataFromFile) {
+            if (line.startsWith(key)) {
+                return line.substring(line.indexOf(key) + key.length());
+            }
         }
-    }
-
-    private void appendScreenContents(HttpServletResponse response) throws IOException {
-        Map<String, String> responseData = new HashMap<String, String>();
-        String currentScreenContents = pianobarSupport.getCurrentScreenContents();
-        responseData.put("screen", currentScreenContents);
-        responseData.put("inputRequested", extractInputRequested(currentScreenContents));
-
-        response.getWriter().append(new Gson().toJson(responseData));
+        return "";
     }
 
     private void appendStatus(HttpServletResponse response) throws IOException {
@@ -113,59 +106,51 @@ public class NativePianobarServlet extends HttpServlet {
     }
 
     private void appendStatus(HttpServletResponse response, Map<String, Object> responseData) throws IOException {
-        populateResponseData(responseData);
+        populateResponseDataFromFile(responseData);
         response.getWriter().append(new Gson().toJson(responseData));
     }
 
-    private void populateResponseData(Map<String, Object> responseData) {
+    private void populateResponseDataFromFile(Map<String, Object> responseData) {
         pianobarSupport.activatePianoBar();
 
         String currentScreenContents = pianobarSupport.getCurrentScreenContents();
         String[] lines = currentScreenContents.split("\n");
         boolean inputRequested = "YES".equals(extractInputRequested(currentScreenContents));
 
-        int lastStationEntryPoint = currentScreenContents.lastIndexOf("|>  Station");
-        if (lastStationEntryPoint < 0 && !inputRequested) {
-            sendTextCommand("i");
-            currentScreenContents = pianobarSupport.getCurrentScreenContents();
-            lastStationEntryPoint = currentScreenContents.lastIndexOf("|>  Station");
-        }
         responseData.put("screen", currentScreenContents);
-        if (lastStationEntryPoint >= 0) {
-            currentScreenContents = currentScreenContents.substring(lastStationEntryPoint);
-        }
 
-        if (lastStationEntryPoint < 0 || currentScreenContents.contains("No song playing.")) {
-            responseData.put("artist", "");
-            responseData.put("album", "");
-            responseData.put("station", "");
-            responseData.put("title", "");
-            responseData.put("heart", "NO");
-        } else {
-            responseData.put("station", extractStation(currentScreenContents));
-            responseData.put("artist", extractArtist(currentScreenContents));
-            responseData.put("album", extractAlbum(currentScreenContents));
-            responseData.put("title", extractTitle(currentScreenContents));
-            responseData.put("heart", extractHeart(currentScreenContents));
-        }
+        List<String> pianobarData = pianobarSupport.getDataFromFile();
+
+        responseData.put("station", extractStation(pianobarData));
+        responseData.put("artist", extractArtist(pianobarData));
+        responseData.put("album", extractAlbum(pianobarData));
+        responseData.put("title", extractTitle(pianobarData));
+        responseData.put("heart", extractHeart(pianobarData));
 
         if (inputRequested) {
             String lastLine = lines[lines.length - 1];
             if (lastLine.startsWith("[?] Select station:")) {
-                int beginIndex = currentScreenContents.lastIndexOf(" 0)");
-                Map<Integer, String> stations;
-                if (beginIndex >= 0) {
-                    stations = parseStationList(currentScreenContents.substring(beginIndex));
-                } else {
-                    stations = Collections.emptyMap();
-                }
+                Map<Integer, String> stations = parseStationList(pianobarData);
                 responseData.put("stations", stations);
                 responseData.put("inputType", "stationSelection");
             }
         }
-
         responseData.put("inputRequested", inputRequested ? "YES" : "NO");
     }
+
+    Map<Integer, String> parseStationList(List<String> pianobarData) {
+        Map<Integer, String> stations = new HashMap<Integer, String>();
+
+        for (String dataLine : pianobarData) {
+            if (dataLine.startsWith("station") && !dataLine.startsWith("stationCount") && !dataLine.startsWith("stationName")) {
+                String stationNumber = dataLine.substring(dataLine.indexOf("station") + 7, dataLine.indexOf("="));
+                String stationName = dataLine.substring(dataLine.indexOf("=") + 1);
+                stations.put(Integer.valueOf(stationNumber), stationName);
+            }
+        }
+        return stations;
+    }
+
 
     private void sleep() {
         try {
@@ -175,62 +160,28 @@ public class NativePianobarServlet extends HttpServlet {
         }
     }
 
-    String extractStation(String nowPlaying) {
-        int stationLocation = nowPlaying.lastIndexOf("Station \"");
-        int parenLocation = nowPlaying.indexOf("(");
-        if (stationLocation < 0 || parenLocation < 0) {
-            return "";
-        }
-        return nowPlaying.substring(stationLocation + 9, parenLocation - 2);
+    String extractStation(List<String> data) {
+        return getValueFromDataFile("stationName=", data);
     }
 
-    String extractTitle(String nowPlaying) {
-        int albumLocation = nowPlaying.lastIndexOf("|>  \"");
-        int end = nowPlaying.lastIndexOf("\" by \"");
-        if (albumLocation < 0 || end < 0) {
-            return "";
-        }
-        return nowPlaying.substring(albumLocation + 5, end);
+    String extractTitle(List<String> data) {
+        return getValueFromDataFile("title=", data);
     }
 
-    String extractAlbum(String nowPlaying) {
-        int albumLocation = nowPlaying.lastIndexOf(" on \"");
-        int end = nowPlaying.lastIndexOf("\"");
-        if (albumLocation < 0 || end < 0) {
-            return "";
-        }
-        return nowPlaying.substring(albumLocation + 5, end);
+    String extractAlbum(List<String> data) {
+        return getValueFromDataFile("album=", data);
     }
 
-    String extractArtist(String nowPlaying) {
-        int albumLocation = nowPlaying.lastIndexOf(" by \"");
-        int end = nowPlaying.lastIndexOf("\" on \"");
-        if (albumLocation < 0 || end < 0) {
-            return "";
-        }
-        return nowPlaying.substring(albumLocation + 5, end);
+    String extractArtist(List<String> data) {
+        return getValueFromDataFile("artist=", data);
     }
 
-    String extractHeart(String nowPlaying) {
-        int heartLocation = nowPlaying.lastIndexOf(" on \"");
-        if (heartLocation < 0) {
-            return "NO";
-        }
-        String endOfSongInfo = nowPlaying.substring(heartLocation);
-        int end = endOfSongInfo.lastIndexOf("<3");
-        return end > 0 ? "YES" : "NO";
+    String extractHeart(List<String> data) {
+        String rating = getValueFromDataFile("rating=", data);
+        return rating.equals("1") ? "YES" : "NO";
     }
 
     String extractInputRequested(String screenContents) {
-//        String substring = screenContents.substring(screenContents.length() - 10);
-//        byte[] bytes = substring.getBytes();
-//        for (byte aByte : bytes) {
-//            System.out.println("aByte = " + aByte);
-//        }
-
-//        if (screenContents.endsWith("[?] Select station: \n")) {
-//            return "NO";
-//        }
         String[] lines = screenContents.split("\\n");
         String lastLine = lines[lines.length - 1];
         return lastLine.startsWith("[?]") ? "YES" : "NO";
@@ -240,22 +191,4 @@ public class NativePianobarServlet extends HttpServlet {
         pianobarSupport.sendTextCommand(command);
     }
 
-    Map<Integer, String> parseStationList(String stationData) {
-        Map<Integer, String> results = new LinkedHashMap<Integer, String>();
-        String[] lines = stationData.split("\n");
-        for (String line : lines) {
-            if (line.startsWith("(i)") || line.startsWith("[?]")) {
-                continue;
-            }
-
-            Pattern pattern = Pattern.compile("\\s+(\\d+)\\)\\s+[Q|S]?\\s+(\\w.*)$");
-            Matcher matcher = pattern.matcher(line);
-            if (matcher.find()) {
-                Integer key = Integer.valueOf(matcher.group(1));
-                String stationName = matcher.group(2);
-                results.put(key, stationName);
-            }
-        }
-        return results;
-    }
 }
