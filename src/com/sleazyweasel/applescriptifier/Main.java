@@ -46,6 +46,21 @@ public class Main {
         server.start();
 //        server.join();
 
+        // set system properties here that affect Quaqua
+        // for example the default layout policy for tabbed
+        // panes:
+        System.setProperty(
+                "Quaqua.tabLayoutPolicy", "wrap"
+        );
+        // set the Quaqua Look and Feel in the UIManager
+        try {
+            UIManager.setLookAndFeel(ch.randelshofer.quaqua.QuaquaManager.getLookAndFeel());
+            // set UI manager properties here that affect Quaqua
+        } catch (Exception e) {
+            e.printStackTrace();
+            // take an appropriate action here
+        }
+
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             public void uncaughtException(Thread t, Throwable e) {
                 e.printStackTrace();

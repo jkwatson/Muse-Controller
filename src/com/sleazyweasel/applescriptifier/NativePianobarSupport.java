@@ -1,7 +1,10 @@
 package com.sleazyweasel.applescriptifier;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class NativePianobarSupport implements ApplicationSupport {
 
@@ -99,7 +102,7 @@ public class NativePianobarSupport implements ApplicationSupport {
         while (tries < 5) {
             String currentScreenContents = getCurrentScreenContents();
             String[] lines = currentScreenContents.split("\\n");
-            System.out.println("lines = " + Arrays.toString(lines));
+//            System.out.println("lines = " + Arrays.toString(lines));
             if (lines.length > 1) {
                 break;
             }
@@ -290,6 +293,22 @@ public class NativePianobarSupport implements ApplicationSupport {
         }
     }
 
+    public void selectStation(Integer stationNumber) {
+        if (stationNumber != null) {
+            sendTextCommand(stationNumber.toString());
+        }
+    }
+
+    public void askToChooseStation() {
+        if (inputTypeRequested().equals(InputType.CHOOSE_STATION)) {
+            return;
+        }
+        sendKeyStroke('s');
+    }
+
+    public void cancelStationSelection() {
+        sendTextCommand("");
+    }
 
     enum InputType {
         NONE, CHOOSE_STATION
