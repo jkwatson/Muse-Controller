@@ -29,15 +29,18 @@ use warnings;
 
 # (taken from https://github.com/jcmuller/pianobar-notify)
 	my $command = shift;
-	if ($command == "songstart" || $command == "userlogin") {
+	open( my $debugHandle, ">>/tmp/pianobar_debug.txt") or die "Couldn't open debug file for writing: $!";
+	print $debugHandle "$command\n";
 		my $data = '/tmp/pianobar_data';
 		open(my $fh, ">$data") or die "Couldn't open $data for writing: $!";
 		while (<STDIN>)
 		{
 			#print $fh "$1. $2\n" if (/station(\d+)=(.+)$/);
 			print $fh "$_";
+			print $debugHandle "$_";
 		}
 
 		close($fh);
-	}
+	print $debugHandle "\n";
+	close($debugHandle);
 

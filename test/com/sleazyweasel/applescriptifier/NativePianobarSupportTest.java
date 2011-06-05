@@ -9,81 +9,54 @@ import java.util.Map;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
-public class PianobarServletTest {
+public class NativePianobarSupportTest {
 
     @Test
     public void testStation() {
-        NativePianobarServlet testClass = new NativePianobarServlet(null);
+        NativePianobarSupport testClass = new NativePianobarSupport();
         String station = testClass.extractStation(Arrays.asList("foo=blah", "stationName=Afrobeat Radio"));
         assertEquals("Afrobeat Radio", station);
     }
 
     @Test
     public void testAlbum() {
-        NativePianobarServlet testClass = new NativePianobarServlet(null);
+        NativePianobarSupport testClass = new NativePianobarSupport();
         String album = testClass.extractAlbum(Arrays.asList("foo=blah", "album=Orgone"));
         assertEquals("Orgone", album);
     }
 
     @Test
     public void testArtist() {
-        NativePianobarServlet testClass = new NativePianobarServlet(null);
+        NativePianobarSupport testClass = new NativePianobarSupport();
         String artist = testClass.extractArtist(Arrays.asList("foo=blah", "artist=Orgone"));
         assertEquals("Orgone", artist);
     }
 
     @Test
     public void testTitle() {
-        NativePianobarServlet testClass = new NativePianobarServlet(null);
+        NativePianobarSupport testClass = new NativePianobarSupport();
         String title = testClass.extractTitle(Arrays.asList("foo=blah", "title=Soul Strut"));
         assertEquals("Soul Strut", title);
     }
 
     @Test
     public void testHeart_false() {
-        NativePianobarServlet testClass = new NativePianobarServlet(null);
+        NativePianobarSupport testClass = new NativePianobarSupport();
         String heart = testClass.extractHeart(Arrays.asList("foo=blah", "rating=0"));
         assertEquals("NO", heart);
     }
 
     @Test
     public void testHeart_true() {
-        NativePianobarServlet testClass = new NativePianobarServlet(null);
+        NativePianobarSupport testClass = new NativePianobarSupport();
         String heart = testClass.extractHeart(Arrays.asList("foo=blah", "rating=1"));
         assertEquals("YES", heart);
     }
 
-    @Test
-    public void testInputRequested_true() {
-        NativePianobarServlet testClass = new NativePianobarServlet(null);
-        String inputRequested = testClass.extractInputRequested("a bunch of stuff then\n[?] Looking for input!");
-        assertEquals("YES", inputRequested);
-    }
-
-    @Test
-    public void testInputRequested_false() {
-        NativePianobarServlet testClass = new NativePianobarServlet(null);
-        String inputRequested = testClass.extractInputRequested("\"|>  Station \\\"Afrobeat Radio\\\" (467728149065328655)\\n\" +\n" +
-                "                \"|>  \\\"Soul Strut\\\" by \\\"Orgone\\\" on \\\"Orgone\\\" <3\"");
-        assertEquals("NO", inputRequested);
-    }
-
-    @Test
-    public void testInputRequested_postStationSelectionCanceled() {
-        NativePianobarServlet testClass = new NativePianobarServlet(null);
-        String inputRequested = testClass.extractInputRequested("\t24)     The Firm Radio\n" +
-                "\t25)     Total Eclipse Of The Heart Radio\n" +
-                "\t26)     Trip Shakespeare Radio\n" +
-                "\t27)     Weezer Radio\n" +
-                "\t28)     Wilco Radio\n" +
-                "\t29)     XTC Radio\n" +
-                "[?] Select station: \n-");
-        assertEquals("NO", inputRequested);
-    }
 
     @Test
     public void testGetStationList() {
-        NativePianobarServlet testClass = new NativePianobarServlet(null);
+        NativePianobarSupport testClass = new NativePianobarSupport();
         List<String> input = Arrays.asList(
                 "detailUrl=",
                 "stationCount=30",

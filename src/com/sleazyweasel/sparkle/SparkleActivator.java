@@ -3,13 +3,12 @@ package com.sleazyweasel.sparkle;
 /**
  * Activates the Sparkle Framework
  */
-public class SparkleActivator
-{    
-    /** 
+public class SparkleActivator {
+    /**
      * Native method declaration
      */
-    public native static void initSparkle(String pathToSparkleFramework, 
-                                          boolean updateAtStartup, 
+    public native static void initSparkle(String pathToSparkleFramework,
+                                          boolean updateAtStartup,
                                           int checkInterval);
 
     /**
@@ -26,8 +25,8 @@ public class SparkleActivator
      * Dynamically loads the JNI object. Will 
      * fail if it is launched on an non-MacOSX system
      * or when libinit_sparkle.dylib is outside of the 
-     * LD_LIBRARY_PATH
-     */    
+     * DYLD_LIBRARY_PATH
+     */
     static {
 //        System.load("/Users/john/projects/applescriptifier/lib/native/libsparkle_init.dylib");
         try {
@@ -42,8 +41,7 @@ public class SparkleActivator
      *
      * @throws Exception
      */
-    public void start() throws Exception
-    {
+    public void start() throws Exception {
         System.out.println("System.getProperty(\"user.dir\") = " + System.getProperty("user.dir"));
         initSparkle(System.getProperty("user.dir") + "/../../Frameworks/Sparkle.framework", updateAtStartup, checkInterval);
     }

@@ -33,27 +33,48 @@ public class Main {
         context.setContextPath("/");
         server.setHandler(context);
 
-        NativePianobarSupport pianobarSupport = new NativePianobarSupport();
+        final NativePianobarSupport pianobarSupport = new NativePianobarSupport();
 
         AirfoilServlet airfoilServlet = new AirfoilServlet(pianobarSupport);
         context.addServlet(new ServletHolder(airfoilServlet), "/airfoil/*");
         context.addServlet(new ServletHolder(new PandoraBoyServlet()), "/pandoraboy/*");
         context.addServlet(new ServletHolder(new PulsarServlet()), "/pulsar/*");
-        context.addServlet(new ServletHolder(new NativePianobarServlet(pianobarSupport)), "/pianobar/*");
+        NativePianobarServlet nativePianobarServlet = new NativePianobarServlet(pianobarSupport);
+        context.addServlet(new ServletHolder(nativePianobarServlet), "/pianobar/*");
         context.addServlet(new ServletHolder(new ControlServlet()), "/control/*");
 
         server.start();
+//        server.join();
 
-        new JFrame().pack();
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            public void uncaughtException(Thread t, Throwable e) {
+                e.printStackTrace();
+            }
+        });
+
+        final boolean pianoBarSupportEnabled = NativePianobarSupport.isPianoBarSupportEnabled();
+        System.out.println("pianoBarSupportEnabled = " + pianoBarSupportEnabled);
+
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                if (pianoBarSupportEnabled) {
+                    PianobarUI pianobarUI = new PianobarUI(pianobarSupport);
+                    pianobarUI.initialize();
+                    JFrame window = pianobarUI.getWindow();
+                    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    window.setVisible(true);
+                } else {
+                    new JFrame().pack();
+                }
+            }
+        });
 
         try {
             new SparkleActivator().start();
         } catch (Throwable e) {
             e.printStackTrace();
         }
-
-
-        server.join();
 
     }
 }

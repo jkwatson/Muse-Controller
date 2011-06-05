@@ -12,6 +12,7 @@
               value="${module.applescriptifier.basedir}/out/production/applescriptifier"/>
     <property name="applescriptifier.testoutput.dir"
               value="${module.applescriptifier.basedir}/out/test/applescriptifier"/>
+    <property name="applescriptifier.release.dir" value="${module.applescriptifier.basedir}/release"/>
 
     <path id="applescriptifier.module.bootclasspath">
         <!-- Paths to be included in compilation bootclasspath -->
@@ -71,7 +72,7 @@
             description="Compile module applescriptifier; production classes">
         <mkdir dir="${applescriptifier.output.dir}"/>
         <javac destdir="${applescriptifier.output.dir}" debug="${compiler.debug}" target="1.5"
-               nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" 
+               nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true"
                executable="${module.jdk.bin.applescriptifier}/javac">
             <compilerarg line="${compiler.args.applescriptifier}"/>
             <bootclasspath refid="applescriptifier.module.bootclasspath"/>
@@ -94,6 +95,7 @@
     <target name="clean.module.applescriptifier" description="cleanup module">
         <delete dir="${applescriptifier.output.dir}"/>
         <delete dir="${applescriptifier.testoutput.dir}"/>
+        <delete dir="${applescriptifier.release.dir}"/>
     </target>
 
 
@@ -119,6 +121,17 @@
             <jarfileset dir="lib"/>
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
         </jarbundler>
+        <copy file="native/${app.name}.app/Contents/Resources/Java/libao.4.dylib"
+              todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
+        <copy file="native/${app.name}.app/Contents/Resources/Java/libiconv.2.dylib"
+              todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
+        <copy file="native/${app.name}.app/Contents/Resources/Java/libmad.0.dylib"
+              todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
+        <copy file="native/${app.name}.app/Contents/Resources/Java/libfaad.2.dylib"
+              todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
+        <copy file="native/${app.name}.app/native/pianobar" todir="${macosx.app}/${app.name}.app/native/"/>
+        <chmod file="${macosx.app}/${app.name}.app/native/pianobar" perm="ugo+rx"/>
+
     </target>
 
     <target name="bundle-and-sign" depends="bundle-sparkle">
@@ -130,39 +143,34 @@
         </exec>
     </target>
 
+    <!-- Set this property value to the directory where your
+application package has been created (when you invoked
+the "ant macosx" target -->
+    <property name="macosx.app" value="release"/>
+
+    <!-- Set this property value to your application name.
+  Do not include the .app extension -->
+    <property name="app.name" value="Muse Controller"/>
+
+    <!-- Set this property value to your application resource
+directory (where is located your Sparkle jar, the
+Zip of the Sparkle framework and the public key) -->
+    <property name="app.resrc" value="resources"/>
+
+    <!-- Set this property value to your native library
+  directory (where is located your Sparkle JNI library,
+  e.g. lib/native/) -->
+    <property name="app.native" value="lib/native"/>
+
+    <!-- This property is set to the path where are stored
+ the files inside the .app package. You should not need
+ to change it -->
+    <property name="app.internal" value="Contents/Resources/Java"/>
+
     <!-- Create a MacOSX application package with Sparkle support,
      invoked with "ant macosx-sparkle" -->
     <target name="bundle-sparkle" depends="bundle"
             description="Create an .app package for MacOSX with Sparkle support">
-
-        <!-- Set this property value to the directory where your
-    application package has been created (when you invoked
-    the "ant macosx" target -->
-        <property name="macosx.app"
-                  value="release"/>
-
-        <!-- Set this property value to your application name.
-  Do not include the .app extension -->
-        <property name="app.name"
-                  value="Muse Controller"/>
-
-        <!-- Set this property value to your application resource
-directory (where is located your Sparkle jar, the
-Zip of the Sparkle framework and the public key) -->
-        <property name="app.resrc"
-                  value="resources"/>
-
-        <!-- Set this property value to your native library
-      directory (where is located your Sparkle JNI library,
-      e.g. lib/native/) -->
-        <property name="app.native"
-                  value="lib/native"/>
-
-        <!-- This property is set to the path where are stored
-     the files inside the .app package. You should not need
-     to change it -->
-        <property name="app.internal"
-                  value="Contents/Resources/Java"/>
 
         <!-- This property is set to the path where are the
  Sparkle framework will be stored inside the package.
@@ -225,12 +233,11 @@ to the URL where your appcast XML file is located -->
                 link="${macosx.app}/${app.name}.app/${sparkle.path}/Sparkle"
                 resource="./Versions/Current/Sparkle"/>
         <!--<symlink-->
-                <!--link="${macosx.app}/${app.name}.app/${sparkle.path}/Resources/fr_CA.lproj"-->
-                <!--resource="./fr.lproj"/>-->
+        <!--link="${macosx.app}/${app.name}.app/${sparkle.path}/Resources/fr_CA.lproj"-->
+        <!--resource="./fr.lproj"/>-->
 
         <!-- Restore the file permissions to the Sparkle relaunch tool -->
-        <chmod file="${macosx.app}/${app.name}.app/${sparkle.path}/Resources/relaunch"
-               perm="ugo+rx">
+        <chmod file="${macosx.app}/${app.name}.app/${sparkle.path}/Resources/relaunch" perm="ugo+rx">
         </chmod>
     </target>
 
