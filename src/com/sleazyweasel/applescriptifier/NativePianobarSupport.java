@@ -1,10 +1,7 @@
 package com.sleazyweasel.applescriptifier;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NativePianobarSupport implements ApplicationSupport {
 
@@ -101,20 +98,54 @@ public class NativePianobarSupport implements ApplicationSupport {
         int tries = 0;
         while (tries < 5) {
             String currentScreenContents = getCurrentScreenContents();
-            String[] lines = currentScreenContents.split("\\n");
-//            System.out.println("lines = " + Arrays.toString(lines));
+            String[] lines = currentScreenContents.split("\n");
+            System.out.println("lines = " + Arrays.toString(lines));
             if (lines.length > 1) {
-                break;
+                for (String line : lines) {
+                    if (line.contains("Login... Ok.")) {
+                        return;
+                    }
+                    if (line.contains("Error: Username and/or password not correct.")) {
+                        pianobar = null;
+                        data = new LineBuffer(20000);
+                        throw new BadPandoraPasswordException();
+                    }
+                }
             }
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                //nothing to do..this is fine.
+                return;
             }
             tries++;
         }
         if (tries == 5) {
-            throw new RuntimeException("failed to start pianobar!");
+            throw new RuntimeException("Failed to start pianobar!");
+        }
+
+    }
+
+    private void waitForStationSelectionPrompt() {
+        waitForText("[?] Select station:");
+    }
+
+    private void waitForText(String textToLookFor) {
+        int tries = 0;
+        while (tries < 5) {
+            String currentScreenContents = getCurrentScreenContents();
+            String[] lines = currentScreenContents.split("\n");
+            if (lines.length > 1) {
+                String lastLine = lines[lines.length - 1];
+                if (lastLine.startsWith(textToLookFor)) {
+                    return;
+                }
+            }
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                return;
+            }
+            tries++;
         }
     }
 
@@ -128,7 +159,14 @@ public class NativePianobarSupport implements ApplicationSupport {
             data.add(key);
             outputStream.write(key);
             outputStream.flush();
+
+            if (key == 's') {
+                waitForStationSelectionPrompt();
+            }
+
             checkForPossibleNotificationPoint();
+
+
         } catch (IOException e) {
             throw new RuntimeException("keystroke failed", e);
         }
@@ -237,9 +275,13 @@ public class NativePianobarSupport implements ApplicationSupport {
     }
 
     public static boolean isPianoBarSupportEnabled() {
-        String userHome = System.getProperty("user.home");
-        File pianoBarConfigDirectory = new File(userHome + "/.config/pianobar");
+        File pianoBarConfigDirectory = getPianobarConfigDirectory();
         return pianoBarConfigDirectory.isDirectory();
+    }
+
+    private static File getPianobarConfigDirectory() {
+        String userHome = System.getProperty("user.home");
+        return new File(userHome + "/.config/pianobar");
     }
 
     public void addListener(PianobarStateChangeListener listener) {
@@ -296,6 +338,7 @@ public class NativePianobarSupport implements ApplicationSupport {
     public void selectStation(Integer stationNumber) {
         if (stationNumber != null) {
             sendTextCommand(stationNumber.toString());
+            waitForText("|>");
         }
     }
 
@@ -308,6 +351,41 @@ public class NativePianobarSupport implements ApplicationSupport {
 
     public void cancelStationSelection() {
         sendTextCommand("");
+    }
+
+    public void savePianobarConfig(String username, char[] password) throws IOException {
+        File pianobarConfigDirectory = getPianobarConfigDirectory();
+        if (!pianobarConfigDirectory.exists()) {
+            pianobarConfigDirectory.mkdirs();
+        }
+        File configFile = new File(pianobarConfigDirectory, "config");
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(configFile))));
+        writer.write("user = " + username);
+        writer.newLine();
+        writer.write("password = " + new String(password));
+        writer.newLine();
+        writer.write("event_command = " + pianobarConfigDirectory.getAbsolutePath() + "/echo.pl");
+        writer.newLine();
+        writer.close();
+
+        File echoFile = new File(System.getProperty("user.dir") + "/Muse Controller.app/native/echo.pl");
+        File outputFile = new File(pianobarConfigDirectory, "/echo.pl");
+
+        copy(echoFile, outputFile);
+
+        outputFile.setExecutable(true);
+    }
+
+    private void copy(File echoFile, File outputFile) throws IOException {
+        FileReader in = new FileReader(echoFile);
+        FileWriter out = new FileWriter(outputFile);
+        int c;
+
+        while ((c = in.read()) != -1)
+            out.write(c);
+
+        in.close();
+        out.close();
     }
 
     enum InputType {

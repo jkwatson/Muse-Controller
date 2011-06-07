@@ -130,6 +130,7 @@
         <copy file="native/${app.name}.app/Contents/Resources/Java/libfaad.2.dylib"
               todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
         <copy file="native/${app.name}.app/native/pianobar" todir="${macosx.app}/${app.name}.app/native/"/>
+        <copy file="native/Muse Controller.app/native/echo.pl" todir="${macosx.app}/${app.name}.app/native/"/>
         <chmod file="${macosx.app}/${app.name}.app/native/pianobar" perm="ugo+rx"/>
 
     </target>

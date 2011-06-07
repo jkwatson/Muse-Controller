@@ -74,6 +74,9 @@ public class NativePianobarServlet extends HttpServlet {
                 sendTextCommand("\n");
             }
             sleep();
+        } else if (pathInfo.startsWith("/selectStation")) {
+            String stationId = req.getParameter("id");
+            pianobarSupport.selectStation(Integer.valueOf(stationId));
         } else if (pathInfo.startsWith("/albumArt")) {
             populateResponseDataFromFile(new HashMap<String, Object>());
 

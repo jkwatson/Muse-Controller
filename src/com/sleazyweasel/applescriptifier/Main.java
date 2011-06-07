@@ -68,19 +68,30 @@ public class Main {
         });
 
         final boolean pianoBarSupportEnabled = NativePianobarSupport.isPianoBarSupportEnabled();
-        System.out.println("pianoBarSupportEnabled = " + pianoBarSupportEnabled);
-
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 if (pianoBarSupportEnabled) {
                     PianobarUI pianobarUI = new PianobarUI(pianobarSupport);
-                    pianobarUI.initialize();
-                    JFrame window = pianobarUI.getWindow();
-                    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    window.setVisible(true);
+                    try {
+                        pianobarUI.initialize();
+                        JFrame window = pianobarUI.getWindow();
+                        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        window.setVisible(true);
+                    } catch (BadPandoraPasswordException e) {
+                        PandoraPasswordUI pandoraPasswordUI = new PandoraPasswordUI(pianobarSupport);
+
+                        JFrame window = pandoraPasswordUI.getWindow();
+                        window.setLocationRelativeTo(null);
+                        window.setVisible(true);
+                    }
                 } else {
-                    new JFrame().pack();
+                    PandoraPasswordUI pandoraPasswordUI = new PandoraPasswordUI(pianobarSupport);
+
+                    JFrame window = pandoraPasswordUI.getWindow();
+                    window.setLocationRelativeTo(null);
+                    window.setVisible(true);
+//                    new JFrame().pack();
                 }
             }
         });
