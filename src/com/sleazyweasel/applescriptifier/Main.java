@@ -44,29 +44,22 @@ public class Main {
         context.addServlet(new ServletHolder(new ControlServlet()), "/control/*");
 
         server.start();
-//        server.join();
 
-        // set system properties here that affect Quaqua
-        // for example the default layout policy for tabbed
-        // panes:
-        System.setProperty(
-                "Quaqua.tabLayoutPolicy", "wrap"
-        );
-        // set the Quaqua Look and Feel in the UIManager
+        setupQuaqua();
+
+        addUncaughtExceptionHandler();
+
+        startupPianobar(pianobarSupport);
+
         try {
-            UIManager.setLookAndFeel(ch.randelshofer.quaqua.QuaquaManager.getLookAndFeel());
-            // set UI manager properties here that affect Quaqua
-        } catch (Exception e) {
+            new SparkleActivator().start();
+        } catch (Throwable e) {
             e.printStackTrace();
-            // take an appropriate action here
         }
 
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            public void uncaughtException(Thread t, Throwable e) {
-                e.printStackTrace();
-            }
-        });
+    }
 
+    private static void startupPianobar(final NativePianobarSupport pianobarSupport) {
         final boolean pianoBarSupportEnabled = NativePianobarSupport.isPianoBarSupportEnabled();
 
         SwingUtilities.invokeLater(new Runnable() {
@@ -95,12 +88,30 @@ public class Main {
                 }
             }
         });
+    }
 
+    private static void addUncaughtExceptionHandler() {
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            public void uncaughtException(Thread t, Throwable e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private static void setupQuaqua() {
+        // set system properties here that affect Quaqua
+        // for example the default layout policy for tabbed
+        // panes:
+        System.setProperty(
+                "Quaqua.tabLayoutPolicy", "wrap"
+        );
+        // set the Quaqua Look and Feel in the UIManager
         try {
-            new SparkleActivator().start();
-        } catch (Throwable e) {
+            UIManager.setLookAndFeel(ch.randelshofer.quaqua.QuaquaManager.getLookAndFeel());
+            // set UI manager properties here that affect Quaqua
+        } catch (Exception e) {
             e.printStackTrace();
+            // take an appropriate action here
         }
-
     }
 }
