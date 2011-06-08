@@ -6,14 +6,18 @@ import ch.randelshofer.quaqua.SheetListener;
 import layout.TableLayout;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
+import java.awt.image.BufferedImage;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PianobarUI {
+
+    private final AtomicBoolean executionLock = new AtomicBoolean(false);
 
     private final Widgets widgets = new Widgets();
     private final Models models = new Models();
@@ -32,6 +36,7 @@ public class PianobarUI {
 
     private void initWidgetsAndModels() {
         initWindow();
+        initStationComboBox();
         initStationNameLabel();
         initArtistLabel();
         initAlbumLabel();
@@ -41,10 +46,26 @@ public class PianobarUI {
         initThumbsUpButton();
         initThumbsDownButton();
         initChooseStationButton();
+        initImageLabel();
     }
 
     private void initWindow() {
         widgets.window = new JFrame("Pandora");
+    }
+
+    private void initStationComboBox() {
+        models.stationComboBoxModel = new StationComboBoxModel(pianobarSupport);
+        widgets.stationComboBox = new JComboBox(models.stationComboBoxModel);
+        widgets.stationComboBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (acquireLock()) {
+                    pianobarSupport.askToChooseStation();
+                    StationChoice selectedItem = models.stationComboBoxModel.getSelectedStation();
+                    pianobarSupport.selectStation(selectedItem.getKey());
+                    releaseLock();
+                }
+            }
+        });
     }
 
     private void initStationNameLabel() {
@@ -53,18 +74,23 @@ public class PianobarUI {
 
     private void initArtistLabel() {
         widgets.artistLabel = new JLabel();
+        widgets.artistLabel.setForeground(Color.LIGHT_GRAY);
     }
 
     private void initAlbumLabel() {
         widgets.albumLabel = new JLabel();
+        widgets.albumLabel.setFont(Font.decode("Lucida Grande-Bold-14"));
+        widgets.albumLabel.setForeground(Color.DARK_GRAY);
     }
 
     private void initSongLabel() {
         widgets.songLabel = new JLabel();
+        widgets.songLabel.setFont(Font.decode("Lucida Grande-Bold-16"));
     }
 
     private void initPlayPauseButton() {
-        widgets.playPauseButton = new JButton("|>");
+        String name = "playpause.png";
+        widgets.playPauseButton = new JButton(getIcon(name));
         setButtonDefaults(widgets.playPauseButton);
         widgets.playPauseButton.setEnabled(false);
         widgets.playPauseButton.addActionListener(new ActionListener() {
@@ -74,9 +100,13 @@ public class PianobarUI {
         });
     }
 
+    private ImageIcon getIcon(String name) {
+        return new ImageIcon(getClass().getClassLoader().getResource(name));
+    }
+
     private void setButtonDefaults(JButton button) {
         button.putClientProperty("JComponent.sizeVariant", "small");
-        button.putClientProperty("Quaqua.Button.style", "square");
+        button.putClientProperty("Quaqua.Button.style", "push");
     }
 
     private void initNextButton() {
@@ -91,7 +121,7 @@ public class PianobarUI {
     }
 
     private void initThumbsUpButton() {
-        widgets.thumbsUpButton = new JButton("+");
+        widgets.thumbsUpButton = new JButton(getIcon("ThumbsUp.png"));
         setButtonDefaults(widgets.thumbsUpButton);
         widgets.thumbsUpButton.setEnabled(false);
         widgets.thumbsUpButton.addActionListener(new ActionListener() {
@@ -102,7 +132,7 @@ public class PianobarUI {
     }
 
     private void initThumbsDownButton() {
-        widgets.thumbsDownButton = new JButton("-");
+        widgets.thumbsDownButton = new JButton(getIcon("ThumbsDown.png"));
         setButtonDefaults(widgets.thumbsDownButton);
         widgets.thumbsDownButton.setEnabled(false);
         widgets.thumbsDownButton.addActionListener(new ActionListener() {
@@ -119,34 +149,38 @@ public class PianobarUI {
         widgets.chooseStationButton.addActionListener(new ChooseStationAction());
     }
 
+    private void initImageLabel() {
+        widgets.imageLabel = new JLabel();
+        widgets.imageLabel.setBorder(BorderFactory.createEtchedBorder());
+    }
+
     private void initLayout() {
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(widgets.playPauseButton);
         buttonPanel.add(widgets.nextButton);
         buttonPanel.add(widgets.thumbsUpButton);
         buttonPanel.add(widgets.thumbsDownButton);
-        buttonPanel.add(widgets.chooseStationButton);
+//        buttonPanel.add(widgets.chooseStationButton);
 
-        int border = 10;
+        int border = 2;
         int gap = 2;
         JPanel infoPanel = new JPanel(new TableLayout(new double[][]{
-                {border, TableLayout.PREFERRED, gap, TableLayout.FILL, border},
-                {border, 0.25, gap, 0.25, gap, 0.25, gap, 0.25, border}
+                {border, TableLayout.FILL, border},
+                {border, 30, gap, 20, gap, 25, 10, 35, border}
         }));
-        infoPanel.add(new JLabel("Station:"), "1, 1");
-        infoPanel.add(widgets.stationNameLabel, "3, 1");
-        infoPanel.add(new JLabel("Artist:"), "1, 3");
-        infoPanel.add(widgets.artistLabel, "3, 3");
-        infoPanel.add(new JLabel("Album:"), "1, 5");
-        infoPanel.add(widgets.albumLabel, "3, 5");
-        infoPanel.add(new JLabel("Song:"), "1, 7");
-        infoPanel.add(widgets.songLabel, "3, 7");
+        infoPanel.add(widgets.songLabel, "1, 1");
+        infoPanel.add(widgets.artistLabel, "1, 3");
+        infoPanel.add(widgets.albumLabel, "1, 5");
+        infoPanel.add(buttonPanel, "1, 7, l");
 
-        widgets.window.getContentPane().setLayout(new BorderLayout());
-        widgets.window.getContentPane().add(infoPanel, BorderLayout.CENTER);
-        widgets.window.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+        widgets.window.getContentPane().setLayout(new TableLayout(new double[][]{{20, 130, 20, 300, 20}, {20, 30, 20, 130, 20}}));
+        widgets.window.getContentPane().add(widgets.stationComboBox, "1, 1, 3, 1");
+        widgets.window.getContentPane().add(infoPanel, "3, 3");
+//        widgets.window.getContentPane().add(buttonPanel, "3, 5");
+        widgets.window.getContentPane().add(widgets.imageLabel, "1, 3");
 
         widgets.window.pack();
+        widgets.window.setResizable(false);
     }
 
     public JFrame getWindow() {
@@ -159,6 +193,7 @@ public class PianobarUI {
     }
 
     private static class Widgets {
+        private JComboBox stationComboBox;
         private JFrame window;
         private JButton playPauseButton;
         private JButton nextButton;
@@ -169,52 +204,43 @@ public class PianobarUI {
         private JLabel artistLabel;
         private JLabel albumLabel;
         private JLabel songLabel;
+        private JLabel imageLabel;
     }
 
     private static class Models {
-
+        private StationComboBoxModel stationComboBoxModel;
     }
 
     private class PianobarStateChangeListener implements NativePianobarSupport.PianobarStateChangeListener {
 
         public void stateChanged(final NativePianobarSupport pianobarSupport, PianobarState state) {
-            widgets.playPauseButton.setEnabled(!state.isInputRequested());
-            widgets.nextButton.setEnabled(!state.isInputRequested());
-            widgets.thumbsDownButton.setEnabled(!state.isInputRequested());
-            widgets.thumbsUpButton.setEnabled(!state.isInputRequested());
+            if (acquireLock()) {
+                widgets.playPauseButton.setEnabled(!state.isInputRequested());
+                widgets.nextButton.setEnabled(!state.isInputRequested());
+                widgets.thumbsDownButton.setEnabled(!state.isInputRequested());
+                widgets.thumbsUpButton.setEnabled(!state.isInputRequested());
 
-            if (state.isInputRequested() && NativePianobarSupport.InputType.CHOOSE_STATION.equals(state.getInputTypeRequested())) {
-                widgets.chooseStationButton.setEnabled(true);
+                if (state.isInputRequested() && NativePianobarSupport.InputType.CHOOSE_STATION.equals(state.getInputTypeRequested())) {
+                    widgets.chooseStationButton.setEnabled(true);
+                }
+                widgets.stationNameLabel.setText(state.getStation());
+                widgets.artistLabel.setText(state.getArtist());
+                widgets.albumLabel.setText(state.getAlbum());
+                widgets.songLabel.setText(state.getTitle());
+                models.stationComboBoxModel.setSelectedItem(state.getCurrentStation());
+
+                if (widgets.imageLabel.getName() == null || !widgets.imageLabel.getName().equals(state.getAlbumArtUrl())) {
+                    widgets.imageLabel.setName(state.getAlbumArtUrl());
+                    try {
+                        URL imageUrl = new URL(state.getAlbumArtUrl());
+                        widgets.imageLabel.setIcon(new ImageIcon(imageUrl));
+                    } catch (MalformedURLException e) {
+                        //do nothing, I guess/
+                    }
+                }
+
+                releaseLock();
             }
-            widgets.stationNameLabel.setText(state.getStation());
-            widgets.artistLabel.setText(state.getArtist());
-            widgets.albumLabel.setText(state.getAlbum());
-            widgets.songLabel.setText(state.getTitle());
-
-        }
-    }
-
-    private static class StationChoice {
-        private final Integer key;
-        private final String stationName;
-
-        public StationChoice(Integer key, String stationName) {
-            this.key = key;
-            this.stationName = stationName;
-        }
-
-        public Integer getKey() {
-            return key;
-        }
-
-        public String getStationName() {
-            return stationName;
-        }
-
-        @Override
-        public String toString() {
-            //todo I've never felt so dirty in my life, using toString as a renderer. Please make this better!
-            return stationName;
         }
     }
 
@@ -222,18 +248,12 @@ public class PianobarUI {
         public void actionPerformed(ActionEvent e) {
             pianobarSupport.askToChooseStation();
             PianobarState state = pianobarSupport.getState();
-            Map<Integer, String> stations = state.getStations();
-            java.util.List<StationChoice> choices = new ArrayList<StationChoice>();
-            java.util.List<Integer> list = new ArrayList<Integer>(stations.keySet());
-            Collections.sort(list);
-            for (Integer integer : list) {
-                choices.add(new StationChoice(integer, stations.get(integer)));
-            }
-            JSheet.showInputSheet(widgets.window, "Choose a station", JOptionPane.INFORMATION_MESSAGE, null, choices.toArray(), null, new SheetListener() {
+            java.util.List<StationChoice> stationChoices = state.getStationChoices();
+            JSheet.showInputSheet(widgets.window, "Choose a station", JOptionPane.INFORMATION_MESSAGE, null, stationChoices.toArray(), null, new SheetListener() {
                 public void optionSelected(SheetEvent sheetEvent) {
                     if (sheetEvent.getInputValue() instanceof StationChoice) {
                         StationChoice inputValue = (StationChoice) sheetEvent.getInputValue();
-                        pianobarSupport.selectStation(inputValue.key);
+                        pianobarSupport.selectStation(inputValue.getKey());
                     } else {
                         pianobarSupport.cancelStationSelection();
                     }
@@ -243,5 +263,17 @@ public class PianobarUI {
             });
 
         }
+    }
+
+    private boolean acquireLock() {
+        if (executionLock.get()) {
+            return false;
+        }
+        executionLock.getAndSet(true);
+        return true;
+    }
+
+    private void releaseLock() {
+        executionLock.set(false);
     }
 }

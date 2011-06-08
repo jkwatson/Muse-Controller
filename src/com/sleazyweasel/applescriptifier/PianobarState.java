@@ -1,5 +1,9 @@
 package com.sleazyweasel.applescriptifier;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class PianobarState {
@@ -57,5 +61,25 @@ public class PianobarState {
 
     public String getAlbumArtUrl() {
         return albumArtUrl;
+    }
+
+    public List<StationChoice> getStationChoices() {
+        List<StationChoice> choices = new ArrayList<StationChoice>();
+        List<Integer> list = new ArrayList<Integer>(stations.keySet());
+        Collections.sort(list);
+        for (Integer integer : list) {
+            choices.add(new StationChoice(integer, stations.get(integer)));
+        }
+        return choices;
+    }
+
+
+    public StationChoice getCurrentStation() {
+        for (Map.Entry<Integer, String> entry : stations.entrySet()) {
+            if (station.equals(entry.getValue())) {
+                return new StationChoice(entry.getKey(), entry.getValue());
+            }
+        }
+        return null;
     }
 }
