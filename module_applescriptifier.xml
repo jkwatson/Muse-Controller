@@ -102,6 +102,7 @@
     <target name="jar" depends="compile.module.applescriptifier.production">
         <jar basedir="${applescriptifier.output.dir}" jarfile="applescriptifier.jar">
             <fileset dir="resources"/>
+            <fileset dir="icons"/>
         </jar>
     </target>
 
@@ -120,6 +121,7 @@
             <jarfilelist id="mainjar" dir="." files="applescriptifier.jar"/>
             <jarfileset dir="lib"/>
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
+            <javafileset dir="icons"/>
         </jarbundler>
         <copy file="native/${app.name}.app/Contents/Resources/Java/libao.4.dylib"
               todir="${macosx.app}/${app.name}.app/${app.internal}/"/>

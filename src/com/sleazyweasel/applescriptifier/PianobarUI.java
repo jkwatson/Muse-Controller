@@ -13,6 +13,8 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PianobarUI {
@@ -66,6 +68,20 @@ public class PianobarUI {
                 }
             }
         });
+        widgets.stationComboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value != null) {
+                    StationChoice stationChoice = (StationChoice) value;
+                    setText(stationChoice.getStationName());
+                }
+                else {
+                    setText("Choose a station");
+                }
+                return component;
+            }
+        });
     }
 
     private void initStationNameLabel() {
@@ -110,7 +126,7 @@ public class PianobarUI {
     }
 
     private void initNextButton() {
-        widgets.nextButton = new JButton(">>");
+        widgets.nextButton = new JButton(getIcon("nextsong.png"));
         setButtonDefaults(widgets.nextButton);
         widgets.nextButton.setEnabled(false);
         widgets.nextButton.addActionListener(new ActionListener() {
@@ -227,6 +243,7 @@ public class PianobarUI {
                 widgets.artistLabel.setText(state.getArtist());
                 widgets.albumLabel.setText(state.getAlbum());
                 widgets.songLabel.setText(state.getTitle());
+                models.stationComboBoxModel.refreshContents();
                 models.stationComboBoxModel.setSelectedItem(state.getCurrentStation());
 
                 if (widgets.imageLabel.getName() == null || !widgets.imageLabel.getName().equals(state.getAlbumArtUrl())) {
@@ -238,6 +255,7 @@ public class PianobarUI {
                         //do nothing, I guess/
                     }
                 }
+
 
                 releaseLock();
             }
