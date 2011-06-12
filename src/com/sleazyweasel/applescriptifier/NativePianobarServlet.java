@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class NativePianobarServlet extends HttpServlet {
     private final NativePianobarSupport pianobarSupport;
 
-    private AtomicReference<PianobarState> pianobarState = new AtomicReference<PianobarState>(new PianobarState(false, "", "", "", "", NativePianobarSupport.InputType.NONE, new HashMap<Integer, String>(), ""));
+    private AtomicReference<PianobarState> pianobarState = new AtomicReference<PianobarState>(new PianobarState(false, "", "", "", "", NativePianobarSupport.InputType.NONE, new HashMap<Integer, String>(), "", "", false, ""));
 
     public NativePianobarServlet(NativePianobarSupport pianobarSupport) {
         this.pianobarSupport = pianobarSupport;

@@ -6,15 +6,16 @@ import ch.randelshofer.quaqua.SheetListener;
 import layout.TableLayout;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PianobarUI {
@@ -43,12 +44,15 @@ public class PianobarUI {
         initArtistLabel();
         initAlbumLabel();
         initSongLabel();
+        initTimeLabel();
         initPlayPauseButton();
         initNextButton();
         initThumbsUpButton();
         initThumbsDownButton();
         initChooseStationButton();
         initImageLabel();
+        initHeartLabel();
+        initInfoLabel();
     }
 
     private void initWindow() {
@@ -75,8 +79,7 @@ public class PianobarUI {
                 if (value != null) {
                     StationChoice stationChoice = (StationChoice) value;
                     setText(stationChoice.getStationName());
-                }
-                else {
+                } else {
                     setText("Choose a station");
                 }
                 return component;
@@ -102,6 +105,11 @@ public class PianobarUI {
     private void initSongLabel() {
         widgets.songLabel = new JLabel();
         widgets.songLabel.setFont(Font.decode("Lucida Grande-Bold-16"));
+    }
+
+    private void initTimeLabel() {
+        widgets.timeLabel = new JLabel();
+        widgets.timeLabel.setForeground(Color.LIGHT_GRAY);
     }
 
     private void initPlayPauseButton() {
@@ -170,29 +178,61 @@ public class PianobarUI {
         widgets.imageLabel.setBorder(BorderFactory.createEtchedBorder());
     }
 
+    private void initHeartLabel() {
+        widgets.heartLabel = new JLabel();
+        ImageIcon icon = getIcon("heart.png");
+        widgets.heartLabel.setIcon(icon);
+        widgets.heartLabel.setVisible(false);
+    }
+
+    private void initInfoLabel() {
+        widgets.infoLabel = new JLabel();
+        ImageIcon icon = getIcon("info.png");
+        widgets.infoLabel.setIcon(icon);
+        widgets.infoLabel.setVisible(false);
+        widgets.infoLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                String detailUrl = pianobarSupport.getState().getDetailUrl();
+                if (detailUrl != null && detailUrl.length() > 0) {
+                    try {
+                        open(new URI(detailUrl));
+                    } catch (URISyntaxException e1) {
+                        e1.printStackTrace();
+                        //do nothing if it doesn't parse?
+                    }
+                }
+            }
+        });
+    }
+
     private void initLayout() {
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(widgets.playPauseButton);
         buttonPanel.add(widgets.nextButton);
         buttonPanel.add(widgets.thumbsUpButton);
         buttonPanel.add(widgets.thumbsDownButton);
-//        buttonPanel.add(widgets.chooseStationButton);
 
         int border = 2;
         int gap = 2;
         JPanel infoPanel = new JPanel(new TableLayout(new double[][]{
-                {border, TableLayout.FILL, border},
-                {border, 30, gap, 20, gap, 25, 10, 35, border}
+                {25, TableLayout.FILL, border},
+                {border, 30, gap, 20, gap, 25, gap, 20, gap, 35, border}
         }));
+        infoPanel.add(widgets.infoLabel, "0, 1, L, c");
         infoPanel.add(widgets.songLabel, "1, 1");
         infoPanel.add(widgets.artistLabel, "1, 3");
         infoPanel.add(widgets.albumLabel, "1, 5");
-        infoPanel.add(buttonPanel, "1, 7, l");
+        infoPanel.add(widgets.timeLabel, "1, 7, L");
+        infoPanel.add(widgets.heartLabel, "0, 9, L, c");
+        infoPanel.add(buttonPanel, "1, 9, L");
 
-        widgets.window.getContentPane().setLayout(new TableLayout(new double[][]{{20, 130, 20, 300, 20}, {20, 30, 20, 130, 20}}));
+        widgets.window.getContentPane().setLayout(new TableLayout(new double[][]{
+                {15, 130, 15, 300, 15},
+                {15, 30, 15, 130, 20, 10}}
+        ));
         widgets.window.getContentPane().add(widgets.stationComboBox, "1, 1, 3, 1");
-        widgets.window.getContentPane().add(infoPanel, "3, 3");
-//        widgets.window.getContentPane().add(buttonPanel, "3, 5");
+        widgets.window.getContentPane().add(infoPanel, "3, 3, 3, 4");
         widgets.window.getContentPane().add(widgets.imageLabel, "1, 3");
 
         widgets.window.pack();
@@ -221,6 +261,9 @@ public class PianobarUI {
         private JLabel albumLabel;
         private JLabel songLabel;
         private JLabel imageLabel;
+        private JLabel timeLabel;
+        private JLabel heartLabel;
+        private JLabel infoLabel;
     }
 
     private static class Models {
@@ -234,7 +277,6 @@ public class PianobarUI {
                 widgets.playPauseButton.setEnabled(!state.isInputRequested());
                 widgets.nextButton.setEnabled(!state.isInputRequested());
                 widgets.thumbsDownButton.setEnabled(!state.isInputRequested());
-                widgets.thumbsUpButton.setEnabled(!state.isInputRequested());
 
                 if (state.isInputRequested() && NativePianobarSupport.InputType.CHOOSE_STATION.equals(state.getInputTypeRequested())) {
                     widgets.chooseStationButton.setEnabled(true);
@@ -243,22 +285,59 @@ public class PianobarUI {
                 widgets.artistLabel.setText(state.getArtist());
                 widgets.albumLabel.setText(state.getAlbum());
                 widgets.songLabel.setText(state.getTitle());
+                widgets.timeLabel.setText(state.getCurrentTimeInTrack());
                 models.stationComboBoxModel.refreshContents();
                 models.stationComboBoxModel.setSelectedItem(state.getCurrentStation());
 
-                if (widgets.imageLabel.getName() == null || !widgets.imageLabel.getName().equals(state.getAlbumArtUrl())) {
-                    widgets.imageLabel.setName(state.getAlbumArtUrl());
+                widgets.thumbsUpButton.setEnabled(!state.isInputRequested() && !state.isCurrentSongIsLoved());
+
+                if (state.isPlaying()) {
+                    widgets.playPauseButton.setIcon(getIcon("pause.png"));
+                } else {
+                    widgets.playPauseButton.setIcon(getIcon("play.png"));
+                }
+
+                widgets.heartLabel.setVisible(state.isCurrentSongIsLoved());
+                if (state.getDetailUrl() != null && state.getDetailUrl().length() > 0) {
+                    widgets.infoLabel.setVisible(true);
+                }
+                else {
+                    widgets.infoLabel.setVisible(false);
+                }
+
+
+                String albumArtUrl = state.getAlbumArtUrl();
+                if (widgets.imageLabel.getName() == null || !widgets.imageLabel.getName().equals(albumArtUrl)) {
+                    widgets.imageLabel.setName(albumArtUrl);
+
+                    if (albumArtUrl.startsWith("http")) {
                     try {
-                        URL imageUrl = new URL(state.getAlbumArtUrl());
+                        URL imageUrl = new URL(albumArtUrl);
                         widgets.imageLabel.setIcon(new ImageIcon(imageUrl));
                     } catch (MalformedURLException e) {
                         //do nothing, I guess/
+                    }
+                    } else {
+                        widgets.imageLabel.setIcon(null);
                     }
                 }
 
 
                 releaseLock();
             }
+        }
+    }
+
+    private static void open(URI uri) {
+        if (Desktop.isDesktopSupported()) {
+            Desktop desktop = Desktop.getDesktop();
+            try {
+                desktop.browse(uri);
+            } catch (IOException e) {
+                // TODO: error handling
+            }
+        } else {
+            // TODO: error handling
         }
     }
 

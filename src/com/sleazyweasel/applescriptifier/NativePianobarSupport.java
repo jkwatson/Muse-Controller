@@ -9,6 +9,8 @@ public class NativePianobarSupport implements ApplicationSupport {
     private InputStream inputStream;
     private OutputStream outputStream;
     private LineBuffer data = new LineBuffer(20000);
+    private String currentTimeInTrack = "";
+    private String previousCurrentTimeInTrack = "";
 
     private List<PianobarStateChangeListener> listeners = new ArrayList<PianobarStateChangeListener>();
 
@@ -41,6 +43,22 @@ public class NativePianobarSupport implements ApplicationSupport {
     public void next() {
         activatePianoBar();
         sendKeyStroke('n');
+        resetCurrentTime();
+    }
+
+    public void volumeUp() {
+        activatePianoBar();
+        sendKeyStroke(')');
+    }
+
+    public void volumeDown() {
+        activatePianoBar();
+        sendKeyStroke('(');
+    }
+
+    private void resetCurrentTime() {
+        currentTimeInTrack = "";
+        previousCurrentTimeInTrack = "";
     }
 
     public void previous() {
@@ -300,11 +318,15 @@ public class NativePianobarSupport implements ApplicationSupport {
 
     public PianobarState getState() {
         List<String> data = getDataFromFile();
-        return new PianobarState(currentSongIsLoved(data), extractTitle(data), extractArtist(data), extractStation(data), extractAlbum(data), inputTypeRequested(), parseStationList(data), getAlbumArtUrl(data));
+        return new PianobarState(currentSongIsLoved(data), extractTitle(data), extractArtist(data), extractStation(data), extractAlbum(data), inputTypeRequested(), parseStationList(data), getAlbumArtUrl(data), currentTimeInTrack, isPlaying(), getDetailUrl(data));
     }
 
     private String getAlbumArtUrl(List<String> data) {
         return getValueFromDataFile("coverArt=", data);
+    }
+
+    private String getDetailUrl(List<String> data) {
+        return getValueFromDataFile("detailUrl=", data);
     }
 
     Map<Integer, String> parseStationList(List<String> pianobarData) {
@@ -339,6 +361,7 @@ public class NativePianobarSupport implements ApplicationSupport {
         if (stationNumber != null) {
             sendTextCommand(stationNumber.toString());
             waitForText("|>");
+            resetCurrentTime();
         }
     }
 
@@ -400,7 +423,7 @@ public class NativePianobarSupport implements ApplicationSupport {
                 boolean inPrefixGunk = false;
                 int prefixCount = 0;
                 boolean inTimeInfo = false;
-
+                StringBuilder timeData = new StringBuilder(8);
                 while ((character = reader.read()) != -1) {
 //                            System.out.println(character);
                     if (character == 27) {
@@ -423,6 +446,11 @@ public class NativePianobarSupport implements ApplicationSupport {
                     if (inTimeInfo) {
                         if (character == 13) {
                             inTimeInfo = false;
+                            pushTime(timeData.toString());
+                            timeData = new StringBuilder(8);
+                        }
+                        else {
+                            timeData.append((char) character);
                         }
                         continue;
                     }
@@ -435,6 +463,15 @@ public class NativePianobarSupport implements ApplicationSupport {
                 throw new RuntimeException("io exception while reading", e);
             }
         }
+    }
+
+    private void pushTime(String timeData) {
+        previousCurrentTimeInTrack = currentTimeInTrack;
+        currentTimeInTrack = timeData;
+    }
+
+    public boolean isPlaying() {
+        return !currentTimeInTrack.equals(previousCurrentTimeInTrack);
     }
 
     public interface PianobarStateChangeListener {

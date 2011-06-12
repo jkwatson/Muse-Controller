@@ -22,7 +22,10 @@ public class StationComboBoxModel extends DefaultComboBoxModel {
         Object selectedItem = getSelectedItem();
         for (StationChoice stationChoice : stationChoices) {
             Object existingItem = getElementAt(stationChoice.getKey());
-            if (!existingItem.equals(stationChoice)) {
+            if (existingItem == null) {
+                insertElementAt(stationChoice, stationChoice.getKey());
+            }
+            else if (!existingItem.equals(stationChoice)) {
                 removeElementAt(stationChoice.getKey());
                 insertElementAt(stationChoice, stationChoice.getKey());
             }

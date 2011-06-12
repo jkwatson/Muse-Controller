@@ -15,8 +15,11 @@ public class PianobarState {
     private final NativePianobarSupport.InputType inputTypeRequested;
     private final Map<Integer, String> stations;
     private final String albumArtUrl;
+    private final String detailUrl;
+    private final String currentTimeInTrack;
+    private final boolean playing;
 
-    public PianobarState(boolean currentSongIsLoved, String title, String artist, String station, String album, NativePianobarSupport.InputType inputTypeRequested, Map<Integer, String> stations, String albumArtUrl) {
+    public PianobarState(boolean currentSongIsLoved, String title, String artist, String station, String album, NativePianobarSupport.InputType inputTypeRequested, Map<Integer, String> stations, String albumArtUrl, String currentTimeInTrack, boolean isPlaying, String detailUrl) {
         this.currentSongIsLoved = currentSongIsLoved;
         this.title = title;
         this.artist = artist;
@@ -25,6 +28,9 @@ public class PianobarState {
         this.inputTypeRequested = inputTypeRequested;
         this.stations = stations;
         this.albumArtUrl = albumArtUrl;
+        this.detailUrl = detailUrl;
+        this.currentTimeInTrack = currentTimeInTrack.trim();
+        this.playing = isPlaying;
     }
 
     public boolean isCurrentSongIsLoved() {
@@ -61,6 +67,18 @@ public class PianobarState {
 
     public String getAlbumArtUrl() {
         return albumArtUrl;
+    }
+
+    public String getCurrentTimeInTrack() {
+        return currentTimeInTrack;
+    }
+
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    public String getDetailUrl() {
+        return detailUrl;
     }
 
     public List<StationChoice> getStationChoices() {
