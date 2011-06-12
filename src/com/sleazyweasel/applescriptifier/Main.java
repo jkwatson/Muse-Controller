@@ -10,6 +10,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import javax.swing.*;
 import java.net.InetAddress;
+import java.util.prefs.Preferences;
 
 import static com.apple.dnssd.DNSSD.register;
 
@@ -64,6 +65,9 @@ public class Main {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                Preferences preferences = Preferences.userNodeForPackage(getClass());
+                boolean vetoPianobar = preferences.getBoolean(PandoraPasswordUI.PIANOBAR_VETO_KEY, false);
+
                 if (pianoBarSupportEnabled) {
                     PianobarUI pianobarUI = new PianobarUI(pianobarSupport);
                     try {
@@ -78,13 +82,15 @@ public class Main {
                         window.setLocationRelativeTo(null);
                         window.setVisible(true);
                     }
-                } else {
+                } else if (!vetoPianobar) {
                     PandoraPasswordUI pandoraPasswordUI = new PandoraPasswordUI(pianobarSupport);
 
                     JFrame window = pandoraPasswordUI.getWindow();
                     window.setLocationRelativeTo(null);
                     window.setVisible(true);
-//                    new JFrame().pack();
+                }
+                else {
+                    new JFrame().pack();
                 }
             }
         });
