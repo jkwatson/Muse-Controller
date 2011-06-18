@@ -18,6 +18,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static layout.TableLayoutConstants.FILL;
+import static layout.TableLayoutConstants.PREFERRED;
+
 public class PianobarUI {
 
     private final AtomicBoolean executionLock = new AtomicBoolean(false);
@@ -49,6 +52,8 @@ public class PianobarUI {
         initNextButton();
         initThumbsUpButton();
         initThumbsDownButton();
+        initVolumeUpButton();
+        initVolumeDownButton();
         initChooseStationButton();
         initImageLabel();
         initHeartLabel();
@@ -57,6 +62,13 @@ public class PianobarUI {
 
     private void initWindow() {
         widgets.window = new JFrame("Pandora");
+        widgets.window.setContentPane(new JPanel() {
+            @Override
+            public void paint(Graphics g) {
+                super.paint(g);
+//                ((TableLayout) getLayout()).drawGrid(this, g);
+            }
+        });
     }
 
     private void initStationComboBox() {
@@ -89,27 +101,32 @@ public class PianobarUI {
 
     private void initStationNameLabel() {
         widgets.stationNameLabel = new JLabel();
+        widgets.stationNameLabel.setForeground(new Color(102, 102, 102));
+        widgets.stationNameLabel.setFont(Font.decode("Lucida Grande-Bold-14"));
     }
 
     private void initArtistLabel() {
         widgets.artistLabel = new JLabel();
-        widgets.artistLabel.setForeground(Color.LIGHT_GRAY);
+        widgets.artistLabel.setForeground(new Color(102, 102, 102));
+        widgets.artistLabel.setFont(Font.decode("Lucida Grande-Bold-14"));
     }
 
     private void initAlbumLabel() {
         widgets.albumLabel = new JLabel();
+        widgets.albumLabel.setForeground(new Color(102, 102, 102));
         widgets.albumLabel.setFont(Font.decode("Lucida Grande-Bold-14"));
-        widgets.albumLabel.setForeground(Color.DARK_GRAY);
     }
 
     private void initSongLabel() {
         widgets.songLabel = new JLabel();
-        widgets.songLabel.setFont(Font.decode("Lucida Grande-Bold-16"));
+        widgets.songLabel.setForeground(new Color(51, 51, 51));
+        widgets.songLabel.setFont(Font.decode("Lucida Grande-Bold-14"));
     }
 
     private void initTimeLabel() {
         widgets.timeLabel = new JLabel();
-        widgets.timeLabel.setForeground(Color.LIGHT_GRAY);
+        widgets.timeLabel.setFont(Font.decode("Lucida Grande-Bold-12"));
+        widgets.timeLabel.setForeground(new Color(102, 102, 102));
     }
 
     private void initPlayPauseButton() {
@@ -166,6 +183,28 @@ public class PianobarUI {
         });
     }
 
+    private void initVolumeUpButton() {
+        widgets.volumeUpButton = new JButton(getIcon("volume_up.png"));
+        setButtonDefaults(widgets.volumeUpButton);
+        widgets.volumeUpButton.setEnabled(false);
+        widgets.volumeUpButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                pianobarSupport.volumeUp();
+            }
+        });
+    }
+
+    private void initVolumeDownButton() {
+        widgets.volumeDownButton = new JButton(getIcon("volume_down.png"));
+        setButtonDefaults(widgets.volumeDownButton);
+        widgets.volumeDownButton.setEnabled(false);
+        widgets.volumeDownButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                pianobarSupport.volumeDown();
+            }
+        });
+    }
+
     private void initChooseStationButton() {
         widgets.chooseStationButton = new JButton("Station");
         setButtonDefaults(widgets.chooseStationButton);
@@ -175,7 +214,7 @@ public class PianobarUI {
 
     private void initImageLabel() {
         widgets.imageLabel = new JLabel();
-        widgets.imageLabel.setBorder(BorderFactory.createEtchedBorder());
+//        widgets.imageLabel.setBorder(BorderFactory.createEtchedBorder());
     }
 
     private void initHeartLabel() {
@@ -207,33 +246,36 @@ public class PianobarUI {
     }
 
     private void initLayout() {
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        buttonPanel.add(widgets.playPauseButton);
-        buttonPanel.add(widgets.nextButton);
-        buttonPanel.add(widgets.thumbsUpButton);
-        buttonPanel.add(widgets.thumbsDownButton);
-
-        int border = 2;
-        int gap = 2;
-        JPanel infoPanel = new JPanel(new TableLayout(new double[][]{
-                {25, TableLayout.FILL, border},
-                {border, 30, gap, 20, gap, 25, gap, 20, gap, 35, border}
+        JPanel leftButtonPanel = new JPanel(new TableLayout(new double[][] {
+                {PREFERRED,PREFERRED,PREFERRED,PREFERRED,FILL,PREFERRED,PREFERRED},{FILL, PREFERRED}
         }));
-        infoPanel.add(widgets.infoLabel, "0, 1, L, c");
-        infoPanel.add(widgets.songLabel, "1, 1");
-        infoPanel.add(widgets.artistLabel, "1, 3");
-        infoPanel.add(widgets.albumLabel, "1, 5");
-        infoPanel.add(widgets.timeLabel, "1, 7, L");
-        infoPanel.add(widgets.heartLabel, "0, 9, L, c");
-        infoPanel.add(buttonPanel, "1, 9, L");
+        leftButtonPanel.add(widgets.playPauseButton, "0,1");
+        leftButtonPanel.add(widgets.nextButton, "1,1");
+        leftButtonPanel.add(widgets.thumbsUpButton, "2,1");
+        leftButtonPanel.add(widgets.thumbsDownButton, "3,1");
+        leftButtonPanel.add(widgets.volumeDownButton, "5,1");
+        leftButtonPanel.add(widgets.volumeUpButton, "6,1");
+
+        int gap = -3;
+        JPanel infoPanel = new JPanel(new TableLayout(new double[][]{
+                {130, 15, TableLayout.FILL, 30},
+                {20, gap, 20, gap, 20, gap, 20, TableLayout.FILL, 40}
+        }));
+        infoPanel.add(widgets.artistLabel, "0, 0, L, t");
+        infoPanel.add(widgets.infoLabel, "3, 0, R, c");
+        infoPanel.add(widgets.songLabel, "0, 2, 3, 2, L, t");
+        infoPanel.add(widgets.albumLabel, "0, 4, 3, 4, L, t");
+        infoPanel.add(widgets.timeLabel, "0, 6, L, t");
+//        infoPanel.add(widgets.heartLabel, "0, 9, L, c");
+        infoPanel.add(leftButtonPanel, "0, 8,3,8 L, b");
 
         widgets.window.getContentPane().setLayout(new TableLayout(new double[][]{
                 {15, 130, 15, 300, 15},
-                {15, 30, 15, 130, 20, 10}}
+                {15, 30, 15, 130, 15}}
         ));
-        widgets.window.getContentPane().add(widgets.stationComboBox, "1, 1, 3, 1");
-        widgets.window.getContentPane().add(infoPanel, "3, 3, 3, 4");
-        widgets.window.getContentPane().add(widgets.imageLabel, "1, 3");
+        widgets.window.getContentPane().add(widgets.stationComboBox, "1, 1, 3, 1, L");
+        widgets.window.getContentPane().add(infoPanel, "3, 3");
+        widgets.window.getContentPane().add(widgets.imageLabel, "1, 3, L, c");
 
         widgets.window.pack();
         widgets.window.setResizable(false);
@@ -255,6 +297,8 @@ public class PianobarUI {
         private JButton nextButton;
         private JButton thumbsUpButton;
         private JButton thumbsDownButton;
+        private JButton volumeUpButton;
+        private JButton volumeDownButton;
         private JButton chooseStationButton;
         private JLabel stationNameLabel;
         private JLabel artistLabel;
@@ -277,6 +321,8 @@ public class PianobarUI {
                 widgets.playPauseButton.setEnabled(!state.isInputRequested());
                 widgets.nextButton.setEnabled(!state.isInputRequested());
                 widgets.thumbsDownButton.setEnabled(!state.isInputRequested());
+                widgets.volumeUpButton.setEnabled(!state.isInputRequested());
+                widgets.volumeDownButton.setEnabled(!state.isInputRequested());
 
                 if (state.isInputRequested() && NativePianobarSupport.InputType.CHOOSE_STATION.equals(state.getInputTypeRequested())) {
                     widgets.chooseStationButton.setEnabled(true);
@@ -304,7 +350,6 @@ public class PianobarUI {
                 else {
                     widgets.infoLabel.setVisible(false);
                 }
-
 
                 String albumArtUrl = state.getAlbumArtUrl();
                 if (widgets.imageLabel.getName() == null || !widgets.imageLabel.getName().equals(albumArtUrl)) {

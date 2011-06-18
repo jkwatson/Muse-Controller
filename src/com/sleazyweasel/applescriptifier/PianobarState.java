@@ -29,7 +29,11 @@ public class PianobarState {
         this.stations = stations;
         this.albumArtUrl = albumArtUrl;
         this.detailUrl = detailUrl;
-        this.currentTimeInTrack = currentTimeInTrack.trim();
+        currentTimeInTrack = currentTimeInTrack.trim();
+        if (currentTimeInTrack.startsWith("-")) {
+            currentTimeInTrack = currentTimeInTrack.substring(1);
+        }
+        this.currentTimeInTrack = currentTimeInTrack;
         this.playing = isPlaying;
     }
 
