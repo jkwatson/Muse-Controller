@@ -214,7 +214,7 @@ public class NativePianobarSupport implements ApplicationSupport {
         List<String> contents = new ArrayList<String>();
         BufferedReader bufferedReader = null;
         try {
-            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream("/tmp/pianobar_data")));
+            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream("/tmp/pianobar_data"), "UTF-8"));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 contents.add(line);
@@ -234,11 +234,6 @@ public class NativePianobarSupport implements ApplicationSupport {
             }
         }
         return contents;
-    }
-
-    String getValueFromDataFile(String key) {
-        List<String> dataFromFile = getDataFromFile();
-        return getValueFromDataFile(key, dataFromFile);
     }
 
     String getValueFromDataFile(String key, List<String> dataFromFile) {
@@ -274,13 +269,6 @@ public class NativePianobarSupport implements ApplicationSupport {
     boolean currentSongIsLoved(List<String> data) {
         String rating = getValueFromDataFile("rating=", data);
         return rating.equals("1");
-    }
-
-    String getAlbumArtUrl() {
-        //todo consider doing something along the lines below to try to dig for other images.
-//        valueFromDataFile = valueFromDataFile.replace("130W", "500W");
-//        valueFromDataFile = valueFromDataFile.replace("130H", "434H");
-        return getValueFromDataFile("coverArt=");
     }
 
     public InputType inputTypeRequested() {
@@ -417,9 +405,9 @@ public class NativePianobarSupport implements ApplicationSupport {
 
     private class PianobarStandardOutReader implements Runnable {
         public void run() {
-            InputStreamReader reader = new InputStreamReader(inputStream);
             int character;
             try {
+                InputStreamReader reader = new InputStreamReader(inputStream, "UTF-8");
                 boolean inPrefixGunk = false;
                 int prefixCount = 0;
                 boolean inTimeInfo = false;
