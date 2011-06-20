@@ -35,6 +35,37 @@
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="SvnBranchConfigurationManager">
+    <option name="myConfigurationMap">
+      <map>
+        <entry key="$PROJECT_DIR$">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="https://muse-controller.googlecode.com/svn/applescriptifier/branches">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="https://muse-controller.googlecode.com/svn/applescriptifier/tags">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="https://muse-controller.googlecode.com/svn/applescriptifier/branches" />
+                  <option value="https://muse-controller.googlecode.com/svn/applescriptifier/tags" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="https://muse-controller.googlecode.com/svn/applescriptifier/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>
 </project>

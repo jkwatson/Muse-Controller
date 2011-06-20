@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
-   <channel>
-      <title>Muse Controller Changelog</title>
-      <link>http://www.musecontrol.com/sparkle/appcast.xml</link>
-      <description>Most recent changes with links to updates.</description>
-      <language>en</language>
-         <item>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <channel>
+        <title>Muse Controller Changelog</title>
+        <link>http://www.musecontrol.com/sparkle/appcast.xml</link>
+        <description>Most recent changes with links to updates.</description>
+        <language>en</language>
+        <item>
             <title>Version 2.1 (initial Sparkle support)</title>
             <description><![CDATA[
                 <h2>New Features</h2>
@@ -13,27 +14,46 @@
                     <h3>Basic PandoraOne Support from the Airfoil screen</h3>
                 ]]></description>
             <pubDate>Sun, 03 Apr 2011 19:20:11 +0000</pubDate>
-            <enclosure url="http://www.musecontrol.com/downloads/MuseController2.1.dmg" sparkle:version="2.1" length="3270055" type="application/octet-stream" sparkle:dsaSignature="MC0CFQD0/tI8airZma2R9YAR+B39gguR4gIUJ09h5BKPokDp9u7u3XL9hRyvfhY=" />
-         </item>
-
-         <item>
+            <enclosure url="http://www.musecontrol.com/downloads/MuseController2.1.dmg" sparkle:version="2.1"
+                       length="3270055" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFQD0/tI8airZma2R9YAR+B39gguR4gIUJ09h5BKPokDp9u7u3XL9hRyvfhY="/>
+        </item>
+        <item>
             <title>Version 2.2.0</title>
             <description><![CDATA[
                 <h2>New Features</h2>
                     <h3>Support for PandoraBoy channels with non-ascii characters in them</h3>
                 ]]></description>
             <pubDate>Sun, 24 Apr 2011 18:20:11 +0800</pubDate>
-            <enclosure url="http://www.musecontrol.com/downloads/MuseController2.2.0.dmg" sparkle:version="2.2.0" length="3270055" type="application/octet-stream" sparkle:dsaSignature="MCwCFEGAFJDEty+bIxqD49lteWM/hrrwAhQbS8tmwjNNUh/iyoVyUsB7dIokDg==" />
-         </item>
-         <item>
+            <enclosure url="http://www.musecontrol.com/downloads/MuseController2.2.0.dmg" sparkle:version="2.2.0"
+                       length="3270055" type="application/octet-stream"
+                       sparkle:dsaSignature="MCwCFEGAFJDEty+bIxqD49lteWM/hrrwAhQbS8tmwjNNUh/iyoVyUsB7dIokDg=="/>
+        </item>
+        <item>
             <title>Version 2.2.1</title>
             <description><![CDATA[
                 <h2>New Features</h2>
                     <h3>Minor internal updates. Nothing that should affect functionality.</h3>
                 ]]></description>
             <pubDate>Mon, 25 Apr 2011 20:20:11 +0800</pubDate>
-            <enclosure url="http://www.musecontrol.com/downloads/MuseController2.2.1.dmg" sparkle:version="2.2.1" length="3270055" type="application/octet-stream" sparkle:dsaSignature="MCwCFBAnMTIJkBooYkDWoODKTchlc+pjAhQcL4K46GF20ceY+TDpnzyuPujgPA==" />
-         </item>
+            <enclosure url="http://www.musecontrol.com/downloads/MuseController2.2.1.dmg" sparkle:version="2.2.1"
+                       length="3270055" type="application/octet-stream"
+                       sparkle:dsaSignature="MCwCFBAnMTIJkBooYkDWoODKTchlc+pjAhQcL4K46GF20ceY+TDpnzyuPujgPA=="/>
+        </item>
+        <item>
+            <title>Version 3.0.0</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                <h2>New Features</h2>
+                    <h3>All new pianobar-based built-in Pandora streaming.</h3>
+                    <h3>Required for full feature support for Muse Control 3.0. Use with earlier versions of Muse Control is not supported.</h3>
+                    <h3>This will work on Snow Leopard ONLY.</h3>
+                ]]></description>
+            <pubDate>Mon, 20 Jun 2011 20:20:11 +0800</pubDate>
+            <enclosure url="http://www.musecontrol.com/downloads/MuseController3.0.0.dmg" sparkle:version="3.0.0"
+                       length="11658969" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFFWtJjie85bOWQFq8MMjwCaoLNN1AhUAi430hLGFgOHkvOV2VNzMtUGyejk="/>
 
-   </channel>
+        </item>
+    </channel>
 </rss>
