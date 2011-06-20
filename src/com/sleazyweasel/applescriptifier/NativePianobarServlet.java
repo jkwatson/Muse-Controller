@@ -104,9 +104,6 @@ public class NativePianobarServlet extends HttpServlet {
 
         boolean inputRequested = state.isInputRequested();
 
-        String currentScreenContents = pianobarSupport.getCurrentScreenContents();
-        responseData.put("screen", currentScreenContents);
-
         responseData.put("station", state.getStation());
         responseData.put("artist", state.getArtist());
         responseData.put("album", state.getAlbum());
