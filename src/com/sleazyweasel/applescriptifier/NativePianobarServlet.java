@@ -109,6 +109,7 @@ public class NativePianobarServlet extends HttpServlet {
         responseData.put("album", state.getAlbum());
         responseData.put("title", state.getTitle());
         responseData.put("heart", state.isCurrentSongIsLoved() ? "YES" : "NO");
+        responseData.put("playing", state.isPlaying() ? "YES" : "NO");
 
         if (inputRequested && state.getInputTypeRequested().equals(NativePianobarSupport.InputType.CHOOSE_STATION)) {
             Map<Integer, String> stations = state.getStations();
