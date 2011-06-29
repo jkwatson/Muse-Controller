@@ -41,6 +41,7 @@ public class PianobarUI {
     }
 
     private void initWidgetsAndModels() {
+        initMenuBar();
         initWindow();
         initStationComboBox();
         initStationNameLabel();
@@ -58,6 +59,7 @@ public class PianobarUI {
         initImageLabel();
         initHeartLabel();
         initInfoLabel();
+        initKillButton();
     }
 
     private void initWindow() {
@@ -69,6 +71,22 @@ public class PianobarUI {
 //                ((TableLayout) getLayout()).drawGrid(this, g);
             }
         });
+    }
+
+    private void initMenuBar() {
+        JMenu menu = new JMenu("Control");
+        JMenuItem menuItem = new JMenuItem("Restart Pandora");
+        menuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                pianobarSupport.kill();
+            }
+        });
+        menu.add(menuItem);
+
+        JMenuBar menubar = new JMenuBar();
+        menubar.add(menu);
+        com.apple.eawt.Application macApp = com.apple.eawt.Application.getApplication();
+        macApp.setDefaultMenuBar(menubar);
     }
 
     private void initStationComboBox() {
@@ -253,6 +271,7 @@ public class PianobarUI {
         leftButtonPanel.add(widgets.nextButton, "1,1");
         leftButtonPanel.add(widgets.thumbsUpButton, "2,1");
         leftButtonPanel.add(widgets.thumbsDownButton, "3,1");
+//        leftButtonPanel.add(widgets.killButton, "4, 1");
         leftButtonPanel.add(widgets.volumeDownButton, "5,1");
         leftButtonPanel.add(widgets.volumeUpButton, "6,1");
 
@@ -281,6 +300,15 @@ public class PianobarUI {
         widgets.window.setResizable(false);
     }
 
+    private void initKillButton() {
+        widgets.killButton = new JButton("ZAP!");
+        widgets.killButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                pianobarSupport.kill();
+            }
+        });
+    }
+
     public JFrame getWindow() {
         return widgets.window;
     }
@@ -300,6 +328,7 @@ public class PianobarUI {
         private JButton volumeUpButton;
         private JButton volumeDownButton;
         private JButton chooseStationButton;
+        private JButton killButton;
         private JLabel stationNameLabel;
         private JLabel artistLabel;
         private JLabel albumLabel;

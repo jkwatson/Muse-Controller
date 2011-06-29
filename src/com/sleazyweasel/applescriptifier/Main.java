@@ -19,6 +19,7 @@ public class Main {
     private static final int PORT = 23233;
 
     public static void main(String[] args) throws Exception {
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
         register(0, 0, InetAddress.getLocalHost().getHostName(), "_asrunner._udp", "local.", null, PORT, null, new RegisterListener() {
             public void serviceRegistered(DNSSDRegistration dnssdRegistration, int port, String s, String s1, String s2) {
             }
@@ -46,7 +47,7 @@ public class Main {
 
         server.start();
 
-        setupQuaqua();
+//        setupQuaqua();
 
         addUncaughtExceptionHandler();
 

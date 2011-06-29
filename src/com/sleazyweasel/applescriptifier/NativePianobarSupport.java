@@ -75,6 +75,15 @@ public class NativePianobarSupport implements ApplicationSupport {
         sendKeyStroke('-');
     }
 
+    public synchronized void kill() {
+        if (pianobar != null) {
+            pianobar.destroy();
+            pianobar = null;
+        }
+        data = new LineBuffer(20000);
+        activatePianoBar();
+    }
+
     public synchronized void activatePianoBar() {
         if (pianobar == null) {
             try {
