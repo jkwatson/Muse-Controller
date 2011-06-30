@@ -58,6 +58,9 @@ public class NativePianobarServlet extends HttpServlet {
         } else if (pathInfo.startsWith("/keyStroke")) {
             pianobarSupport.sendKeyStroke(req.getParameter("key").charAt(0));
             sleep();
+        } else if (pathInfo.startsWith("/bounce")) {
+            pianobarSupport.kill();
+            sleep();
         } else if (pathInfo.startsWith("/textEntry")) {
             String text = req.getParameter("text");
             //trim the user data to protect against buffer overflows in pianobar.

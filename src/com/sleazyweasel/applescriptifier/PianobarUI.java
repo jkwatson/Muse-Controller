@@ -97,7 +97,9 @@ public class PianobarUI {
                 if (acquireLock()) {
                     pianobarSupport.askToChooseStation();
                     StationChoice selectedItem = models.stationComboBoxModel.getSelectedStation();
-                    pianobarSupport.selectStation(selectedItem.getKey());
+                    if (selectedItem != null) {
+                        pianobarSupport.selectStation(selectedItem.getKey());
+                    }
                     releaseLock();
                 }
             }
