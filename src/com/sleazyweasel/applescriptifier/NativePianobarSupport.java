@@ -49,10 +49,14 @@ public class NativePianobarSupport implements ApplicationSupport {
     public void volumeUp() {
         activatePianoBar();
         sendKeyStroke(')');
+        sendKeyStroke(')');
+        sendKeyStroke(')');
     }
 
     public void volumeDown() {
         activatePianoBar();
+        sendKeyStroke('(');
+        sendKeyStroke('(');
         sendKeyStroke('(');
     }
 

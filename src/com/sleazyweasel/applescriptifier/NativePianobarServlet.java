@@ -61,6 +61,12 @@ public class NativePianobarServlet extends HttpServlet {
         } else if (pathInfo.startsWith("/bounce")) {
             pianobarSupport.kill();
             sleep();
+        } else if (pathInfo.startsWith("/volumeUp")) {
+            pianobarSupport.volumeUp();
+            sleep();
+        } else if (pathInfo.startsWith("/volumeDown")) {
+            pianobarSupport.volumeDown();
+            sleep();
         } else if (pathInfo.startsWith("/textEntry")) {
             String text = req.getParameter("text");
             //trim the user data to protect against buffer overflows in pianobar.
