@@ -55,5 +55,20 @@
                        sparkle:dsaSignature="MC0CFFWtJjie85bOWQFq8MMjwCaoLNN1AhUAi430hLGFgOHkvOV2VNzMtUGyejk="/>
 
         </item>
+        <item>
+            <title>Version 3.1.0</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                <h2>New Features</h2>
+                    <h3>Adds ability to restart the Pandora music stream.</h3>
+                    <h3>Required for full feature support for Muse Control 3.1.</h3>
+                    <h3>This will work on Snow Leopard ONLY.</h3>
+                ]]></description>
+            <pubDate>Tue, 05 Jul 2011 20:20:11 +0800</pubDate>
+            <enclosure url="http://www.musecontrol.com/downloads/MuseController3.1.0.dmg" sparkle:version="3.1.0"
+                       length="11658969" type="application/octet-stream"
+                       sparkle:dsaSignature="MC4CFQC7JyDMzOn9bamjl19TVZgNkWEEjgIVAMIBME9v5hs56RvUqZ040VlzA8Ql"/>
+
+        </item>
     </channel>
 </rss>
