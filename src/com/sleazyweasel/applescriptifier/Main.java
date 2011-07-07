@@ -47,8 +47,6 @@ public class Main {
 
         server.start();
 
-//        setupQuaqua();
-
         addUncaughtExceptionHandler();
 
         startupPianobar(pianobarSupport);
@@ -100,6 +98,7 @@ public class Main {
     private static void addUncaughtExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             public void uncaughtException(Thread t, Throwable e) {
+                JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
             }
         });

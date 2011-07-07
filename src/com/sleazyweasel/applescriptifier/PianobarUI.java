@@ -55,9 +55,7 @@ public class PianobarUI {
         initThumbsDownButton();
         initVolumeUpButton();
         initVolumeDownButton();
-        initChooseStationButton();
         initImageLabel();
-        initHeartLabel();
         initInfoLabel();
         initKillButton();
     }
@@ -75,18 +73,105 @@ public class PianobarUI {
 
     private void initMenuBar() {
         JMenu menu = new JMenu("Control");
-        JMenuItem menuItem = new JMenuItem("Restart Pandora");
-        menuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                pianobarSupport.kill();
-            }
-        });
-        menu.add(menuItem);
+        menu.setMnemonic('c');
+        menu.add(initPlayPauseMenuItem());
+        menu.add(initNextMenuItem());
+        menu.addSeparator();
+        menu.add(initThumbsUpMenuItem());
+        menu.add(initThumbsDownMenuItem());
+        menu.addSeparator();
+        menu.add(initVolumeUpMenuItem());
+        menu.add(initVolumeDownMenuItem());
+        menu.addSeparator();
+        menu.add(initRestartPandoraMenuItem());
 
         JMenuBar menubar = new JMenuBar();
         menubar.add(menu);
         com.apple.eawt.Application macApp = com.apple.eawt.Application.getApplication();
+
         macApp.setDefaultMenuBar(menubar);
+    }
+
+    private JMenuItem initVolumeDownMenuItem() {
+        JMenuItem menuItem = new JMenuItem("Volume Down");
+        menuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                pianobarSupport.volumeDown();
+            }
+        });
+        menuItem.setEnabled(false);
+        widgets.volumeDownMenuItem = menuItem;
+        return menuItem;
+    }
+
+    private JMenuItem initVolumeUpMenuItem() {
+        JMenuItem menuItem = new JMenuItem("Volume Up");
+        menuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                pianobarSupport.volumeUp();
+            }
+        });
+        menuItem.setEnabled(false);
+        widgets.volumeUpMenuItem = menuItem;
+        return menuItem;
+    }
+
+    private JMenuItem initThumbsDownMenuItem() {
+        JMenuItem menuItem = new JMenuItem("Thumbs Down");
+        menuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                pianobarSupport.thumbsDown();
+            }
+        });
+        menuItem.setEnabled(false);
+        widgets.thumbsDownMenuItem = menuItem;
+        return menuItem;
+    }
+
+    private JMenuItem initThumbsUpMenuItem() {
+        JMenuItem menuItem = new JMenuItem("Thumbs Up");
+        menuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                pianobarSupport.thumbsUp();
+            }
+        });
+        menuItem.setEnabled(false);
+        widgets.thumbsUpMenuItem = menuItem;
+        return menuItem;
+    }
+
+    private JMenuItem initNextMenuItem() {
+        JMenuItem menuItem = new JMenuItem("Next");
+        menuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                pianobarSupport.next();
+            }
+        });
+        menuItem.setEnabled(false);
+        widgets.nextMenuItem = menuItem;
+        return menuItem;
+    }
+
+    private JMenuItem initPlayPauseMenuItem() {
+        JMenuItem menuItem = new JMenuItem("Play/Pause");
+        menuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                pianobarSupport.playPause();
+            }
+        });
+        menuItem.setEnabled(false);
+        widgets.playPauseMenuItem = menuItem;
+        return menuItem;
+    }
+
+    private JMenuItem initRestartPandoraMenuItem() {
+        JMenuItem restartMenuItem = new JMenuItem("Restart Pandora");
+        restartMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                pianobarSupport.kill();
+            }
+        });
+        return restartMenuItem;
     }
 
     private void initStationComboBox() {
@@ -225,23 +310,9 @@ public class PianobarUI {
         });
     }
 
-    private void initChooseStationButton() {
-        widgets.chooseStationButton = new JButton("Station");
-        setButtonDefaults(widgets.chooseStationButton);
-        widgets.chooseStationButton.setEnabled(false);
-        widgets.chooseStationButton.addActionListener(new ChooseStationAction());
-    }
-
     private void initImageLabel() {
         widgets.imageLabel = new JLabel();
 //        widgets.imageLabel.setBorder(BorderFactory.createEtchedBorder());
-    }
-
-    private void initHeartLabel() {
-        widgets.heartLabel = new JLabel();
-        ImageIcon icon = getIcon("heart.png");
-        widgets.heartLabel.setIcon(icon);
-        widgets.heartLabel.setVisible(false);
     }
 
     private void initInfoLabel() {
@@ -266,8 +337,8 @@ public class PianobarUI {
     }
 
     private void initLayout() {
-        JPanel leftButtonPanel = new JPanel(new TableLayout(new double[][] {
-                {PREFERRED,PREFERRED,PREFERRED,PREFERRED,FILL,PREFERRED,PREFERRED},{FILL, PREFERRED}
+        JPanel leftButtonPanel = new JPanel(new TableLayout(new double[][]{
+                {PREFERRED, PREFERRED, PREFERRED, PREFERRED, FILL, PREFERRED, PREFERRED}, {FILL, PREFERRED}
         }));
         leftButtonPanel.add(widgets.playPauseButton, "0,1");
         leftButtonPanel.add(widgets.nextButton, "1,1");
@@ -329,7 +400,6 @@ public class PianobarUI {
         private JButton thumbsDownButton;
         private JButton volumeUpButton;
         private JButton volumeDownButton;
-        private JButton chooseStationButton;
         private JButton killButton;
         private JLabel stationNameLabel;
         private JLabel artistLabel;
@@ -337,8 +407,13 @@ public class PianobarUI {
         private JLabel songLabel;
         private JLabel imageLabel;
         private JLabel timeLabel;
-        private JLabel heartLabel;
         private JLabel infoLabel;
+        public JMenuItem volumeDownMenuItem;
+        public JMenuItem volumeUpMenuItem;
+        public JMenuItem thumbsDownMenuItem;
+        public JMenuItem thumbsUpMenuItem;
+        public JMenuItem nextMenuItem;
+        public JMenuItem playPauseMenuItem;
     }
 
     private static class Models {
@@ -354,10 +429,13 @@ public class PianobarUI {
                 widgets.thumbsDownButton.setEnabled(!state.isInputRequested());
                 widgets.volumeUpButton.setEnabled(!state.isInputRequested());
                 widgets.volumeDownButton.setEnabled(!state.isInputRequested());
+                widgets.volumeDownMenuItem.setEnabled(!state.isInputRequested());
+                widgets.volumeUpMenuItem.setEnabled(!state.isInputRequested());
+                widgets.thumbsDownMenuItem.setEnabled(!state.isInputRequested());
+                widgets.thumbsUpMenuItem.setEnabled(!state.isInputRequested());
+                widgets.nextMenuItem.setEnabled(!state.isInputRequested());
+                widgets.playPauseMenuItem.setEnabled(!state.isInputRequested());
 
-                if (state.isInputRequested() && NativePianobarSupport.InputType.CHOOSE_STATION.equals(state.getInputTypeRequested())) {
-                    widgets.chooseStationButton.setEnabled(true);
-                }
                 widgets.stationNameLabel.setText(state.getStation());
                 widgets.artistLabel.setText(state.getArtist());
                 widgets.albumLabel.setText(state.getAlbum());
@@ -374,11 +452,9 @@ public class PianobarUI {
                     widgets.playPauseButton.setIcon(getIcon("play.png"));
                 }
 
-                widgets.heartLabel.setVisible(state.isCurrentSongIsLoved());
                 if (state.getDetailUrl() != null && state.getDetailUrl().length() > 0) {
                     widgets.infoLabel.setVisible(true);
-                }
-                else {
+                } else {
                     widgets.infoLabel.setVisible(false);
                 }
 
@@ -387,12 +463,12 @@ public class PianobarUI {
                     widgets.imageLabel.setName(albumArtUrl);
 
                     if (albumArtUrl.startsWith("http")) {
-                    try {
-                        URL imageUrl = new URL(albumArtUrl);
-                        widgets.imageLabel.setIcon(new ImageIcon(imageUrl));
-                    } catch (MalformedURLException e) {
-                        //do nothing, I guess/
-                    }
+                        try {
+                            URL imageUrl = new URL(albumArtUrl);
+                            widgets.imageLabel.setIcon(new ImageIcon(imageUrl));
+                        } catch (MalformedURLException e) {
+                            //do nothing, I guess/
+                        }
                     } else {
                         widgets.imageLabel.setIcon(null);
                     }
