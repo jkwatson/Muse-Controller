@@ -70,5 +70,34 @@
                        sparkle:dsaSignature="MC4CFQC7JyDMzOn9bamjl19TVZgNkWEEjgIVAMIBME9v5hs56RvUqZ040VlzA8Ql"/>
 
         </item>
+        <item>
+            <title>Version 3.1.1</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                <h2>New Features</h2>
+                    <h3>Added menu items for basic controls.</h3>
+                    <h3>Required for full feature support for Muse Control 3.1.</h3>
+                    <h3>This will work on Snow Leopard ONLY.</h3>
+                ]]></description>
+            <pubDate>Tue, 06 Jul 2011 20:20:11 +0800</pubDate>
+            <enclosure url="http://www.musecontrol.com/downloads/MuseController3.1.1.dmg" sparkle:version="3.1.1"
+                       length="11658969" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFBZGPH+fDOGz91sSILD+m4e5P6tAAhUAqTlARCqIWYoj78pVzoCvzSmpt9w="/>
+
+        </item>
+       <item>
+            <title>Version 3.1.2</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                <h2>New Features</h2>
+                    <h3>Updated pianobar Pandora streaming to new Pandora APIs.</h3>
+                    <h3>This will work on Snow Leopard ONLY.</h3>
+                ]]></description>
+            <pubDate>Sat, 09 Jul 2011 20:20:11 +0800</pubDate>
+            <enclosure url="http://www.musecontrol.com/downloads/MuseController3.1.2.dmg" sparkle:version="3.1.2"
+                       length="11658969" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFQDwNIcSM5xl0A/DQMkGgGdUdTtvKwIUe/m0KawXSrofO2s4oIDH9DciPZw="/>
+
+        </item>
     </channel>
 </rss>
