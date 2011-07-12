@@ -313,7 +313,11 @@ public class NativePianobarSupport implements ApplicationSupport {
 //        System.out.println("NativePianobarSupport.notifyListeners firing");
         PianobarState state = getState();
         for (PianobarStateChangeListener listener : listeners) {
-            listener.stateChanged(this, state);
+            try {
+                listener.stateChanged(this, state);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
