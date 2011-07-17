@@ -43,6 +43,7 @@ public class Main {
         context.addServlet(new ServletHolder(new PulsarServlet()), "/pulsar/*");
         NativePianobarServlet nativePianobarServlet = new NativePianobarServlet(pianobarSupport);
         context.addServlet(new ServletHolder(nativePianobarServlet), "/pianobar/*");
+        context.addServlet(new ServletHolder(new SpotifyServlet()), "/spotify/*");
         context.addServlet(new ServletHolder(new ControlServlet()), "/control/*");
 
         server.start();

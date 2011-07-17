@@ -3,7 +3,7 @@ package com.sleazyweasel.applescriptifier;
 public enum Application {
     AIRFOIL("Airfoil", "Airfoil", "com.rogueamoeba.Airfoil", true, false, false, false, false, false),
     PANDORABOY("PandoraBoy", "PandoraBoy", "com.frozensilicon.PandoraBoy", true, true, true, false, true, true),
-    PULSAR("Pulsar", "Pulsar", "com.rogueamoeba.Pulsar", false, true, true, true, false, false),
+    PULSAR("Pulsar", "Pulsar", "com.rogueamoeba.Pulsar", true, true, true, true, false, false),
     ITUNES("iTunes", "iTunes", "com.apple.iTunes", false, true, true, true, false, false),
     PANDORAONE("Pandora", "Pandora", "com.pandora.desktop.FB9956FD96E03239939108614098AD95535EE674.1", false, true, true, false, true, true),
     RDIO("Rdio", "Rdio", "com.rdio.desktop", false, true, true, true, false, false),

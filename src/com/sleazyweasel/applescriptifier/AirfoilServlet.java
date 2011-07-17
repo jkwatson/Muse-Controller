@@ -7,9 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.Collator;
+import java.util.*;
 
 public class AirfoilServlet extends HttpServlet {
     private static final String CURRENT_SOURCE_KEY = "currentSource";
@@ -39,65 +38,64 @@ public class AirfoilServlet extends HttpServlet {
         if (pathInfo.equals("/status")) {
             response.setStatus(HttpServletResponse.SC_OK);
             appendStatus(response);
-        } else {
-            if (pathInfo.startsWith("/updateSpeaker")) {
-                String speakerId = req.getParameter("id");
-                String conn = req.getParameter("conn");
-                String volume = req.getParameter("volume");
-                if (conn != null) {
-                    boolean connected = "1".equals(conn);
-                    updateSpeakerStatus(response, speakerId, connected);
-                } else if (volume != null) {
-                    float vol = Float.parseFloat(volume);
-                    updateSpeakerVolume(response, speakerId, vol);
-                }
-            } else if (pathInfo.startsWith("/startApp")) {
-                startApplication(response);
-            } else if (pathInfo.startsWith("/selectApplicationAudioSource")) {
-                String sourceId = req.getParameter("id");
-                selectApplicationAudioSource(sourceId, response);
-            } else if (pathInfo.startsWith("/playpause")) {
-                Map<String, Object> runningStatus = getRunningStatus();
-                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
-                if (applicationSupport != null) {
-                    applicationSupport.playPause();
-                }
-                appendRunningStatus(response, runningStatus);
-
-            } else if (pathInfo.startsWith("/next")) {
-                Map<String, Object> runningStatus = getRunningStatus();
-                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
-                if (applicationSupport != null) {
-                    applicationSupport.next();
-                }
-                appendRunningStatus(response, runningStatus);
-
-            } else if (pathInfo.startsWith("/previous")) {
-                Map<String, Object> runningStatus = getRunningStatus();
-                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
-                if (applicationSupport != null) {
-                    applicationSupport.previous();
-                }
-                appendRunningStatus(response, runningStatus);
-            } else if (pathInfo.startsWith("/thumbsup")) {
-                Map<String, Object> runningStatus = getRunningStatus();
-                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
-                if (applicationSupport != null) {
-                    applicationSupport.thumbsUp();
-                }
-                appendRunningStatus(response, runningStatus);
-
-            } else if (pathInfo.startsWith("/thumbsdown")) {
-                Map<String, Object> runningStatus = getRunningStatus();
-                ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
-                if (applicationSupport != null) {
-                    applicationSupport.thumbsDown();
-                }
-                appendRunningStatus(response, runningStatus);
-            } else {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } else if (pathInfo.startsWith("/updateSpeaker")) {
+            String speakerId = req.getParameter("id");
+            String conn = req.getParameter("conn");
+            String volume = req.getParameter("volume");
+            if (conn != null) {
+                boolean connected = "1".equals(conn);
+                updateSpeakerStatus(response, speakerId, connected);
+            } else if (volume != null) {
+                float vol = Float.parseFloat(volume);
+                updateSpeakerVolume(response, speakerId, vol);
             }
+        } else if (pathInfo.startsWith("/startApp")) {
+            startApplication(response);
+        } else if (pathInfo.startsWith("/selectApplicationAudioSource")) {
+            String sourceId = req.getParameter("id");
+            selectApplicationAudioSource(sourceId, response);
+        } else if (pathInfo.startsWith("/playpause")) {
+            Map<String, Object> runningStatus = getRunningStatus();
+            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
+            if (applicationSupport != null) {
+                applicationSupport.playPause();
+            }
+            appendRunningStatus(response, runningStatus);
+
+        } else if (pathInfo.startsWith("/next")) {
+            Map<String, Object> runningStatus = getRunningStatus();
+            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
+            if (applicationSupport != null) {
+                applicationSupport.next();
+            }
+            appendRunningStatus(response, runningStatus);
+
+        } else if (pathInfo.startsWith("/previous")) {
+            Map<String, Object> runningStatus = getRunningStatus();
+            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
+            if (applicationSupport != null) {
+                applicationSupport.previous();
+            }
+            appendRunningStatus(response, runningStatus);
+        } else if (pathInfo.startsWith("/thumbsup")) {
+            Map<String, Object> runningStatus = getRunningStatus();
+            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
+            if (applicationSupport != null) {
+                applicationSupport.thumbsUp();
+            }
+            appendRunningStatus(response, runningStatus);
+
+        } else if (pathInfo.startsWith("/thumbsdown")) {
+            Map<String, Object> runningStatus = getRunningStatus();
+            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
+            if (applicationSupport != null) {
+                applicationSupport.thumbsDown();
+            }
+            appendRunningStatus(response, runningStatus);
+        } else {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
+
     }
 
     private ApplicationSupport getCurrentApplicationSupport(Map<String, Object> runningStatus, NativePianobarSupport pianobarSupport) {
@@ -162,9 +160,17 @@ public class AirfoilServlet extends HttpServlet {
         List data = appleScriptTemplate.execute(Application.AIRFOIL, "[get properties of every speaker, get properties of every application source, get properties of every system source, get properties of current audio source]");
 
         stateMap.put("speakers", data.get(0));
-        List<?> sources = (List) data.get(1);
+        List<Map<String, Object>> sources = (List<Map<String, Object>>) data.get(1);
         sources.addAll((List) data.get(2));
         stateMap.put("appSources", sources);
+        Collections.sort(sources, new Comparator<Map<String, Object>>() {
+            public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+                Collator collator = Collator.getInstance();
+                String name1 = (String) o1.get(NAME_KEY);
+                String name2 = (String) o2.get(NAME_KEY);
+                return collator.compare(name1, name2);
+            }
+        });
         Map<String, Object> currentSource = (Map<String, Object>) data.get(3);
         String sourceName = (String) currentSource.get(NAME_KEY);
         Application currentApplication = Application.forName(sourceName);
