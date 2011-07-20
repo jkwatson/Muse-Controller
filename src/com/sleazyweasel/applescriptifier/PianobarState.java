@@ -1,6 +1,5 @@
 package com.sleazyweasel.applescriptifier;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -103,5 +102,19 @@ public class PianobarState {
             }
         }
         return null;
+    }
+
+    public int getDuration() {
+        if (currentTimeInTrack != null && currentTimeInTrack.length() > 0) {
+            String[] parts = currentTimeInTrack.split("/");
+            String totalTimePart = parts[1];
+            String[] minutesAndSeconds = totalTimePart.split(":");
+            int minutes = Integer.parseInt(minutesAndSeconds[0]);
+            int seconds = Integer.parseInt(minutesAndSeconds[1]);
+            return minutes * 60 + seconds;
+        }
+        else {
+            return 0;
+        }
     }
 }

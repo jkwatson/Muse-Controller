@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -42,7 +43,17 @@ public class NativePianobarServlet extends HttpServlet {
         response.setContentType("application/json; charset=utf-8");
         response.setCharacterEncoding("UTF-8");
         String pathInfo = req.getPathInfo();
-        if (pathInfo.startsWith("/status")) {
+        if (pathInfo.startsWith("/airfoilstatusdata")) {
+            PrintWriter writer = response.getWriter();
+            PianobarState pianobarState = this.pianobarState.get();
+            writer.println(pianobarState.getAlbumArtUrl());
+            writer.println(pianobarState.getTitle());
+            writer.println(pianobarState.getArtist());
+            writer.println(pianobarState.getAlbum());
+            writer.println(pianobarState.getDuration());
+            writer.println();
+            writer.flush();
+            return;
         } else if (pathInfo.startsWith("/playpause")) {
             pianobarSupport.playPause();
             sleep();
