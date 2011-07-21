@@ -99,5 +99,20 @@
                        sparkle:dsaSignature="MC0CFQDwNIcSM5xl0A/DQMkGgGdUdTtvKwIUe/m0KawXSrofO2s4oIDH9DciPZw="/>
 
         </item>
+       <item>
+            <title>Version 3.2.0</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                <h2>New Features</h2>
+                    <h3>Basic mini-controls for the Spotify client on the Airfoil page.</h3>
+                    <h3>When using the build-in Pandora player, supports displaying album art, etc on Airfoil Speakers (future Airfoil update required).</h3>
+                    <h3>This will work on Snow Leopard ONLY. (it might work on Lion..untested at this point)</h3>
+                ]]></description>
+            <pubDate>Wed, 20 Jul 2011 20:20:11 +0800</pubDate>
+            <enclosure url="http://www.musecontrol.com/downloads/MuseController3.2.0.dmg" sparkle:version="3.2.0"
+                       length="11658969" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFQDrtWZe27p/Ie9VMh5l4lcZLjSHiQIUOlt1IHVNh/YsDzQzA2ArnB2mpaI="/>
+
+        </item>
     </channel>
 </rss>
