@@ -3,6 +3,9 @@ package com.sleazyweasel.applescriptifier;
 import com.apple.dnssd.DNSSDRegistration;
 import com.apple.dnssd.DNSSDService;
 import com.apple.dnssd.RegisterListener;
+import com.apple.eawt.AppEvent;
+import com.apple.eawt.PreferencesHandler;
+import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
 import com.sleazyweasel.sparkle.SparkleActivator;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -20,6 +23,26 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         System.setProperty("apple.laf.useScreenMenuBar", "true");
+
+        final MuseControllerPreferences preferences = new MuseControllerPreferences(Preferences.userNodeForPackage(Main.class));
+        final NativePianobarSupport pianobarSupport = new NativePianobarSupport();
+
+        if (preferences.isMuseControlEnabled()) {
+            startupWebServer(pianobarSupport);
+        }
+        addUncaughtExceptionHandler();
+
+        startupGui(pianobarSupport, preferences);
+
+        try {
+            new SparkleActivator().start();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private static void startupWebServer(NativePianobarSupport pianobarSupport) throws Exception {
         register(0, 0, InetAddress.getLocalHost().getHostName(), "_asrunner._udp", "local.", null, PORT, null, new RegisterListener() {
             public void serviceRegistered(DNSSDRegistration dnssdRegistration, int port, String s, String s1, String s2) {
             }
@@ -35,7 +58,6 @@ public class Main {
         context.setContextPath("/");
         server.setHandler(context);
 
-        final NativePianobarSupport pianobarSupport = new NativePianobarSupport();
 
         AirfoilServlet airfoilServlet = new AirfoilServlet(pianobarSupport);
         context.addServlet(new ServletHolder(airfoilServlet), "/airfoil/*");
@@ -47,53 +69,50 @@ public class Main {
         context.addServlet(new ServletHolder(new ControlServlet()), "/control/*");
 
         server.start();
-
-        addUncaughtExceptionHandler();
-
-        startupPianobar(pianobarSupport);
-
-        try {
-            new SparkleActivator().start();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-
     }
 
-    private static void startupPianobar(final NativePianobarSupport pianobarSupport) {
-        final boolean pianoBarSupportEnabled = NativePianobarSupport.isPianoBarSupportEnabled();
+    private static void startupGui(final NativePianobarSupport pianobarSupport, final MuseControllerPreferences preferences) {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                Preferences preferences = Preferences.userNodeForPackage(getClass());
-                boolean vetoPianobar = preferences.getBoolean(PandoraPasswordUI.PIANOBAR_VETO_KEY, false);
 
-                if (pianoBarSupportEnabled) {
-                    PianobarUI pianobarUI = new PianobarUI(pianobarSupport);
-                    try {
-                        pianobarUI.initialize();
-                        JFrame window = pianobarUI.getWindow();
-                        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                        window.setVisible(true);
-                    } catch (BadPandoraPasswordException e) {
-                        PandoraPasswordUI pandoraPasswordUI = new PandoraPasswordUI(pianobarSupport);
-
-                        JFrame window = pandoraPasswordUI.getWindow();
-                        window.setLocationRelativeTo(null);
-                        window.setVisible(true);
+                boolean enablePianoBar = preferences.isPianoBarEnabled();
+                com.apple.eawt.Application macApp = com.apple.eawt.Application.getApplication();
+                macApp.setPreferencesHandler(new PreferencesHandler() {
+                    public void handlePreferences(AppEvent.PreferencesEvent preferencesEvent) {
+                        PreferencesGui preferencesGui = new PreferencesGui(preferences);
+                        JFrame preferencesFrame = preferencesGui.getWindow();
+                        preferencesFrame.setLocationRelativeTo(null);
+                        preferencesFrame.setVisible(true);
                     }
-                } else if (!vetoPianobar) {
-                    PandoraPasswordUI pandoraPasswordUI = new PandoraPasswordUI(pianobarSupport);
+                });
 
-                    JFrame window = pandoraPasswordUI.getWindow();
-                    window.setLocationRelativeTo(null);
-                    window.setVisible(true);
-                }
-                else {
+                if (enablePianoBar) {
+                    if (NativePianobarSupport.isPianoBarConfigured()) {
+                        PianobarUI pianobarUI = new PianobarUI(pianobarSupport);
+                        try {
+                            pianobarUI.initialize();
+                            JFrame window = pianobarUI.getWindow();
+                            window.setVisible(true);
+                        } catch (BadPandoraPasswordException e) {
+                            promptForPandoraPassword(pianobarSupport, preferences);
+                        }
+                    } else {
+                        promptForPandoraPassword(pianobarSupport, preferences);
+                    }
+                } else {
                     new JFrame().pack();
                 }
             }
         });
+    }
+
+    private static void promptForPandoraPassword(NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences) {
+        PandoraPasswordUI pandoraPasswordUI = new PandoraPasswordUI(pianobarSupport, preferences);
+
+        JFrame window = pandoraPasswordUI.getWindow();
+        window.setLocationRelativeTo(null);
+        window.setVisible(true);
     }
 
     private static void addUncaughtExceptionHandler() {
@@ -105,20 +124,4 @@ public class Main {
         });
     }
 
-    private static void setupQuaqua() {
-        // set system properties here that affect Quaqua
-        // for example the default layout policy for tabbed
-        // panes:
-        System.setProperty(
-                "Quaqua.tabLayoutPolicy", "wrap"
-        );
-        // set the Quaqua Look and Feel in the UIManager
-        try {
-            UIManager.setLookAndFeel(ch.randelshofer.quaqua.QuaquaManager.getLookAndFeel());
-            // set UI manager properties here that affect Quaqua
-        } catch (Exception e) {
-            e.printStackTrace();
-            // take an appropriate action here
-        }
-    }
 }

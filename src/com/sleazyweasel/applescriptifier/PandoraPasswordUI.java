@@ -1,22 +1,23 @@
 package com.sleazyweasel.applescriptifier;
 
+import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
 import layout.TableLayout;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.prefs.Preferences;
 
 public class PandoraPasswordUI {
-    public  static final String PIANOBAR_VETO_KEY = "pianobar.veto";
 
     private final NativePianobarSupport pianobarSupport;
+    private final MuseControllerPreferences preferences;
 
     private final Widgets widgets = new Widgets();
 
-    public PandoraPasswordUI(NativePianobarSupport pianobarSupport) {
+    public PandoraPasswordUI(NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences) {
         this.pianobarSupport = pianobarSupport;
+        this.preferences = preferences;
         initUserInterface();
         initLayout();
     }
@@ -49,7 +50,7 @@ public class PandoraPasswordUI {
 
     private void initOkButton() {
         widgets.okButton = new JButton("OK");
-        widgets.okButton.addActionListener(new SetupPianobarConfigAction(widgets.window, pianobarSupport, widgets.usernameField, widgets.passwordField));
+        widgets.okButton.addActionListener(new SetupPianobarConfigAction(widgets.window, pianobarSupport, widgets.usernameField, widgets.passwordField, preferences));
     }
 
     private void initCancelButton() {
@@ -58,8 +59,7 @@ public class PandoraPasswordUI {
             public void actionPerformed(ActionEvent e) {
                 widgets.window.dispose();
                 if (widgets.neverShowAgainCheckbox.isSelected()) {
-                    Preferences preferences = Preferences.userNodeForPackage(getClass());
-                    preferences.putBoolean(PIANOBAR_VETO_KEY, true);
+                    preferences.enablePianoBar(false);
                 }
             }
         });

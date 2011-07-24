@@ -75,7 +75,7 @@ public class ScriptEngineAppleScriptTemplate implements AppleScriptTemplate {
     public boolean applicationExists(Application application) {
         //this is a bad, bad hack. fix it.
         if (application.equals(Application.MUSECONTROLLER)) {
-            return NativePianobarSupport.isPianoBarSupportEnabled();
+            return NativePianobarSupport.isPianoBarConfigured();
         }
 
         String query = "try\n" +

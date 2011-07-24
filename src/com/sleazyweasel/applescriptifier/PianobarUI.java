@@ -7,10 +7,7 @@ import layout.TableLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -57,11 +54,16 @@ public class PianobarUI {
         initVolumeDownButton();
         initImageLabel();
         initInfoLabel();
-        initKillButton();
     }
 
     private void initWindow() {
         widgets.window = new JFrame("Pandora");
+        widgets.window.addWindowStateListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                pianobarSupport.close();
+            }
+        });
         widgets.window.setContentPane(new JPanel() {
             @Override
             public void paint(Graphics g) {
@@ -90,6 +92,7 @@ public class PianobarUI {
         com.apple.eawt.Application macApp = com.apple.eawt.Application.getApplication();
 
         macApp.setDefaultMenuBar(menubar);
+
     }
 
     private JMenuItem initVolumeDownMenuItem() {
@@ -168,7 +171,7 @@ public class PianobarUI {
         JMenuItem restartMenuItem = new JMenuItem("Restart Pandora");
         restartMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                pianobarSupport.kill();
+                pianobarSupport.bounce();
             }
         });
         return restartMenuItem;
@@ -373,15 +376,6 @@ public class PianobarUI {
         widgets.window.setResizable(false);
     }
 
-    private void initKillButton() {
-        widgets.killButton = new JButton("ZAP!");
-        widgets.killButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                pianobarSupport.kill();
-            }
-        });
-    }
-
     public JFrame getWindow() {
         return widgets.window;
     }
@@ -400,7 +394,6 @@ public class PianobarUI {
         private JButton thumbsDownButton;
         private JButton volumeUpButton;
         private JButton volumeDownButton;
-        private JButton killButton;
         private JLabel stationNameLabel;
         private JLabel artistLabel;
         private JLabel albumLabel;

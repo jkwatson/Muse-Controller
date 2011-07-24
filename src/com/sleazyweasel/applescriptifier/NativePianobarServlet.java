@@ -70,7 +70,7 @@ public class NativePianobarServlet extends HttpServlet {
             pianobarSupport.sendKeyStroke(req.getParameter("key").charAt(0));
             sleep();
         } else if (pathInfo.startsWith("/bounce")) {
-            pianobarSupport.kill();
+            pianobarSupport.bounce();
             sleep();
         } else if (pathInfo.startsWith("/volumeUp")) {
             pianobarSupport.volumeUp();

@@ -79,7 +79,15 @@ public class NativePianobarSupport implements ApplicationSupport {
         sendKeyStroke('-');
     }
 
-    public synchronized void kill() {
+    public void close() {
+        if (pianobar != null) {
+            pianobar.destroy();
+            pianobar = null;
+        }
+        data = new LineBuffer(20000);
+    }
+
+    public synchronized void bounce() {
         if (pianobar != null) {
             pianobar.destroy();
             pianobar = null;
@@ -293,7 +301,7 @@ public class NativePianobarSupport implements ApplicationSupport {
         return lastLine.startsWith("[?] Select station:") ? InputType.CHOOSE_STATION : InputType.NONE;
     }
 
-    public static boolean isPianoBarSupportEnabled() {
+    public static boolean isPianoBarConfigured() {
         File pianoBarConfigDirectory = getPianobarConfigDirectory();
         return pianoBarConfigDirectory.isDirectory();
     }

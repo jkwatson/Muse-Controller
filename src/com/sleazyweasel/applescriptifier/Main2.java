@@ -1,5 +1,7 @@
 package com.sleazyweasel.applescriptifier;
 
+import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
+
 import java.io.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.prefs.Preferences;
@@ -7,9 +9,6 @@ import java.util.prefs.Preferences;
 public class Main2 {
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        Preferences.userNodeForPackage(Main2.class).putBoolean(PandoraPasswordUI.PIANOBAR_VETO_KEY, false);
-        System.exit(0);
-
         final AtomicBoolean stop = new AtomicBoolean(false);
         Process process = Runtime.getRuntime().exec("/opt/local/bin/pianobar");
         final InputStream inputStream = process.getInputStream();
