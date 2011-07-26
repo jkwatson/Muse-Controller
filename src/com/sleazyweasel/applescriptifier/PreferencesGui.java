@@ -26,18 +26,21 @@ public class PreferencesGui {
     }
 
     private void initLayout() {
-        double[][] columnsThenRows = {{15, FILL, PREFERRED, PREFERRED, 12}, {15, PREFERRED, PREFERRED, 15, PREFERRED, 12}};
+        double[][] columnsThenRows = {{15, FILL, PREFERRED, PREFERRED, 12}, {15, PREFERRED, PREFERRED, 5, PREFERRED, 15, PREFERRED, 12}};
         TableLayout tableLayout = new TableLayout(columnsThenRows);
         Container contentPane = widgets.window.getContentPane();
         contentPane.setLayout(tableLayout);
 
         contentPane.add(widgets.enablePandoraCheckbox, "1, 1");
         contentPane.add(widgets.enableMuseControlCheckbox, "1, 2");
-        contentPane.add(widgets.saveButton, "2, 4");
-        contentPane.add(widgets.cancelButton, "3, 4");
-
-
+        JPanel labelHolder = new JPanel(new TableLayout(new double[][]{{FILL},{FILL}}));
+        labelHolder.add(new JLabel("(Application must be restarted for changes to take effect)"), "0,0,c,c");
+        contentPane.add(labelHolder, "1,4,3,4");
+        contentPane.add(widgets.saveButton, "2, 6");
+        contentPane.add(widgets.cancelButton, "3, 6");
+        widgets.window.getRootPane().setDefaultButton(widgets.saveButton);
         widgets.window.pack();
+        widgets.cancelButton.requestFocus();
     }
 
     private void initWidgetsAndModels() {

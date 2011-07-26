@@ -103,6 +103,8 @@ public class NativePianobarSupport implements ApplicationSupport {
                 String home = "HOME=" + System.getProperty("user.home");
 
                 System.out.println("libraryPath = " + libraryPath);
+                Map<String, String> environment = System.getenv();
+                System.out.println("environment = " + environment);
                 pianobar = Runtime.getRuntime().exec("native/pianobar", new String[]{libraryPath, home}, new File("Muse Controller.app"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
