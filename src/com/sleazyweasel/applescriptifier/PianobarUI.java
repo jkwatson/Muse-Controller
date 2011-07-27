@@ -3,6 +3,7 @@ package com.sleazyweasel.applescriptifier;
 import ch.randelshofer.quaqua.JSheet;
 import ch.randelshofer.quaqua.SheetEvent;
 import ch.randelshofer.quaqua.SheetListener;
+import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
 import layout.TableLayout;
 
 import javax.swing.*;
@@ -26,10 +27,15 @@ public class PianobarUI {
     private final Models models = new Models();
 
     private final NativePianobarSupport pianobarSupport;
+    private final JMenuBar mainMenuBar;
+    private final JMenuItem pandoraMenuItem;
 
-    public PianobarUI(NativePianobarSupport pianobarSupport) {
+    public PianobarUI(NativePianobarSupport pianobarSupport, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, MuseControllerPreferences preferences) {
         this.pianobarSupport = pianobarSupport;
+        this.mainMenuBar = mainMenuBar;
+        this.pandoraMenuItem = pandoraMenuItem;
         initUserInterface();
+        preferences.setPandoraAsStreamer();
     }
 
     private void initUserInterface() {
@@ -58,10 +64,13 @@ public class PianobarUI {
 
     private void initWindow() {
         widgets.window = new JFrame("Pandora");
-        widgets.window.addWindowStateListener(new WindowAdapter() {
+        widgets.window.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                System.out.println("PianobarUI.windowClosing");
                 pianobarSupport.close();
+                mainMenuBar.remove(widgets.menu);
+                pandoraMenuItem.setEnabled(true);
             }
         });
         widgets.window.setContentPane(new JPanel() {
@@ -74,25 +83,20 @@ public class PianobarUI {
     }
 
     private void initMenuBar() {
-        JMenu menu = new JMenu("Control");
-        menu.setMnemonic('c');
-        menu.add(initPlayPauseMenuItem());
-        menu.add(initNextMenuItem());
-        menu.addSeparator();
-        menu.add(initThumbsUpMenuItem());
-        menu.add(initThumbsDownMenuItem());
-        menu.addSeparator();
-        menu.add(initVolumeUpMenuItem());
-        menu.add(initVolumeDownMenuItem());
-        menu.addSeparator();
-        menu.add(initRestartPandoraMenuItem());
+        widgets.menu = new JMenu("Control");
+        widgets.menu.setMnemonic('c');
+        widgets.menu.add(initPlayPauseMenuItem());
+        widgets.menu.add(initNextMenuItem());
+        widgets.menu.addSeparator();
+        widgets.menu.add(initThumbsUpMenuItem());
+        widgets.menu.add(initThumbsDownMenuItem());
+        widgets.menu.addSeparator();
+        widgets.menu.add(initVolumeUpMenuItem());
+        widgets.menu.add(initVolumeDownMenuItem());
+        widgets.menu.addSeparator();
+        widgets.menu.add(initRestartPandoraMenuItem());
 
-        JMenuBar menubar = new JMenuBar();
-        menubar.add(menu);
-        com.apple.eawt.Application macApp = com.apple.eawt.Application.getApplication();
-
-        macApp.setDefaultMenuBar(menubar);
-
+        mainMenuBar.add(widgets.menu);
     }
 
     private JMenuItem initVolumeDownMenuItem() {
@@ -407,6 +411,7 @@ public class PianobarUI {
         public JMenuItem thumbsUpMenuItem;
         public JMenuItem nextMenuItem;
         public JMenuItem playPauseMenuItem;
+        public JMenu menu;
     }
 
     private static class Models {

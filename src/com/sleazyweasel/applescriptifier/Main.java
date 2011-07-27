@@ -12,7 +12,10 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.InetAddress;
+import java.util.Map;
 import java.util.prefs.Preferences;
 
 import static com.apple.dnssd.DNSSD.register;
@@ -23,6 +26,8 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         System.setProperty("apple.laf.useScreenMenuBar", "true");
+        Map<String, String> environment = System.getenv();
+        System.out.println("environment = " + environment);
 
         final MuseControllerPreferences preferences = new MuseControllerPreferences(Preferences.userNodeForPackage(Main.class));
         final NativePianobarSupport pianobarSupport = new NativePianobarSupport();
@@ -76,7 +81,6 @@ public class Main {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
 
-                boolean enablePianoBar = preferences.isPianoBarEnabled();
                 com.apple.eawt.Application macApp = com.apple.eawt.Application.getApplication();
                 macApp.setPreferencesHandler(new PreferencesHandler() {
                     public void handlePreferences(AppEvent.PreferencesEvent preferencesEvent) {
@@ -87,19 +91,23 @@ public class Main {
                     }
                 });
 
-                if (enablePianoBar) {
-                    if (NativePianobarSupport.isPianoBarConfigured()) {
-                        PianobarUI pianobarUI = new PianobarUI(pianobarSupport);
-                        try {
-                            pianobarUI.initialize();
-                            JFrame window = pianobarUI.getWindow();
-                            window.setVisible(true);
-                        } catch (BadPandoraPasswordException e) {
-                            promptForPandoraPassword(pianobarSupport, preferences);
-                        }
-                    } else {
-                        promptForPandoraPassword(pianobarSupport, preferences);
+                boolean enablePianoBar = preferences.isPianoBarEnabled();
+
+                final JMenuBar menubar = new JMenuBar();
+                JMenu menu = new JMenu("Music");
+                final JMenuItem pandoraMenuItem = new JMenuItem("Pandora");
+                menu.add(pandoraMenuItem);
+                pandoraMenuItem.setEnabled(enablePianoBar);
+                pandoraMenuItem.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        startupPandora(pandoraMenuItem, pianobarSupport, preferences, menubar);
                     }
+                });
+                menubar.add(menu);
+                macApp.setDefaultMenuBar(menubar);
+
+                if (enablePianoBar && preferences.wasPandoraTheLastStreamerOpen()) {
+                    startupPandora(pandoraMenuItem, pianobarSupport, preferences, menubar);
                 } else {
                     new JFrame().pack();
                 }
@@ -107,8 +115,24 @@ public class Main {
         });
     }
 
-    private static void promptForPandoraPassword(NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences) {
-        PandoraPasswordUI pandoraPasswordUI = new PandoraPasswordUI(pianobarSupport, preferences);
+    private static void startupPandora(final JMenuItem pandoraMenuItem, NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences, final JMenuBar mainMenuBar) {
+        if (NativePianobarSupport.isPianoBarConfigured()) {
+            PianobarUI pianobarUI = new PianobarUI(pianobarSupport, mainMenuBar, pandoraMenuItem, preferences);
+            try {
+                pianobarUI.initialize();
+                JFrame window = pianobarUI.getWindow();
+                pandoraMenuItem.setEnabled(false);
+                window.setVisible(true);
+            } catch (BadPandoraPasswordException e) {
+                promptForPandoraPassword(pianobarSupport, preferences, mainMenuBar, pandoraMenuItem);
+            }
+        } else {
+            promptForPandoraPassword(pianobarSupport, preferences, mainMenuBar, pandoraMenuItem);
+        }
+    }
+
+    private static void promptForPandoraPassword(NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem) {
+        PandoraPasswordUI pandoraPasswordUI = new PandoraPasswordUI(pianobarSupport, preferences, mainMenuBar, pandoraMenuItem);
 
         JFrame window = pandoraPasswordUI.getWindow();
         window.setLocationRelativeTo(null);
