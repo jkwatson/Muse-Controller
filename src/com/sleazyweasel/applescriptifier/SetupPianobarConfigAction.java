@@ -33,6 +33,7 @@ class SetupPianobarConfigAction implements ActionListener {
             parent.dispose();
             PianobarUI pianobarUI = new PianobarUI(pianobarSupport, mainMenuBar, pandoraMenuItem, preferences);
             pianobarUI.initialize();
+            Main.setActiveFrame(pianobarUI);
             pianobarUI.getWindow().setVisible(true);
         } catch (IOException e) {
             e.printStackTrace();
@@ -42,6 +43,7 @@ class SetupPianobarConfigAction implements ActionListener {
 
             JFrame window = pandoraPasswordUI.getWindow();
             window.setLocationRelativeTo(null);
+            Main.setActiveFrame(pandoraPasswordUI);
             window.setVisible(true);
         }
 

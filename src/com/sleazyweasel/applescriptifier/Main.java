@@ -23,6 +23,15 @@ import static com.apple.dnssd.DNSSD.register;
 public class Main {
 
     private static final int PORT = 23233;
+    //this is so hacky, it makes my soul hurt.
+    private static MuseControllerFrame activeFrame;
+
+    public static void setActiveFrame(MuseControllerFrame frame) {
+        if (activeFrame != null && frame != activeFrame) {
+            activeFrame.close();
+        }
+        activeFrame = frame;
+    }
 
     public static void main(String[] args) throws Exception {
         System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -103,16 +112,50 @@ public class Main {
                         startupPandora(pandoraMenuItem, pianobarSupport, preferences, menubar);
                     }
                 });
+
+                final JMenuItem spotifyMenuItem = new JMenuItem("Spotify");
+                menu.add(spotifyMenuItem);
+                final NativeSpotifySupport spotifySupport = new NativeSpotifySupport();
+                spotifyMenuItem.setEnabled(true);
+                spotifyMenuItem.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        startupSpotify(spotifyMenuItem, spotifySupport, preferences, menubar);
+                    }
+                });
+
                 menubar.add(menu);
                 macApp.setDefaultMenuBar(menubar);
 
                 if (enablePianoBar && preferences.wasPandoraTheLastStreamerOpen()) {
                     startupPandora(pandoraMenuItem, pianobarSupport, preferences, menubar);
+                } else if (preferences.isSpotifyEnabled() && preferences.wasSpotifyTheLastStreamerOpen()) {
+                    startupSpotify(spotifyMenuItem, spotifySupport, preferences, menubar);
                 } else {
                     new JFrame().pack();
                 }
             }
         });
+    }
+
+    private static void startupSpotify(JMenuItem spotifyMenuItem, NativeSpotifySupport spotifySupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar) {
+        if (spotifySupport.isSpotifyAuthorized()) {
+            SpotifyUI spotifyUI = new SpotifyUI(spotifySupport, mainMenuBar, spotifyMenuItem, preferences);
+            JFrame window = spotifyUI.getWindow();
+            setActiveFrame(spotifyUI);
+            spotifyMenuItem.setEnabled(false);
+            window.setVisible(true);
+        } else {
+            promptForSpotifyPassword(spotifySupport, preferences, mainMenuBar, spotifyMenuItem);
+        }
+    }
+
+    private static void promptForSpotifyPassword(NativeSpotifySupport spotifySupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem spotifyMenuItem) {
+        SpotifyPasswordUI spotifyPasswordUI = new SpotifyPasswordUI(spotifySupport, preferences, mainMenuBar, spotifyMenuItem);
+        spotifyMenuItem.setEnabled(false);
+        JFrame window = spotifyPasswordUI.getWindow();
+        setActiveFrame(spotifyPasswordUI);
+        window.setLocationRelativeTo(null);
+        window.setVisible(true);
     }
 
     private static void startupPandora(final JMenuItem pandoraMenuItem, NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences, final JMenuBar mainMenuBar) {
@@ -121,6 +164,7 @@ public class Main {
             try {
                 pianobarUI.initialize();
                 JFrame window = pianobarUI.getWindow();
+                setActiveFrame(pianobarUI);
                 pandoraMenuItem.setEnabled(false);
                 window.setVisible(true);
             } catch (BadPandoraPasswordException e) {
@@ -135,6 +179,7 @@ public class Main {
         PandoraPasswordUI pandoraPasswordUI = new PandoraPasswordUI(pianobarSupport, preferences, mainMenuBar, pandoraMenuItem);
 
         JFrame window = pandoraPasswordUI.getWindow();
+        setActiveFrame(pandoraPasswordUI);
         window.setLocationRelativeTo(null);
         window.setVisible(true);
     }

@@ -1,14 +1,14 @@
 package com.sleazyweasel.applescriptifier;
 
-import ch.randelshofer.quaqua.JSheet;
-import ch.randelshofer.quaqua.SheetEvent;
-import ch.randelshofer.quaqua.SheetListener;
 import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
 import layout.TableLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static layout.TableLayoutConstants.FILL;
 import static layout.TableLayoutConstants.PREFERRED;
 
-public class PianobarUI {
+public class PianobarUI implements MuseControllerFrame {
 
     private final AtomicBoolean executionLock = new AtomicBoolean(false);
 
@@ -64,15 +64,6 @@ public class PianobarUI {
 
     private void initWindow() {
         widgets.window = new JFrame("Pandora");
-        widgets.window.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                System.out.println("PianobarUI.windowClosing");
-                pianobarSupport.close();
-                mainMenuBar.remove(widgets.menu);
-                pandoraMenuItem.setEnabled(true);
-            }
-        });
         widgets.window.setContentPane(new JPanel() {
             @Override
             public void paint(Graphics g) {
@@ -351,7 +342,6 @@ public class PianobarUI {
         leftButtonPanel.add(widgets.nextButton, "1,1");
         leftButtonPanel.add(widgets.thumbsUpButton, "2,1");
         leftButtonPanel.add(widgets.thumbsDownButton, "3,1");
-//        leftButtonPanel.add(widgets.killButton, "4, 1");
         leftButtonPanel.add(widgets.volumeDownButton, "5,1");
         leftButtonPanel.add(widgets.volumeUpButton, "6,1");
 
@@ -365,7 +355,6 @@ public class PianobarUI {
         infoPanel.add(widgets.songLabel, "0, 2, 3, 2, L, t");
         infoPanel.add(widgets.albumLabel, "0, 4, 3, 4, L, t");
         infoPanel.add(widgets.timeLabel, "0, 6, L, t");
-//        infoPanel.add(widgets.heartLabel, "0, 9, L, c");
         infoPanel.add(leftButtonPanel, "0, 8,3,8 L, b");
 
         widgets.window.getContentPane().setLayout(new TableLayout(new double[][]{
@@ -387,6 +376,13 @@ public class PianobarUI {
     public void initialize() {
         pianobarSupport.addListener(new PianobarStateChangeListener());
         pianobarSupport.activatePianoBar();
+    }
+
+    public void close() {
+        pianobarSupport.close();
+        mainMenuBar.remove(widgets.menu);
+        pandoraMenuItem.setEnabled(true);
+        widgets.window.dispose();
     }
 
     private static class Widgets {
@@ -488,27 +484,6 @@ public class PianobarUI {
             }
         } else {
             // TODO: error handling
-        }
-    }
-
-    private class ChooseStationAction implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            pianobarSupport.askToChooseStation();
-            PianobarState state = pianobarSupport.getState();
-            java.util.List<StationChoice> stationChoices = state.getStationChoices();
-            JSheet.showInputSheet(widgets.window, "Choose a station", JOptionPane.INFORMATION_MESSAGE, null, stationChoices.toArray(), null, new SheetListener() {
-                public void optionSelected(SheetEvent sheetEvent) {
-                    if (sheetEvent.getInputValue() instanceof StationChoice) {
-                        StationChoice inputValue = (StationChoice) sheetEvent.getInputValue();
-                        pianobarSupport.selectStation(inputValue.getKey());
-                    } else {
-                        pianobarSupport.cancelStationSelection();
-                    }
-
-                    widgets.window.setEnabled(true);
-                }
-            });
-
         }
     }
 

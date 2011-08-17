@@ -395,6 +395,9 @@ public class NativePianobarSupport implements ApplicationSupport {
         File pianobarConfigDirectory = getPianobarConfigDirectory();
         if (!pianobarConfigDirectory.exists()) {
             pianobarConfigDirectory.mkdirs();
+            pianobarConfigDirectory.setReadable(true, true);
+            pianobarConfigDirectory.setWritable(true, true);
+            pianobarConfigDirectory.setExecutable(true, true);
         }
         File configFile = new File(pianobarConfigDirectory, "config");
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(configFile))));
@@ -463,8 +466,7 @@ public class NativePianobarSupport implements ApplicationSupport {
                             inTimeInfo = false;
                             pushTime(timeData.toString());
                             timeData = new StringBuilder(8);
-                        }
-                        else {
+                        } else {
                             timeData.append((char) character);
                         }
                         continue;

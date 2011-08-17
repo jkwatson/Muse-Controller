@@ -1,16 +1,16 @@
 package com.sleazyweasel.applescriptifier.preferences;
 
 
-import com.sleazyweasel.applescriptifier.Application;
-
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 public class MuseControllerPreferences {
-    public static final String PIANOBAR_VETO_KEY = "pianobar.veto";
+    private static final String PIANOBAR_VETO_KEY = "pianobar.veto";
+    private static final String SPOTIFY_ENABLE_KEY = "spotify.enable";
     private static final String MUSECONTROL_ENABLE_KEY = "musecontrol.enable";
     private static final String LAST_STREAMER_KEY = "last.streamer";
     private static final String PANDORA_STREAMER_VALUE = "Pandora";
+    private static final String SPOTIFY_STREAMER_VALUE = "Spotify";
 
     private final Preferences preferences;
 
@@ -20,6 +20,10 @@ public class MuseControllerPreferences {
 
     public boolean isPianoBarEnabled() {
         return !preferences.getBoolean(PIANOBAR_VETO_KEY, false);
+    }
+
+    public boolean isSpotifyEnabled() {
+        return preferences.getBoolean(SPOTIFY_ENABLE_KEY, true);
     }
 
     public void enablePianoBar(boolean enable) {
@@ -44,7 +48,20 @@ public class MuseControllerPreferences {
         return lastStreamer == null || lastStreamer.equals(PANDORA_STREAMER_VALUE);
     }
 
+    public boolean wasSpotifyTheLastStreamerOpen() {
+        String lastStreamer = preferences.get(LAST_STREAMER_KEY, null);
+        return SPOTIFY_STREAMER_VALUE.equals(lastStreamer);
+    }
+
     public void setPandoraAsStreamer() {
         preferences.put(LAST_STREAMER_KEY, PANDORA_STREAMER_VALUE);
+    }
+
+    public void enableSpotify(boolean enable) {
+        preferences.putBoolean(SPOTIFY_ENABLE_KEY, enable);
+    }
+
+    public void setSpotifyAsStreamer() {
+        preferences.put(LAST_STREAMER_KEY, SPOTIFY_STREAMER_VALUE);
     }
 }

@@ -8,20 +8,20 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class PandoraPasswordUI implements MuseControllerFrame {
+public class SpotifyPasswordUI implements MuseControllerFrame {
 
-    private final NativePianobarSupport pianobarSupport;
+    private final NativeSpotifySupport spotifySupport;
     private final MuseControllerPreferences preferences;
 
     private final Widgets widgets = new Widgets();
     private final JMenuBar mainMenuBar;
-    private final JMenuItem pandoraMenuItem;
+    private final JMenuItem spotifyMenuItem;
 
-    public PandoraPasswordUI(NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem) {
-        this.pianobarSupport = pianobarSupport;
+    public SpotifyPasswordUI(NativeSpotifySupport spotifySupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem spotifyMenuItem) {
+        this.spotifySupport = spotifySupport;
         this.preferences = preferences;
         this.mainMenuBar = mainMenuBar;
-        this.pandoraMenuItem = pandoraMenuItem;
+        this.spotifyMenuItem = spotifyMenuItem;
         initUserInterface();
         initLayout();
     }
@@ -36,7 +36,7 @@ public class PandoraPasswordUI implements MuseControllerFrame {
     }
 
     private void initWindow() {
-        widgets.window = new JFrame("Pandora Login");
+        widgets.window = new JFrame("Spotify Login");
         widgets.window.setResizable(false);
     }
 
@@ -49,21 +49,21 @@ public class PandoraPasswordUI implements MuseControllerFrame {
     }
 
     private void initNeverShowAgainCheckbox() {
-        widgets.neverShowAgainCheckbox = new JCheckBox("I don't use Pandora. Don't ask again.");
+        widgets.neverShowAgainCheckbox = new JCheckBox("I don't use Spotify. Don't ask again.");
     }
 
     private void initOkButton() {
         widgets.okButton = new JButton("OK");
-        widgets.okButton.addActionListener(new SetupPianobarConfigAction(widgets.window, pianobarSupport, widgets.usernameField, widgets.passwordField, preferences, mainMenuBar, pandoraMenuItem));
+        widgets.okButton.addActionListener(new SetupSpotifyConfigAction(preferences, widgets.usernameField, widgets.passwordField, spotifySupport, spotifyMenuItem, widgets.window));
     }
 
     private void initCancelButton() {
         widgets.cancelButton = new JButton("Cancel");
         widgets.cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                widgets.window.dispose();
+                close();
                 if (widgets.neverShowAgainCheckbox.isSelected()) {
-                    preferences.enablePianoBar(false);
+                    preferences.enableSpotify(false);
                 }
             }
         });
@@ -94,7 +94,7 @@ public class PandoraPasswordUI implements MuseControllerFrame {
 
     public void close() {
         widgets.window.dispose();
-        pandoraMenuItem.setEnabled(true);
+        spotifyMenuItem.setEnabled(true);
     }
 
     private static class Widgets {
