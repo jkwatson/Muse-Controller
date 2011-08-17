@@ -1,22 +1,18 @@
 tell application id "com.sleazyweasel.MuseController"
 	if it is running then
 		try
-			tell application "URL Access Scripting"
-				download "http://localhost:23233/pianobar/airfoilstatusdata" to "/tmp/mcstatus.txt" replacing yes
-			end tell
-			--delay 1
-			set filedata to readFile("/tmp/mcstatus.txt")
+			do shell script "curl -L http://localhost:23233/pianobar/airfoilstatusdata -o /tmp/mcstatus.txt"
+			set theFileReference to open for access "/tmp/mcstatus.txt"
+			set filedata to read theFileReference
+			close access theFileReference
 			
 			set linedata to every paragraph of filedata
 			set imageurl to item 1 of linedata
-			
-			tell application "URL Access Scripting"
-				download imageurl to "/tmp/imagedata" replacing yes
-			end tell
+			do shell script "curl -L " & imageurl & " -o /tmp/imagedata.jpg"
 			
 			tell application "Image Events"
 				launch
-				set imagedata to open "/tmp/imagedata"
+				set imagedata to open "/tmp/imagedata.jpg"
 				tell imagedata
 					save in ("/tmp/imagedata.tiff") as TIFF
 				end tell
@@ -34,9 +30,3 @@ tell application id "com.sleazyweasel.MuseController"
 	end if
 end tell
 
-on readFile(unixPath)
-	set theFileReference to open for access unixPath
-	set theFileContents to read theFileReference
-	close access theFileReference
-	return theFileContents
-end readFile

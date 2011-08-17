@@ -2,21 +2,15 @@ on remote_stop()
 end remote_stop
 
 on remote_play()
-	tell application "URL Access Scripting"
-		download "http://localhost:23233/pianobar/playpause" to "/tmp/mcstatus.json" replacing yes
-	end tell
+	do shell script "curl -L http://localhost:23233/pianobar/playpause -o /tmp/mcstatus.json"
 end remote_play
 
 on remote_pause()
-	tell application "URL Access Scripting"
-		download "http://localhost:23233/pianobar/playpause" to "/tmp/mcstatus.json" replacing yes
-	end tell
+	do shell script "curl -L http://localhost:23233/pianobar/playpause -o /tmp/mcstatus.json"
 end remote_pause
 
 on remote_next_item()
-	tell application "URL Access Scripting"
-		download "http://localhost:23233/pianobar/next" to "/tmp/mcstatus.json" replacing yes
-	end tell
+	do shell script "curl -L http://localhost:23233/pianobar/next -o /tmp/mcstatus.json"
 end remote_next_item
 
 on remote_previous_item()
@@ -32,15 +26,11 @@ on remote_end_seek()
 end remote_end_seek
 
 on remote_volume_up()
-	tell application "URL Access Scripting"
-		download "http://localhost:23233/pianobar/volumeUp" to "/tmp/mcstatus.json" replacing yes
-	end tell
+	do shell script "curl -L http://localhost:23233/pianobar/volumeUp -o /tmp/mcstatus.json"
 end remote_volume_up
 
 on remote_volume_down()
-	tell application "URL Access Scripting"
-		download "http://localhost:23233/pianobar/volumeDown" to "/tmp/mcstatus.json" replacing yes
-	end tell
+	do shell script "curl -L http://localhost:23233/pianobar/volumeDown -o /tmp/mcstatus.json"
 end remote_volume_down
 
 on remote_mute()
