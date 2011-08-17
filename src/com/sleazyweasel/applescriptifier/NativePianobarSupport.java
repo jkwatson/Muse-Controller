@@ -395,9 +395,7 @@ public class NativePianobarSupport implements ApplicationSupport {
         File pianobarConfigDirectory = getPianobarConfigDirectory();
         if (!pianobarConfigDirectory.exists()) {
             pianobarConfigDirectory.mkdirs();
-            pianobarConfigDirectory.setReadable(true, true);
-            pianobarConfigDirectory.setWritable(true, true);
-            pianobarConfigDirectory.setExecutable(true, true);
+            Runtime.getRuntime().exec(new String[]{"chmod", "700", pianobarConfigDirectory.getAbsolutePath()});
         }
         File configFile = new File(pianobarConfigDirectory, "config");
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(configFile))));

@@ -54,7 +54,7 @@ public class SpotifyUI implements MuseControllerFrame {
     }
 
     private void initLayout() {
-        widgets.window.setPreferredSize(new Dimension(400, 600));
+        widgets.window.setPreferredSize(new Dimension(600, 400));
         widgets.window.pack();
         widgets.window.setResizable(false);
     }

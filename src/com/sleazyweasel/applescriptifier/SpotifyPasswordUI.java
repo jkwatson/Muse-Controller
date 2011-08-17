@@ -54,7 +54,7 @@ public class SpotifyPasswordUI implements MuseControllerFrame {
 
     private void initOkButton() {
         widgets.okButton = new JButton("OK");
-        widgets.okButton.addActionListener(new SetupSpotifyConfigAction(preferences, widgets.usernameField, widgets.passwordField, spotifySupport, spotifyMenuItem, widgets.window));
+        widgets.okButton.addActionListener(new SetupSpotifyConfigAction(preferences, widgets.usernameField, widgets.passwordField, spotifySupport, spotifyMenuItem, widgets.window, mainMenuBar));
     }
 
     private void initCancelButton() {

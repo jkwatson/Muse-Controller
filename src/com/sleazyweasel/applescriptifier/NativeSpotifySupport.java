@@ -73,10 +73,8 @@ public class NativeSpotifySupport {
     public void saveSpotifyConfig(String username, char[] password) throws IOException {
         File spotifyConfigDirectory = getSpotifyConfigDirectory();
         if (!spotifyConfigDirectory.exists()) {
-            System.out.println(spotifyConfigDirectory.setReadable(true, true));
-            System.out.println(spotifyConfigDirectory.setWritable(true, true));
-            System.out.println(spotifyConfigDirectory.setExecutable(true, true));
             spotifyConfigDirectory.mkdirs();
+            Runtime.getRuntime().exec(new String[]{"chmod", "700", spotifyConfigDirectory.getAbsolutePath()});
         }
         File configFile = getConfigFile();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(configFile))));
