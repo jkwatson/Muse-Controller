@@ -8,9 +8,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
-import static layout.TableLayoutConstants.*;
+import static layout.TableLayoutConstants.FILL;
+import static layout.TableLayoutConstants.PREFERRED;
 
 public class PreferencesGui {
 
@@ -26,18 +26,19 @@ public class PreferencesGui {
     }
 
     private void initLayout() {
-        double[][] columnsThenRows = {{15, FILL, PREFERRED, PREFERRED, 12}, {15, PREFERRED, PREFERRED, 5, PREFERRED, 15, PREFERRED, 12}};
+        double[][] columnsThenRows = {{15, FILL, PREFERRED, PREFERRED, 12}, {15, PREFERRED, PREFERRED, PREFERRED, 5, PREFERRED, 15, PREFERRED, 12}};
         TableLayout tableLayout = new TableLayout(columnsThenRows);
         Container contentPane = widgets.window.getContentPane();
         contentPane.setLayout(tableLayout);
 
         contentPane.add(widgets.enablePandoraCheckbox, "1, 1");
-        contentPane.add(widgets.enableMuseControlCheckbox, "1, 2");
-        JPanel labelHolder = new JPanel(new TableLayout(new double[][]{{FILL},{FILL}}));
+        contentPane.add(widgets.enableSpotifyCheckbox, "1, 2");
+        contentPane.add(widgets.enableMuseControlCheckbox, "1, 3");
+        JPanel labelHolder = new JPanel(new TableLayout(new double[][]{{FILL}, {FILL}}));
         labelHolder.add(new JLabel("(Application must be restarted for changes to take effect)"), "0,0,c,c");
-        contentPane.add(labelHolder, "1,4,3,4");
-        contentPane.add(widgets.saveButton, "2, 6");
-        contentPane.add(widgets.cancelButton, "3, 6");
+        contentPane.add(labelHolder, "1,5,3,5");
+        contentPane.add(widgets.saveButton, "2, 7");
+        contentPane.add(widgets.cancelButton, "3, 7");
         widgets.window.getRootPane().setDefaultButton(widgets.saveButton);
         widgets.window.pack();
         widgets.cancelButton.requestFocus();
@@ -47,6 +48,7 @@ public class PreferencesGui {
         initWindow();
         initCancelButton();
         initEnablePandoraCheckbox();
+        initEnableSpotifyCheckbox();
         initEnableMuseControlCheckbox();
         initSaveButton();
     }
@@ -70,6 +72,7 @@ public class PreferencesGui {
         widgets.saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 preferences.enablePianoBar(widgets.enablePandoraCheckbox.isSelected());
+                preferences.enableSpotify(widgets.enableSpotifyCheckbox.isSelected());
                 preferences.enableMuseControl(widgets.enableMuseControlCheckbox.isSelected());
                 try {
                     preferences.save();
@@ -85,6 +88,10 @@ public class PreferencesGui {
         widgets.enablePandoraCheckbox = new JCheckBox("Enable Pandora Streaming", preferences.isPianoBarEnabled());
     }
 
+    private void initEnableSpotifyCheckbox() {
+        widgets.enableSpotifyCheckbox = new JCheckBox("Enable Spotify Streaming", preferences.isSpotifyEnabled());
+    }
+
     private void initWindow() {
         widgets.window = new JFrame("Preferences");
     }
@@ -96,6 +103,7 @@ public class PreferencesGui {
     private static class Widgets {
         private JFrame window;
         private JCheckBox enablePandoraCheckbox;
+        private JCheckBox enableSpotifyCheckbox;
         private JCheckBox enableMuseControlCheckbox;
         private JButton saveButton;
         private JButton cancelButton;
