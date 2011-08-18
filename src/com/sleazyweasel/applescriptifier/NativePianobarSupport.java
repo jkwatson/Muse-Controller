@@ -387,10 +387,6 @@ public class NativePianobarSupport implements ApplicationSupport {
         sendKeyStroke('s');
     }
 
-    public void cancelStationSelection() {
-        sendTextCommand("");
-    }
-
     public void savePianobarConfig(String username, char[] password) throws IOException {
         File pianobarConfigDirectory = getPianobarConfigDirectory();
         if (!pianobarConfigDirectory.exists()) {

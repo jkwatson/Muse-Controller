@@ -66,12 +66,11 @@ public class Main {
             }
         });
 
-        Server server = new Server(PORT);
+        final Server server = new Server(PORT);
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
         server.setHandler(context);
-
 
         AirfoilServlet airfoilServlet = new AirfoilServlet(pianobarSupport);
         context.addServlet(new ServletHolder(airfoilServlet), "/airfoil/*");
@@ -82,7 +81,16 @@ public class Main {
         context.addServlet(new ServletHolder(new SpotifyServlet()), "/spotify/*");
         context.addServlet(new ServletHolder(new ControlServlet()), "/control/*");
 
-        server.start();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                try {
+                    server.start();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        new Thread(runnable).start();
     }
 
     private static void startupGui(final NativePianobarSupport pianobarSupport, final MuseControllerPreferences preferences) {

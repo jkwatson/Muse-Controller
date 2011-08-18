@@ -3,12 +3,16 @@ package com.sleazyweasel.applescriptifier;
 import de.felixbruns.jotify.JotifyPool;
 import de.felixbruns.jotify.exceptions.AuthenticationException;
 import de.felixbruns.jotify.exceptions.ConnectionException;
+import de.felixbruns.jotify.media.Playlist;
+import de.felixbruns.jotify.media.PlaylistContainer;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 public class NativeSpotifySupport {
 
-    private static final String ALIAS = "com.sleazyweasel.spotify";
     private JotifyPool jotifyPool;
 
     private synchronized JotifyPool getJotifyPool() {
@@ -94,5 +98,19 @@ public class NativeSpotifySupport {
         return new File(userHome + "/.config/spotify");
     }
 
+    public List<Playlist> getPlaylists() {
+        try {
+            PlaylistContainer playlistContainer = getJotifyPool().playlistContainer();
+            List<Playlist> playlists = playlistContainer.getPlaylists();
+            List<Playlist> results = new ArrayList<Playlist>(playlists.size());
+            for (Playlist playlist : playlists) {
+                results.add(getJotifyPool().playlist(playlist.getId()));
+            }
+            return results;
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
 
 }

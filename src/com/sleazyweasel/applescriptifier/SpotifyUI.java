@@ -1,9 +1,13 @@
 package com.sleazyweasel.applescriptifier;
 
 import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
+import de.felixbruns.jotify.media.Playlist;
+import layout.TableLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SpotifyUI implements MuseControllerFrame {
@@ -32,7 +36,34 @@ public class SpotifyUI implements MuseControllerFrame {
 
     private void initWidgetsAndModels() {
         initMenuBar();
+        initPlaylistComboBox();
         initWindow();
+    }
+
+    private void initPlaylistComboBox() {
+        models.playlistComboBoxModel = new PlaylistComboBoxModel(spotifySupport);
+        widgets.playlistComboBox = new JComboBox(models.playlistComboBoxModel);
+        widgets.playlistComboBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (acquireLock()) {
+                    releaseLock();
+                }
+            }
+        });
+        widgets.playlistComboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value != null) {
+                    Playlist playlist = (Playlist) value;
+                    setText(playlist.getName());
+                } else {
+                    setText("Choose a playlist");
+                }
+                return component;
+            }
+        });
+
     }
 
     private void initWindow() {
@@ -49,12 +80,14 @@ public class SpotifyUI implements MuseControllerFrame {
     private void initMenuBar() {
     }
 
-    private ImageIcon getIcon(String name) {
-        return new ImageIcon(getClass().getClassLoader().getResource(name));
-    }
-
     private void initLayout() {
-        widgets.window.setPreferredSize(new Dimension(600, 400));
+        widgets.window.getContentPane().setLayout(new TableLayout(new double[][]{
+                {15, 130, 15, 300, 15},
+                {15, 30, 15, 130, 15}}
+
+        ));
+        widgets.window.getContentPane().add(widgets.playlistComboBox, "1, 1, 3, 1, L");
+
         widgets.window.pack();
         widgets.window.setResizable(false);
     }
@@ -72,9 +105,11 @@ public class SpotifyUI implements MuseControllerFrame {
 
     private static class Widgets {
         private JFrame window;
+        private JComboBox playlistComboBox;
     }
 
     private static class Models {
+        private PlaylistComboBoxModel playlistComboBoxModel;
     }
 
     private boolean acquireLock() {
