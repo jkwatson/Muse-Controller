@@ -11,7 +11,7 @@ public class PlaylistComboBoxModel extends DefaultComboBoxModel {
     private final NativeSpotifySupport spotifySupport;
 
     public PlaylistComboBoxModel(NativeSpotifySupport spotifySupport) {
-        super(new Vector<Playlist>(spotifySupport.getPlaylists()));
+        super(new Vector<Playlist>());
         this.spotifySupport = spotifySupport;
         setSelectedItem(null);
     }

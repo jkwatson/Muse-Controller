@@ -32,6 +32,7 @@
         <exclude name="**/.hg/**"/>
         <exclude name="**/*.lib/**"/>
         <exclude name="**/*~/**"/>
+        <exclude name="**/*.scala/**"/>
     </patternset>
     <patternset id="library.patterns">
         <include name="*.zip"/>

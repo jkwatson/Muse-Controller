@@ -16,12 +16,14 @@ public class SpotifyPasswordUI implements MuseControllerFrame {
     private final Widgets widgets = new Widgets();
     private final JMenuBar mainMenuBar;
     private final JMenuItem spotifyMenuItem;
+    private final Main main;
 
-    public SpotifyPasswordUI(NativeSpotifySupport spotifySupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem spotifyMenuItem) {
+    public SpotifyPasswordUI(NativeSpotifySupport spotifySupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem spotifyMenuItem, Main main) {
         this.spotifySupport = spotifySupport;
         this.preferences = preferences;
         this.mainMenuBar = mainMenuBar;
         this.spotifyMenuItem = spotifyMenuItem;
+        this.main = main;
         initUserInterface();
         initLayout();
     }
@@ -54,7 +56,7 @@ public class SpotifyPasswordUI implements MuseControllerFrame {
 
     private void initOkButton() {
         widgets.okButton = new JButton("OK");
-        widgets.okButton.addActionListener(new SetupSpotifyConfigAction(preferences, widgets.usernameField, widgets.passwordField, spotifySupport, spotifyMenuItem, widgets.window, mainMenuBar));
+        widgets.okButton.addActionListener(new SetupSpotifyConfigAction(preferences, widgets.usernameField, widgets.passwordField, spotifySupport, spotifyMenuItem, widgets.window, mainMenuBar, main));
     }
 
     private void initCancelButton() {

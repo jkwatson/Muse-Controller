@@ -20,14 +20,14 @@
 
     <path id="applescriptifier.module.production.classpath">
         <path refid="${module.jdk.classpath.applescriptifier}"/>
-        <pathelement location="${basedir}/../../../../System/Library/Java/Extensions/dns_sd.jar"/>
+        <pathelement location="/System/Library/Java/Extensions/dns_sd.jar"/>
         <path refid="library.aslib.classpath"/>
         <pathelement location="${basedir}/resources"/>
     </path>
 
     <path id="applescriptifier.runtime.production.module.classpath">
         <pathelement location="${applescriptifier.output.dir}"/>
-        <pathelement location="${basedir}/../../../../System/Library/Java/Extensions/dns_sd.jar"/>
+        <pathelement location="/System/Library/Java/Extensions/dns_sd.jar"/>
         <path refid="library.aslib.classpath"/>
         <pathelement location="${basedir}/resources"/>
     </path>
@@ -35,7 +35,7 @@
     <path id="applescriptifier.module.classpath">
         <path refid="${module.jdk.classpath.applescriptifier}"/>
         <pathelement location="${applescriptifier.output.dir}"/>
-        <pathelement location="${basedir}/../../../../System/Library/Java/Extensions/dns_sd.jar"/>
+        <pathelement location="/System/Library/Java/Extensions/dns_sd.jar"/>
         <path refid="library.aslib.classpath"/>
         <pathelement location="${basedir}/resources"/>
     </path>
@@ -43,7 +43,7 @@
     <path id="applescriptifier.runtime.module.classpath">
         <pathelement location="${applescriptifier.testoutput.dir}"/>
         <pathelement location="${applescriptifier.output.dir}"/>
-        <pathelement location="${basedir}/../../../../System/Library/Java/Extensions/dns_sd.jar"/>
+        <pathelement location="/System/Library/Java/Extensions/dns_sd.jar"/>
         <path refid="library.aslib.classpath"/>
         <pathelement location="${basedir}/resources"/>
     </path>
@@ -63,10 +63,26 @@
         </dirset>
     </path>
 
-
     <target name="compile.module.applescriptifier"
-            depends="compile.module.applescriptifier.production,compile.module.applescriptifier.tests"
+            depends="compile.module.applescriptifier.production,
+                    compile.module.applescriptifier.production.scala,
+                    compile.module.applescriptifier.tests"
             description="Compile module applescriptifier"/>
+
+
+    <property name="scala.home" value="lib/scala"/>
+    <taskdef resource="scala/tools/ant/antlib.xml">
+        <classpath>
+            <pathelement location="${scala.home}/scala-compiler.jar"/>
+            <pathelement location="lib/scala-library.jar"/>
+        </classpath>
+    </taskdef>
+
+    <target name="compile.module.applescriptifier.production.scala">
+        <scalac srcref="applescriptifier.module.sourcepath"
+                destdir="${applescriptifier.output.dir}"
+                classpathref="applescriptifier.module.production.classpath"/>
+    </target>
 
     <target name="compile.module.applescriptifier.production"
             description="Compile module applescriptifier; production classes">
@@ -99,7 +115,8 @@
     </target>
 
 
-    <target name="jar" depends="compile.module.applescriptifier.production">
+    <target name="jar"
+            depends="compile.module.applescriptifier.production, compile.module.applescriptifier.production.scala">
         <jar basedir="${applescriptifier.output.dir}" jarfile="applescriptifier.jar">
             <fileset dir="resources"/>
             <fileset dir="icons"/>
@@ -112,7 +129,7 @@
         <mkdir dir="release"/>
         <jarbundler dir="release"
                     name="Muse Controller"
-                    mainclass="com.sleazyweasel.applescriptifier.Main"
+                    mainclass="com.sleazyweasel.applescriptifier.ScalaMain"
                     icon="icons/AppIcon.icns"
                     bundleid="com.sleazyweasel.MuseController"
                     build="${BUILD_NUMBER}"
@@ -131,7 +148,8 @@
               todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
         <copy file="native/${app.name}.app/Contents/Resources/Java/libfaad.2.dylib"
               todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
-        <copy file="native/${app.name}.app/Contents/Resources/Java/libmacosx.so" todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
+        <copy file="native/${app.name}.app/Contents/Resources/Java/libmacosx.so"
+              todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
         <copy file="native/${app.name}.app/native/pianobar" todir="${macosx.app}/${app.name}.app/native/"/>
         <copy file="native/Muse Controller.app/native/echo.pl" todir="${macosx.app}/${app.name}.app/native/"/>
         <chmod file="${macosx.app}/${app.name}.app/native/pianobar" perm="ugo+rx"/>

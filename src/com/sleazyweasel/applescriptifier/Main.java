@@ -1,12 +1,12 @@
 package com.sleazyweasel.applescriptifier;
 
+import com.apple.dnssd.DNSSDException;
 import com.apple.dnssd.DNSSDRegistration;
 import com.apple.dnssd.DNSSDService;
 import com.apple.dnssd.RegisterListener;
 import com.apple.eawt.AppEvent;
 import com.apple.eawt.PreferencesHandler;
 import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
-import com.sleazyweasel.sparkle.SparkleActivator;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -15,54 +15,30 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
-import java.util.Map;
-import java.util.prefs.Preferences;
+import java.net.UnknownHostException;
 
 import static com.apple.dnssd.DNSSD.register;
 
 public class Main {
 
     private static final int PORT = 23233;
-    //this is so hacky, it makes my soul hurt.
-    private static MuseControllerFrame activeFrame;
 
-    public static void setActiveFrame(MuseControllerFrame frame) {
+    private MuseControllerFrame activeFrame;
+
+    public void setActiveFrame(MuseControllerFrame frame) {
         if (activeFrame != null && frame != activeFrame) {
             activeFrame.close();
         }
         activeFrame = frame;
     }
 
-    public static void main(String[] args) throws Exception {
-        System.setProperty("apple.laf.useScreenMenuBar", "true");
-        Map<String, String> environment = System.getenv();
-        System.out.println("environment = " + environment);
-
-        final MuseControllerPreferences preferences = new MuseControllerPreferences(Preferences.userNodeForPackage(Main.class));
-        final NativePianobarSupport pianobarSupport = new NativePianobarSupport();
-
-        if (preferences.isMuseControlEnabled()) {
-            startupWebServer(pianobarSupport);
-        }
-        addUncaughtExceptionHandler();
-
-        startupGui(pianobarSupport, preferences);
-
-        try {
-            new SparkleActivator().start();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private static void startupWebServer(NativePianobarSupport pianobarSupport) throws Exception {
+    public void startupWebServer(NativePianobarSupport pianobarSupport) throws UnknownHostException, DNSSDException {
         register(0, 0, InetAddress.getLocalHost().getHostName(), "_asrunner._udp", "local.", null, PORT, null, new RegisterListener() {
             public void serviceRegistered(DNSSDRegistration dnssdRegistration, int port, String s, String s1, String s2) {
             }
 
             public void operationFailed(DNSSDService dnssdService, int i) {
-                System.exit(-3876);
+                throw new RuntimeException("Failed to register Muse Controller service with local DNS.");
             }
         });
 
@@ -93,7 +69,8 @@ public class Main {
         new Thread(runnable).start();
     }
 
-    private static void startupGui(final NativePianobarSupport pianobarSupport, final MuseControllerPreferences preferences) {
+    public void startupGui(final NativePianobarSupport pianobarSupport, final MuseControllerPreferences preferences) {
+        final NativeSpotifySupport spotifySupport = new NativeSpotifySupportImpl();
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -123,7 +100,6 @@ public class Main {
 
                 final JMenuItem spotifyMenuItem = new JMenuItem("Spotify");
                 menu.add(spotifyMenuItem);
-                final NativeSpotifySupport spotifySupport = new NativeSpotifySupport();
                 spotifyMenuItem.setEnabled(true);
                 spotifyMenuItem.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -145,8 +121,9 @@ public class Main {
         });
     }
 
-    private static void startupSpotify(JMenuItem spotifyMenuItem, NativeSpotifySupport spotifySupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar) {
+    private void startupSpotify(JMenuItem spotifyMenuItem, NativeSpotifySupport spotifySupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar) {
         if (spotifySupport.isSpotifyAuthorized()) {
+            setActiveFrame(null);
             SpotifyUI spotifyUI = new SpotifyUI(spotifySupport, mainMenuBar, spotifyMenuItem, preferences);
             JFrame window = spotifyUI.getWindow();
             setActiveFrame(spotifyUI);
@@ -157,8 +134,8 @@ public class Main {
         }
     }
 
-    private static void promptForSpotifyPassword(NativeSpotifySupport spotifySupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem spotifyMenuItem) {
-        SpotifyPasswordUI spotifyPasswordUI = new SpotifyPasswordUI(spotifySupport, preferences, mainMenuBar, spotifyMenuItem);
+    private void promptForSpotifyPassword(NativeSpotifySupport spotifySupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem spotifyMenuItem) {
+        SpotifyPasswordUI spotifyPasswordUI = new SpotifyPasswordUI(spotifySupport, preferences, mainMenuBar, spotifyMenuItem, this);
         spotifyMenuItem.setEnabled(false);
         JFrame window = spotifyPasswordUI.getWindow();
         setActiveFrame(spotifyPasswordUI);
@@ -166,7 +143,8 @@ public class Main {
         window.setVisible(true);
     }
 
-    private static void startupPandora(final JMenuItem pandoraMenuItem, NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences, final JMenuBar mainMenuBar) {
+    private void startupPandora(final JMenuItem pandoraMenuItem, NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences, final JMenuBar mainMenuBar) {
+        setActiveFrame(null);
         if (NativePianobarSupport.isPianoBarConfigured()) {
             PianobarUI pianobarUI = new PianobarUI(pianobarSupport, mainMenuBar, pandoraMenuItem, preferences);
             try {
@@ -183,22 +161,13 @@ public class Main {
         }
     }
 
-    private static void promptForPandoraPassword(NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem) {
-        PandoraPasswordUI pandoraPasswordUI = new PandoraPasswordUI(pianobarSupport, preferences, mainMenuBar, pandoraMenuItem);
+    private void promptForPandoraPassword(NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem) {
+        PandoraPasswordUI pandoraPasswordUI = new PandoraPasswordUI(pianobarSupport, preferences, mainMenuBar, pandoraMenuItem, this);
 
         JFrame window = pandoraPasswordUI.getWindow();
         setActiveFrame(pandoraPasswordUI);
         window.setLocationRelativeTo(null);
         window.setVisible(true);
-    }
-
-    private static void addUncaughtExceptionHandler() {
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            public void uncaughtException(Thread t, Throwable e) {
-                JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
-            }
-        });
     }
 
 }

@@ -5,6 +5,7 @@
     <buildFile url="file://$PROJECT_DIR$/applescriptifier.xml">
       <additionalClassPath>
         <entry path="file://$PROJECT_DIR$/lib/jarbundler-2.2.0.jar" />
+        <entry path="file://$PROJECT_DIR$/lib/scala-library.jar" />
       </additionalClassPath>
       <antReference projectDefault="true" />
       <customJdkName value="" />

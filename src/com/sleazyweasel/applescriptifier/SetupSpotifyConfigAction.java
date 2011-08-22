@@ -14,8 +14,9 @@ public class SetupSpotifyConfigAction implements ActionListener {
     private final JMenuItem spotifyMenuItem;
     private final JFrame parent;
     private final JMenuBar mainMenuBar;
+    private final Main main;
 
-    public SetupSpotifyConfigAction(MuseControllerPreferences preferences, JTextField usernameField, JPasswordField passwordField, NativeSpotifySupport spotifySupport, JMenuItem spotifyMenuItem, JFrame window, JMenuBar mainMenuBar) {
+    public SetupSpotifyConfigAction(MuseControllerPreferences preferences, JTextField usernameField, JPasswordField passwordField, NativeSpotifySupport spotifySupport, JMenuItem spotifyMenuItem, JFrame window, JMenuBar mainMenuBar, Main main) {
         this.preferences = preferences;
         this.usernameField = usernameField;
         this.passwordField = passwordField;
@@ -23,6 +24,7 @@ public class SetupSpotifyConfigAction implements ActionListener {
         this.spotifyMenuItem = spotifyMenuItem;
         this.parent = window;
         this.mainMenuBar = mainMenuBar;
+        this.main = main;
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -32,7 +34,7 @@ public class SetupSpotifyConfigAction implements ActionListener {
         } else {
             parent.dispose();
             SpotifyUI spotifyUI = new SpotifyUI(spotifySupport, mainMenuBar, spotifyMenuItem, preferences);
-            Main.setActiveFrame(spotifyUI);
+            main.setActiveFrame(spotifyUI);
             spotifyUI.getWindow().setVisible(true);
         }
     }

@@ -63,7 +63,7 @@ public class NativePianobarSupportTest {
                 "stationName=foober",
                 "station0=Afrobeat Radio",
                 "station1=Antonio Vivaldi Radio",
-                "station2=BjÌürk Radio",
+                "station2=BjÃ¸rk Radio",
                 "station3=Burning Spear Radio",
                 "station4=CrÌ´cker Radio",
                 "station5=Delta Blues",

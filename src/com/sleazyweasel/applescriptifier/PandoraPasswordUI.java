@@ -16,12 +16,14 @@ public class PandoraPasswordUI implements MuseControllerFrame {
     private final Widgets widgets = new Widgets();
     private final JMenuBar mainMenuBar;
     private final JMenuItem pandoraMenuItem;
+    private final Main main;
 
-    public PandoraPasswordUI(NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem) {
+    public PandoraPasswordUI(NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, Main main) {
         this.pianobarSupport = pianobarSupport;
         this.preferences = preferences;
         this.mainMenuBar = mainMenuBar;
         this.pandoraMenuItem = pandoraMenuItem;
+        this.main = main;
         initUserInterface();
         initLayout();
     }
@@ -54,7 +56,7 @@ public class PandoraPasswordUI implements MuseControllerFrame {
 
     private void initOkButton() {
         widgets.okButton = new JButton("OK");
-        widgets.okButton.addActionListener(new SetupPianobarConfigAction(widgets.window, pianobarSupport, widgets.usernameField, widgets.passwordField, preferences, mainMenuBar, pandoraMenuItem));
+        widgets.okButton.addActionListener(new SetupPianobarConfigAction(widgets.window, pianobarSupport, widgets.usernameField, widgets.passwordField, preferences, mainMenuBar, pandoraMenuItem, main));
     }
 
     private void initCancelButton() {

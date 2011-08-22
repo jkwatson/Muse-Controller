@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SpotifyUI implements MuseControllerFrame {
@@ -42,6 +44,11 @@ public class SpotifyUI implements MuseControllerFrame {
 
     private void initPlaylistComboBox() {
         models.playlistComboBoxModel = new PlaylistComboBoxModel(spotifySupport);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                models.playlistComboBoxModel.refreshContents();
+            }
+        });
         widgets.playlistComboBox = new JComboBox(models.playlistComboBoxModel);
         widgets.playlistComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -75,6 +82,14 @@ public class SpotifyUI implements MuseControllerFrame {
 //                ((TableLayout) getLayout()).drawGrid(this, g);
             }
         });
+        widgets.window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        widgets.window.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                spotifySupport.close();
+                spotifyMenuItem.setEnabled(true);
+            }
+        });
     }
 
     private void initMenuBar() {
@@ -97,7 +112,7 @@ public class SpotifyUI implements MuseControllerFrame {
     }
 
     public void close() {
-//        spotifySupport.close();
+        spotifySupport.close();
 //        mainMenuBar.remove(widgets.menu);
         spotifyMenuItem.setEnabled(true);
         widgets.window.dispose();
