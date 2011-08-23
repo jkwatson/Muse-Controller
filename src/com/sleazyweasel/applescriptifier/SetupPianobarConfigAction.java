@@ -16,9 +16,9 @@ class SetupPianobarConfigAction implements ActionListener {
     private final MuseControllerPreferences preferences;
     private final JMenuBar mainMenuBar;
     private final JMenuItem pandoraMenuItem;
-    private final Main main;
+    private final MuseControllerMain main;
 
-    public SetupPianobarConfigAction(JFrame parent, NativePianobarSupport pianobarSupport, JTextField usernameField, JPasswordField passwordField, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, Main main) {
+    public SetupPianobarConfigAction(JFrame parent, NativePianobarSupport pianobarSupport, JTextField usernameField, JPasswordField passwordField, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, MuseControllerMain main) {
         this.parent = parent;
         this.pianobarSupport = pianobarSupport;
         this.usernameField = usernameField;

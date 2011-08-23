@@ -16,9 +16,9 @@ public class PandoraPasswordUI implements MuseControllerFrame {
     private final Widgets widgets = new Widgets();
     private final JMenuBar mainMenuBar;
     private final JMenuItem pandoraMenuItem;
-    private final Main main;
+    private final MuseControllerMain main;
 
-    public PandoraPasswordUI(NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, Main main) {
+    public PandoraPasswordUI(NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, MuseControllerMain main) {
         this.pianobarSupport = pianobarSupport;
         this.preferences = preferences;
         this.mainMenuBar = mainMenuBar;

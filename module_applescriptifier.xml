@@ -64,8 +64,7 @@
     </path>
 
     <target name="compile.module.applescriptifier"
-            depends="compile.module.applescriptifier.production,
-                    compile.module.applescriptifier.production.scala,
+            depends="compile.module.applescriptifier.production.scala,
                     compile.module.applescriptifier.tests"
             description="Compile module applescriptifier"/>
 
@@ -78,7 +77,8 @@
         </classpath>
     </taskdef>
 
-    <target name="compile.module.applescriptifier.production.scala">
+    <target name="compile.module.applescriptifier.production.scala"
+            depends="compile.module.applescriptifier.production">
         <scalac srcref="applescriptifier.module.sourcepath"
                 destdir="${applescriptifier.output.dir}"
                 classpathref="applescriptifier.module.production.classpath"/>
@@ -116,7 +116,7 @@
 
 
     <target name="jar"
-            depends="compile.module.applescriptifier.production, compile.module.applescriptifier.production.scala">
+            depends="compile.module.applescriptifier">
         <jar basedir="${applescriptifier.output.dir}" jarfile="applescriptifier.jar">
             <fileset dir="resources"/>
             <fileset dir="icons"/>

@@ -14,9 +14,9 @@ public class SetupSpotifyConfigAction implements ActionListener {
     private final JMenuItem spotifyMenuItem;
     private final JFrame parent;
     private final JMenuBar mainMenuBar;
-    private final Main main;
+    private final MuseControllerMain main;
 
-    public SetupSpotifyConfigAction(MuseControllerPreferences preferences, JTextField usernameField, JPasswordField passwordField, NativeSpotifySupport spotifySupport, JMenuItem spotifyMenuItem, JFrame window, JMenuBar mainMenuBar, Main main) {
+    public SetupSpotifyConfigAction(MuseControllerPreferences preferences, JTextField usernameField, JPasswordField passwordField, NativeSpotifySupport spotifySupport, JMenuItem spotifyMenuItem, JFrame window, JMenuBar mainMenuBar, MuseControllerMain main) {
         this.preferences = preferences;
         this.usernameField = usernameField;
         this.passwordField = passwordField;

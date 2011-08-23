@@ -22,7 +22,6 @@ public class NativePianobarServlet extends HttpServlet {
     }
 
     public void init() {
-        System.out.println("NativePianobarServlet.init");
         pianobarSupport.addListener(new NativePianobarSupport.PianobarStateChangeListener() {
             public void stateChanged(NativePianobarSupport pianobarSupport, PianobarState state) {
                 pianobarState.set(state);

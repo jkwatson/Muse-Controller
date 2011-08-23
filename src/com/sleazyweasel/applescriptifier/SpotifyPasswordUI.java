@@ -16,9 +16,9 @@ public class SpotifyPasswordUI implements MuseControllerFrame {
     private final Widgets widgets = new Widgets();
     private final JMenuBar mainMenuBar;
     private final JMenuItem spotifyMenuItem;
-    private final Main main;
+    private final MuseControllerMain main;
 
-    public SpotifyPasswordUI(NativeSpotifySupport spotifySupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem spotifyMenuItem, Main main) {
+    public SpotifyPasswordUI(NativeSpotifySupport spotifySupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem spotifyMenuItem, MuseControllerMain main) {
         this.spotifySupport = spotifySupport;
         this.preferences = preferences;
         this.mainMenuBar = mainMenuBar;
