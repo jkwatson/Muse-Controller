@@ -2,25 +2,27 @@ package com.sleazyweasel.applescriptifier;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Matchers;
 
-import javax.script.ScriptException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SpotifySupportTest {
 
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testGetStatus_notRunning() throws Exception {
         AppleScriptTemplate appleScriptTemplate = mock(AppleScriptTemplate.class);
         when(appleScriptTemplate.isRunning(Application.SPOTIFY)).thenReturn(false);
 
         SpotifySupport testClass = new SpotifySupport(appleScriptTemplate);
-        Map<String,Object> status = testClass.getStatus();
+        Map<String, Object> status = testClass.getStatus();
         assertNotNull(status);
         assertEquals("Spotify", status.get("app"));
 
@@ -30,6 +32,7 @@ public class SpotifySupportTest {
         assertEquals(false, state.get("running"));
     }
 
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testGetStatus_running() throws Exception {
         //setup
@@ -45,7 +48,7 @@ public class SpotifySupportTest {
         SpotifySupport testClass = new SpotifySupport(appleScriptTemplate);
 
         //when
-        Map<String,Object> status = testClass.getStatus();
+        Map<String, Object> status = testClass.getStatus();
 
         //then
         assertNotNull(status);
@@ -63,6 +66,7 @@ public class SpotifySupportTest {
         assertEquals("The Who", state.get("artist"));
     }
 
+    @SuppressWarnings({"unchecked"})
     @Test
     public void testGetStatus_noTrack() throws Exception {
         //setup
@@ -78,7 +82,7 @@ public class SpotifySupportTest {
         SpotifySupport testClass = new SpotifySupport(appleScriptTemplate);
 
         //when
-        Map<String,Object> status = testClass.getStatus();
+        Map<String, Object> status = testClass.getStatus();
 
         //then
         assertNotNull(status);
