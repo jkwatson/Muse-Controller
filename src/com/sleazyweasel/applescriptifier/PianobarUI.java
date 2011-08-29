@@ -233,8 +233,7 @@ public class PianobarUI implements MuseControllerFrame {
     }
 
     private void initPlayPauseButton() {
-        String name = "playpause.png";
-        widgets.playPauseButton = new JButton(getIcon(name));
+        widgets.playPauseButton = new JButton(getIcon("playpause.png"));
         setButtonDefaults(widgets.playPauseButton);
         widgets.playPauseButton.setEnabled(false);
         widgets.playPauseButton.addActionListener(new ActionListener() {

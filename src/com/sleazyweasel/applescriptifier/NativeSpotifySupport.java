@@ -1,6 +1,7 @@
 package com.sleazyweasel.applescriptifier;
 
 import de.felixbruns.jotify.media.Playlist;
+import nl.pascaldevink.jotify.gui.listeners.PlayerListener;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,4 +18,12 @@ public interface NativeSpotifySupport {
     List<Playlist> getPlaylists();
 
     void close();
+
+    void setListener(PlayerListener playbackListener);
+
+    void play(Playlist playlist);
+
+    void play();
+
+    void pause();
 }

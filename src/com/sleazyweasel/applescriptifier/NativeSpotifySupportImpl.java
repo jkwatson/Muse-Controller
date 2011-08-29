@@ -5,6 +5,10 @@ import de.felixbruns.jotify.exceptions.AuthenticationException;
 import de.felixbruns.jotify.exceptions.ConnectionException;
 import de.felixbruns.jotify.media.Playlist;
 import de.felixbruns.jotify.media.PlaylistContainer;
+import de.felixbruns.jotify.media.Track;
+import nl.pascaldevink.jotify.gui.JotifyPlayer;
+import nl.pascaldevink.jotify.gui.listeners.JotifyBroadcast;
+import nl.pascaldevink.jotify.gui.listeners.PlayerListener;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -14,6 +18,19 @@ import java.util.concurrent.TimeoutException;
 public class NativeSpotifySupportImpl implements NativeSpotifySupport {
 
     private JotifyPool jotifyPool;
+    private JotifyPlayer jotifyPlayer;
+
+    private synchronized JotifyPlayer getJotifyPlayer() {
+        if (jotifyPlayer == null) {
+            try {
+                jotifyPlayer = new JotifyPlayer(getJotifyPool());
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+        return jotifyPlayer;
+    }
 
     private synchronized JotifyPool getJotifyPool() {
         if (jotifyPool == null) {
@@ -98,6 +115,7 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
         return new File(userHome + "/.config/spotify");
     }
 
+    @Override
     public List<Playlist> getPlaylists() {
         try {
             PlaylistContainer playlistContainer = getJotifyPool().playlistContainer();
@@ -113,6 +131,7 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
         }
     }
 
+    @Override
     public void close() {
         try {
             getJotifyPool().close();
@@ -121,5 +140,39 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
         } finally {
             jotifyPool = null;
         }
+    }
+
+    @Override
+    public void setListener(PlayerListener playbackListener) {
+        if (playbackListener != null) {
+            JotifyBroadcast.getInstance().addPlayerListener(playbackListener);
+        } else {
+            //todo add code to remove a player listener
+        }
+    }
+
+    @Override
+    public void play(Playlist playlist) {
+        JotifyPlayer player = getJotifyPlayer();
+        List<Track> tracks = playlist.getTracks();
+        List<Track> browsedTracks;
+        try {
+            browsedTracks = getJotifyPool().browse(tracks);
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        player.controlSelect(browsedTracks);
+        player.controlPlay();
+    }
+
+    @Override
+    public void play() {
+        getJotifyPlayer().controlPlay();
+    }
+
+    @Override
+    public void pause() {
+        getJotifyPlayer().controlPause();
     }
 }
