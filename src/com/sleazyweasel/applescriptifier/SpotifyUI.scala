@@ -2,19 +2,18 @@ package com.sleazyweasel.applescriptifier
 
 import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences
 import layout.TableLayout
-import java.awt.event.ActionEvent
-import java.awt.event.ActionListener
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
 import java.util.concurrent.atomic.AtomicBoolean
 import de.felixbruns.jotify.media.{Track, Playlist}
 import javax.swing._
 import layout.TableLayoutConstants._
-import swing.{Button, Label, Swing}
 import swing.event.ButtonClicked
-import java.awt.{Font, Color, Graphics, Component}
 import nl.pascaldevink.jotify.gui.listeners.PlayerListener
 import nl.pascaldevink.jotify.gui.listeners.PlayerListener.Status
+import swing.{Alignment, Button, Label, Swing}
+import java.awt.event._
+import java.awt._
+import java.io.IOException
+import java.net.URI
 
 class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spotifyMenuItem: JMenuItem, preferences: MuseControllerPreferences) extends PlayerListener with MuseControllerFrame {
   private val executionLock = new AtomicBoolean(false)
@@ -33,7 +32,12 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     initMenuBar()
     initPlaylistComboBox()
     initTrackNameLabel()
+    initArtistLabel()
+    initAlbumLabel()
+    initInfoLabel()
+    initImageLabel()
     initPlayButton()
+    initNextButton()
     initPauseButton()
     initWindow()
   }
@@ -52,6 +56,16 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     }
   }
 
+  def initNextButton() {
+    val nextButton = new Button
+    nextButton.icon = getIcon("nextsong.png")
+    widgets.nextButton = nextButton
+    widgets.nextButton.enabled = false
+    widgets.nextButton.reactions += {
+      case ButtonClicked(`nextButton`) => spotifySupport nextTrack()
+    }
+  }
+
   def initPauseButton() {
     val pauseButton = new Button
     pauseButton.icon = getIcon("pause.png")
@@ -63,9 +77,62 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
   }
 
   private def initTrackNameLabel() {
-    widgets.trackNameLabel = new Label();
+    widgets.trackNameLabel = new Label("", null, Alignment.Left)
     widgets.trackNameLabel.foreground = new Color(51, 51, 51)
     widgets.trackNameLabel.font = Font.decode("Lucida Grande-Bold-14")
+  }
+
+  private def initArtistLabel() {
+    widgets.artistLabel = new Label("", null, Alignment.Left)
+    widgets.artistLabel.foreground = new Color(102, 102, 102)
+    widgets.artistLabel.font = Font.decode("Lucida Grande-Bold-14")
+  }
+
+  private def initAlbumLabel() {
+    widgets.albumLabel = new Label("", null, Alignment.Left)
+    widgets.albumLabel.foreground = new Color(102, 102, 102)
+    widgets.albumLabel.font = Font.decode("Lucida Grande-Bold-14")
+  }
+
+  private def initImageLabel() {
+    widgets.imageLabel = new Label()
+  }
+
+  private def open(uri: URI) {
+    if (Desktop.isDesktopSupported) {
+      val desktop = Desktop.getDesktop
+      try {
+        desktop.browse(uri)
+      }
+      catch {
+        case e: IOException => {
+          //todo error handling
+        }
+      }
+    }
+    else {
+      //todo error handling
+    }
+  }
+
+  private def initInfoLabel() {
+    widgets.infoLabel = new Label
+    val icon: ImageIcon = getIcon("info.png")
+    widgets.infoLabel.icon = icon
+    widgets.infoLabel.visible = false
+    widgets.infoLabel.peer.addMouseListener(new MouseAdapter {
+      override def mouseClicked(e: MouseEvent) {
+        val detailUrl = widgets.infoLabel.peer.getClientProperty("URL")
+        detailUrl match {
+          case url: String => {
+            if ((url length) > 0) {
+              open(new URI(url))
+            }
+          }
+          case _ => None
+        }
+      }
+    })
   }
 
   private def initPlaylistComboBox() {
@@ -112,6 +179,11 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.window.setContentPane(new JPanel {
       override def paint(g: Graphics) {
         super.paint(g)
+        //        val layout = super.getLayout
+        //        layout match {
+        //          case item: TableLayout => item drawGrid(this, g)
+        //          case _ => None
+        //        }
       }
     })
     widgets.window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE)
@@ -131,24 +203,28 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.window.getContentPane.setLayout(new TableLayout(tableLayoutConfig))
     widgets.window.getContentPane.add(widgets.playlistComboBox, "1, 1, 3, 1, L")
 
-    val leftButtonPanel: JPanel = new JPanel(new TableLayout(Array(Array(PREFERRED, PREFERRED, PREFERRED, PREFERRED, FILL, PREFERRED, PREFERRED), Array(FILL, PREFERRED))))
+    val leftButtonPanel = new JPanel(new TableLayout(Array(Array(PREFERRED, PREFERRED, PREFERRED, PREFERRED, FILL, PREFERRED, PREFERRED), Array(FILL, PREFERRED))))
     leftButtonPanel.add(widgets.playButton.peer, "0,1")
     leftButtonPanel.add(widgets.pauseButton.peer, "1,1")
-    //      leftButtonPanel.add(widgets.nextButton, "2,1")
+    leftButtonPanel.add(widgets.nextButton.peer, "2,1")
     //      leftButtonPanel.add(widgets.thumbsDownButton, "3,1")
     //      leftButtonPanel.add(widgets.volumeDownButton, "5,1")
     //      leftButtonPanel.add(widgets.volumeUpButton, "6,1")
 
     val gap = -3
-    val infoPanel: JPanel = new JPanel(new TableLayout(Array(Array(130, 15, FILL, 30), Array(20, gap, 20, gap, 20, gap, 20, FILL, 40))))
-    //      infoPanel.add(widgets.artistLabel, "0, 0, L, t")
-    //      infoPanel.add(widgets.infoLabel, "3, 0, R, c")
+    val infoPanel = new JPanel(new TableLayout(Array(
+      Array(130, 15, FILL, 30),
+      Array(20, gap, 20, gap, 20, gap, 20, FILL, 40))))
+    infoPanel.add(widgets.artistLabel.peer, "0, 0, 3, 0, L, t")
+    //    infoPanel.add(widgets.infoLabel.peer, "3, 0, R, c")
     infoPanel.add(widgets.trackNameLabel.peer, "0, 2, 3, 2, L, t")
-    //      infoPanel.add(widgets.albumLabel, "0, 4, 3, 4, L, t")
+    infoPanel.add(widgets.albumLabel.peer, "0, 4, 3, 4, L, t")
     //      infoPanel.add(widgets.timeLabel, "0, 6, L, t")
-    infoPanel.add(leftButtonPanel, "0, 8,3,8 L, b")
+    infoPanel.add(leftButtonPanel, "0, 8, 3, 8, L, b")
 
     widgets.window.getContentPane.add(infoPanel, "3, 3")
+    widgets.window.getContentPane.add(widgets.imageLabel.peer, "1, 3, L, c")
+
     widgets.window.pack()
     widgets.window.setResizable(false)
   }
@@ -178,18 +254,28 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
 
   override def playerTrackChanged(track: Track) {
     widgets.trackNameLabel.text = track.getTitle
+    widgets.albumLabel.text = track.getAlbum.getName
+    widgets.artistLabel.text = track.getArtist.getName
+    widgets.infoLabel.peer.putClientProperty("URL", track.getLink.asString())
+    widgets.infoLabel.visible = true
     widgets.playButton.enabled = false;
     widgets.pauseButton.enabled = true;
+    widgets.nextButton.enabled = true;
+    println("album cover: " + track.getAlbum.getCover)
+    println("track cover: " + track.getCover)
+    widgets.imageLabel.icon = new ImageIcon(spotifySupport.image(track.getCover).getScaledInstance(130, 130, Image.SCALE_SMOOTH));
   }
 
   override def playerStatusChanged(status: Status) {
     if (status == Status.PAUSE) {
       widgets.playButton.enabled = true;
       widgets.pauseButton.enabled = false;
+      widgets.nextButton.enabled = true;
     }
     else {
       widgets.playButton.enabled = false;
       widgets.pauseButton.enabled = true;
+      widgets.nextButton.enabled = true;
     }
   }
 
@@ -204,8 +290,13 @@ object SpotifyUI {
     var window: JFrame = null
     var playlistComboBox: JComboBox = null
     var trackNameLabel: Label = null;
+    var artistLabel: Label = null;
+    var albumLabel: Label = null;
     var playButton: Button = null;
+    var nextButton: Button = null;
     var pauseButton: Button = null;
+    var infoLabel: Label = null;
+    var imageLabel: Label = null;
   }
 
   private class Models {

@@ -3,6 +3,7 @@ package com.sleazyweasel.applescriptifier;
 import de.felixbruns.jotify.media.Playlist;
 import nl.pascaldevink.jotify.gui.listeners.PlayerListener;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
@@ -23,7 +24,11 @@ public interface NativeSpotifySupport {
 
     void play(Playlist playlist);
 
+    void nextTrack();
+
     void play();
 
     void pause();
+
+    Image image(String imageCode);
 }

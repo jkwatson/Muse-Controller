@@ -6,10 +6,13 @@ import de.felixbruns.jotify.exceptions.ConnectionException;
 import de.felixbruns.jotify.media.Playlist;
 import de.felixbruns.jotify.media.PlaylistContainer;
 import de.felixbruns.jotify.media.Track;
+import nl.pascaldevink.jotify.gui.JotifyApplication;
 import nl.pascaldevink.jotify.gui.JotifyPlayer;
 import nl.pascaldevink.jotify.gui.listeners.JotifyBroadcast;
 import nl.pascaldevink.jotify.gui.listeners.PlayerListener;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,21 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
 
     private JotifyPool jotifyPool;
     private JotifyPlayer jotifyPlayer;
+
+    public NativeSpotifySupportImpl() {
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                if (jotifyPool != null) {
+                    try {
+                        jotifyPool.close();
+                    } catch (ConnectionException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
 
     private synchronized JotifyPlayer getJotifyPlayer() {
         if (jotifyPlayer == null) {
@@ -117,12 +135,13 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
 
     @Override
     public List<Playlist> getPlaylists() {
+        //todo figure out a way to background this task, so the user can start using the app sooner.
         try {
             PlaylistContainer playlistContainer = getJotifyPool().playlistContainer();
             List<Playlist> playlists = playlistContainer.getPlaylists();
             List<Playlist> results = new ArrayList<Playlist>(playlists.size());
             for (Playlist playlist : playlists) {
-                results.add(getJotifyPool().playlist(playlist.getId()));
+                results.add(getJotifyPool().playlist(playlist.getId(), true));
             }
             return results;
         } catch (TimeoutException e) {
@@ -161,9 +180,21 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
         } catch (TimeoutException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            //todo figure out a better way to do this!
+            this.jotifyPool = null;
+            this.jotifyPlayer = null;
+            throw new RuntimeException(e);
         }
+
         player.controlSelect(browsedTracks);
         player.controlPlay();
+    }
+
+    @Override
+    public void nextTrack() {
+        getJotifyPlayer().controlNext();
     }
 
     @Override
@@ -174,5 +205,14 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
     @Override
     public void pause() {
         getJotifyPlayer().controlPause();
+    }
+
+    @Override
+    public Image image(String imageCode) {
+        try {
+            return getJotifyPool().image(imageCode);
+        } catch (TimeoutException e) {
+            return new ImageIcon(JotifyApplication.class.getResource("images/cover.png")).getImage().getScaledInstance(130, 130, Image.SCALE_SMOOTH);
+        }
     }
 }
