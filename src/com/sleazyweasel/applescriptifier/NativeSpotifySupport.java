@@ -31,4 +31,6 @@ public interface NativeSpotifySupport {
     void pause();
 
     Image image(String imageCode);
+
+    void previousTrack();
 }

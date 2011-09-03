@@ -29,6 +29,7 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
   }
 
   private def initWidgetsAndModels() {
+    initWindow()
     initMenuBar()
     initPlaylistComboBox()
     initTrackNameLabel()
@@ -38,8 +39,8 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     initImageLabel()
     initPlayButton()
     initNextButton()
+    initPreviousButton()
     initPauseButton()
-    initWindow()
   }
 
   private def getIcon(name: String): ImageIcon = {
@@ -63,6 +64,16 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.nextButton.enabled = false
     widgets.nextButton.reactions += {
       case ButtonClicked(`nextButton`) => spotifySupport nextTrack()
+    }
+  }
+
+  def initPreviousButton() {
+    val previousButton = new Button
+    previousButton.icon = getIcon("previoussong.png")
+    widgets.previousButton = previousButton
+    widgets.previousButton.enabled = false
+    widgets.previousButton.reactions += {
+      case ButtonClicked(`previousButton`) => spotifySupport previousTrack()
     }
   }
 
@@ -140,8 +151,14 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
 
     Swing.onEDT({
       if (acquireLock) {
-        models.playlistComboBoxModel.refreshContents()
-        releaseLock();
+        try {
+          widgets.window.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
+          models.playlistComboBoxModel.refreshContents()
+        }
+        finally {
+          widgets.window.setCursor(Cursor.getDefaultCursor)
+          releaseLock();
+        }
       }
     })
 
@@ -149,12 +166,18 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.playlistComboBox.addActionListener(new ActionListener {
       def actionPerformed(e: ActionEvent) {
         if (acquireLock) {
-          val selected: AnyRef = models.playlistComboBoxModel.getSelectedItem
-          selected match {
-            case item: Playlist => spotifySupport play item
-            case _ => None
+          try {
+            widgets.window.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
+            val selected: AnyRef = models.playlistComboBoxModel.getSelectedItem
+            selected match {
+              case item: Playlist => spotifySupport play item
+              case _ => None
+            }
           }
-          releaseLock()
+          finally {
+            widgets.window.setCursor(Cursor.getDefaultCursor)
+            releaseLock()
+          }
         }
       }
     })
@@ -204,10 +227,10 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.window.getContentPane.add(widgets.playlistComboBox, "1, 1, 3, 1, L")
 
     val leftButtonPanel = new JPanel(new TableLayout(Array(Array(PREFERRED, PREFERRED, PREFERRED, PREFERRED, FILL, PREFERRED, PREFERRED), Array(FILL, PREFERRED))))
-    leftButtonPanel.add(widgets.playButton.peer, "0,1")
-    leftButtonPanel.add(widgets.pauseButton.peer, "1,1")
-    leftButtonPanel.add(widgets.nextButton.peer, "2,1")
-    //      leftButtonPanel.add(widgets.thumbsDownButton, "3,1")
+    leftButtonPanel.add(widgets.previousButton.peer, "0,1")
+    leftButtonPanel.add(widgets.playButton.peer, "1,1")
+    leftButtonPanel.add(widgets.pauseButton.peer, "2,1")
+    leftButtonPanel.add(widgets.nextButton.peer, "3,1")
     //      leftButtonPanel.add(widgets.volumeDownButton, "5,1")
     //      leftButtonPanel.add(widgets.volumeUpButton, "6,1")
 
@@ -261,6 +284,7 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.playButton.enabled = false;
     widgets.pauseButton.enabled = true;
     widgets.nextButton.enabled = true;
+    widgets.previousButton.enabled = true;
     println("album cover: " + track.getAlbum.getCover)
     println("track cover: " + track.getCover)
     widgets.imageLabel.icon = new ImageIcon(spotifySupport.image(track.getCover).getScaledInstance(130, 130, Image.SCALE_SMOOTH));
@@ -294,6 +318,7 @@ object SpotifyUI {
     var albumLabel: Label = null;
     var playButton: Button = null;
     var nextButton: Button = null;
+    var previousButton: Button = null;
     var pauseButton: Button = null;
     var infoLabel: Label = null;
     var imageLabel: Label = null;

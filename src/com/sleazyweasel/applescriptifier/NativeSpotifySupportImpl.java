@@ -141,7 +141,10 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
             List<Playlist> playlists = playlistContainer.getPlaylists();
             List<Playlist> results = new ArrayList<Playlist>(playlists.size());
             for (Playlist playlist : playlists) {
-                results.add(getJotifyPool().playlist(playlist.getId(), true));
+                Playlist reifiedPlaylist = getJotifyPool().playlist(playlist.getId(), false);
+                if (reifiedPlaylist.hasTracks()) {
+                    results.add(reifiedPlaylist);
+                }
             }
             return results;
         } catch (TimeoutException e) {
@@ -205,6 +208,11 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
     @Override
     public void pause() {
         getJotifyPlayer().controlPause();
+    }
+
+    @Override
+    public void previousTrack() {
+        getJotifyPlayer().controlPrevious();
     }
 
     @Override
