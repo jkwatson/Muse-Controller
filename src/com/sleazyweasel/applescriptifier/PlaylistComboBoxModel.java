@@ -23,6 +23,7 @@ public class PlaylistComboBoxModel extends DefaultComboBoxModel {
     public void refreshContents() {
         List<Playlist> playlists = spotifySupport.getPlaylists();
         Playlist selectedItem = getSelectedStation();
+        System.out.println("selectedItem = " + selectedItem);
         removeAllElements();
         for (Playlist playlist : playlists) {
             addElement(playlist);

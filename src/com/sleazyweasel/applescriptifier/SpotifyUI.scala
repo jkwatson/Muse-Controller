@@ -2,21 +2,21 @@ package com.sleazyweasel.applescriptifier
 
 import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences
 import layout.TableLayout
-import java.util.concurrent.atomic.AtomicBoolean
 import de.felixbruns.jotify.media.{Track, Playlist}
-import javax.swing._
+import scala.swing.event.{ValueChanged, ButtonClicked}
 import layout.TableLayoutConstants._
-import swing.event.ButtonClicked
 import nl.pascaldevink.jotify.gui.listeners.PlayerListener
 import nl.pascaldevink.jotify.gui.listeners.PlayerListener.Status
-import swing.{Alignment, Button, Label, Swing}
 import java.awt.event._
-import java.awt._
 import java.io.IOException
 import java.net.URI
+import swing._
+import java.awt.{Component, Graphics, Cursor, Desktop, Font, Image}
+import javax.swing._
+import java.util.concurrent.Semaphore
 
 class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spotifyMenuItem: JMenuItem, preferences: MuseControllerPreferences) extends PlayerListener with MuseControllerFrame {
-  private val executionLock = new AtomicBoolean(false)
+  private val executionLock = new Semaphore(1)
   private val widgets = new SpotifyUI.Widgets
   private val models = new SpotifyUI.Models
   initUserInterface()
@@ -41,6 +41,8 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     initNextButton()
     initPreviousButton()
     initPauseButton()
+    initVolumeSlider()
+    initRefreshPlaylistsButton()
   }
 
   private def getIcon(name: String): ImageIcon = {
@@ -53,7 +55,10 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.playButton = playButton
     widgets.playButton.enabled = false
     widgets.playButton.reactions += {
-      case ButtonClicked(`playButton`) => spotifySupport play()
+      case ButtonClicked(`playButton`) => doWithLock {
+        () =>
+          spotifySupport play()
+      }
     }
   }
 
@@ -63,7 +68,56 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.nextButton = nextButton
     widgets.nextButton.enabled = false
     widgets.nextButton.reactions += {
-      case ButtonClicked(`nextButton`) => spotifySupport nextTrack()
+      case ButtonClicked(`nextButton`) => doWithLock {
+        () =>
+          spotifySupport nextTrack()
+      }
+    }
+  }
+
+  def initVolumeSlider() {
+    val volumeSlider = new Slider
+    volumeSlider.min = 0
+    volumeSlider.max = 100
+    volumeSlider.value = 100
+    volumeSlider.reactions += {
+      case ValueChanged(`volumeSlider`) => {
+        doWithLock(() => {
+          val volume: Float = volumeSlider.value
+          spotifySupport setVolume (volume / 100f)
+          if (volume > 0 && volume < 0.5) {
+            //todo modify icon next to volume slider...
+          }
+        })
+      }
+    }
+    widgets.volumeSlider = volumeSlider
+    widgets.volumeSlider.enabled = true
+  }
+
+  def initRefreshPlaylistsButton() {
+    val refreshPlaylistsButton = new Button
+    refreshPlaylistsButton.icon = getIcon("refresh.png")
+    refreshPlaylistsButton.reactions += {
+      case ButtonClicked(`refreshPlaylistsButton`) =>
+        doWithLock(() => {
+          println("refreshing combo from button")
+          models.playlistComboBoxModel.refreshContents()
+        })
+    }
+    widgets.refreshPlaylistsButton = refreshPlaylistsButton
+  }
+
+  def doWithLock(action: () => Unit) {
+    if (executionLock.tryAcquire()) {
+      widgets.window.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
+      try {
+        action()
+      }
+      finally {
+        widgets.window.setCursor(Cursor.getDefaultCursor)
+        executionLock.release()
+      }
     }
   }
 
@@ -73,7 +127,9 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.previousButton = previousButton
     widgets.previousButton.enabled = false
     widgets.previousButton.reactions += {
-      case ButtonClicked(`previousButton`) => spotifySupport previousTrack()
+      case ButtonClicked(`previousButton`) => doWithLock {
+        () => spotifySupport previousTrack()
+      }
     }
   }
 
@@ -83,7 +139,9 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.pauseButton = pauseButton
     widgets.pauseButton.enabled = false
     widgets.pauseButton.reactions += {
-      case ButtonClicked(`pauseButton`) => spotifySupport pause()
+      case ButtonClicked(`pauseButton`) => doWithLock {
+        () => spotifySupport pause()
+      }
     }
   }
 
@@ -150,35 +208,23 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     models.playlistComboBoxModel = new PlaylistComboBoxModel(spotifySupport)
 
     Swing.onEDT({
-      if (acquireLock) {
-        try {
-          widgets.window.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
+      doWithLock({
+        () =>
           models.playlistComboBoxModel.refreshContents()
-        }
-        finally {
-          widgets.window.setCursor(Cursor.getDefaultCursor)
-          releaseLock();
-        }
-      }
+      })
     })
 
     widgets.playlistComboBox = new JComboBox(models.playlistComboBoxModel)
     widgets.playlistComboBox.addActionListener(new ActionListener {
       def actionPerformed(e: ActionEvent) {
-        if (acquireLock) {
-          try {
-            widgets.window.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
+        doWithLock({
+          () =>
             val selected: AnyRef = models.playlistComboBoxModel.getSelectedItem
             selected match {
               case item: Playlist => spotifySupport play item
               case _ => None
             }
-          }
-          finally {
-            widgets.window.setCursor(Cursor.getDefaultCursor)
-            releaseLock()
-          }
-        }
+        })
       }
     })
 
@@ -222,17 +268,20 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
   }
 
   private def initLayout() {
-    val tableLayoutConfig = Array(Array(15d, 130d, 15d, 300d, 15d), Array(15d, 30d, 15d, 130d, 15d))
+    val tableLayoutConfig = Array(Array(15d, 130d, 15d, 300d, 28d, 15d), Array(15d, 30d, 15d, 130d, 15d))
     widgets.window.getContentPane.setLayout(new TableLayout(tableLayoutConfig))
     widgets.window.getContentPane.add(widgets.playlistComboBox, "1, 1, 3, 1, L")
+    widgets.window.getContentPane.add(widgets.refreshPlaylistsButton.peer, "4,1")
 
-    val leftButtonPanel = new JPanel(new TableLayout(Array(Array(PREFERRED, PREFERRED, PREFERRED, PREFERRED, FILL, PREFERRED, PREFERRED), Array(FILL, PREFERRED))))
+    val leftButtonPanel = new JPanel(new TableLayout(Array(Array(PREFERRED, PREFERRED, PREFERRED, PREFERRED, 2d, PREFERRED, FILL, PREFERRED), Array(FILL, PREFERRED))))
     leftButtonPanel.add(widgets.previousButton.peer, "0,1")
     leftButtonPanel.add(widgets.playButton.peer, "1,1")
     leftButtonPanel.add(widgets.pauseButton.peer, "2,1")
     leftButtonPanel.add(widgets.nextButton.peer, "3,1")
     //      leftButtonPanel.add(widgets.volumeDownButton, "5,1")
     //      leftButtonPanel.add(widgets.volumeUpButton, "6,1")
+    leftButtonPanel.add(new JLabel(getIcon("volume_icon.png")), "5,1,R")
+    leftButtonPanel.add(widgets.volumeSlider.peer, "6,1,L")
 
     val gap = -3
     val infoPanel = new JPanel(new TableLayout(Array(
@@ -263,18 +312,6 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.window.dispose()
   }
 
-  private def acquireLock: Boolean = {
-    if (executionLock.get) {
-      return false
-    }
-    executionLock.getAndSet(true)
-    true
-  }
-
-  private def releaseLock() {
-    executionLock.set(false)
-  }
-
   override def playerTrackChanged(track: Track) {
     widgets.trackNameLabel.text = track.getTitle
     widgets.albumLabel.text = track.getAlbum.getName
@@ -285,8 +322,6 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.pauseButton.enabled = true;
     widgets.nextButton.enabled = true;
     widgets.previousButton.enabled = true;
-    println("album cover: " + track.getAlbum.getCover)
-    println("track cover: " + track.getCover)
     widgets.imageLabel.icon = new ImageIcon(spotifySupport.image(track.getCover).getScaledInstance(130, 130, Image.SCALE_SMOOTH));
   }
 
@@ -322,6 +357,8 @@ object SpotifyUI {
     var pauseButton: Button = null;
     var infoLabel: Label = null;
     var imageLabel: Label = null;
+    var volumeSlider: Slider = null;
+    var refreshPlaylistsButton: Button = null;
   }
 
   private class Models {

@@ -33,4 +33,6 @@ public interface NativeSpotifySupport {
     Image image(String imageCode);
 
     void previousTrack();
+
+    void setVolume(float volume);
 }

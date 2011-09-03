@@ -5,10 +5,10 @@
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="file://$USER_HOME$/code/jotify/commons/src/main/java" />
-      <root url="file://$USER_HOME$/code/jotify/gui/src/main/java" />
       <root url="jar:///opt/local/share/scala-2.9/src/scala-library-src.jar!/" />
       <root url="jar:///opt/local/share/scala-2.9/src/scala-swing-src.jar!/" />
+      <root url="file://$PROJECT_DIR$/../jotify/commons/src/main/java" />
+      <root url="file://$PROJECT_DIR$/../jotify/gui/src/main/java" />
     </SOURCES>
     <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
   </library>
