@@ -1,6 +1,5 @@
 package com.sleazyweasel.applescriptifier
 
-import javax.swing.JOptionPane
 import preferences.MuseControllerPreferences
 import java.util.prefs.Preferences
 import com.sleazyweasel.sparkle.SparkleActivator
@@ -10,6 +9,7 @@ import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.servlet.{ServletHolder, ServletContextHandler}
 import com.apple.dnssd.{RegisterListener, DNSSDRegistration, DNSSDService}
 import scala.concurrent.ops.spawn
+import javax.swing.{JMenuBar, JOptionPane}
 
 object ScalaMain {
 
@@ -19,6 +19,8 @@ object ScalaMain {
     println("environment = " + System.getenv)
 
     addUncaughtExceptionHandler()
+    //todo wtf? If I don't have this here, the gui hangs...
+    val foo = new JMenuBar
 
     new ScalaMain().start()
   }
@@ -40,8 +42,8 @@ class ScalaMain {
   private val pianobarSupport: NativePianobarSupport = new NativePianobarSupport
 
   private def start() {
+    println("start")
     val main = new GuiMain()
-
     activateSparkle()
     main.startupGui(pianobarSupport, preferences)
 
