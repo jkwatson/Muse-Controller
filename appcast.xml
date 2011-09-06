@@ -85,7 +85,7 @@
                        sparkle:dsaSignature="MC0CFBZGPH+fDOGz91sSILD+m4e5P6tAAhUAqTlARCqIWYoj78pVzoCvzSmpt9w="/>
 
         </item>
-       <item>
+        <item>
             <title>Version 3.1.2</title>
             <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
             <description><![CDATA[
@@ -99,7 +99,7 @@
                        sparkle:dsaSignature="MC0CFQDwNIcSM5xl0A/DQMkGgGdUdTtvKwIUe/m0KawXSrofO2s4oIDH9DciPZw="/>
 
         </item>
-       <item>
+        <item>
             <title>Version 3.2.0</title>
             <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
             <description><![CDATA[
@@ -112,6 +112,20 @@
             <enclosure url="http://www.musecontrol.com/downloads/MuseController3.2.0.dmg" sparkle:version="3.2.0"
                        length="11658969" type="application/octet-stream"
                        sparkle:dsaSignature="MC0CFQDrtWZe27p/Ie9VMh5l4lcZLjSHiQIUOlt1IHVNh/YsDzQzA2ArnB2mpaI="/>
+
+        </item>
+        <item>
+            <title>Version 3.3.0</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                <h2>New Features</h2>
+                    <h3>Very early support for spotify. NOTE: If you turn this on, there will probably be problems, including with Muse Control. Treat as alpha-quality.</h3>
+                    <h3>New Preferences UI, including the ability to turn off the web server for Muse Control.</h3>
+                ]]></description>
+            <pubDate>Mon, 05 Sep 2011 13:00:00 +0800</pubDate>
+            <enclosure url="http://www.musecontrol.com/downloads/MuseController3.3.0.dmg" sparkle:version="3.3.0"
+                       length="32106026" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFHU9it9fPWVexTt2yb/4HwAsVhviAhUAzbpWtrTE446HNKHsL6FI8oGUR/4="/>
 
         </item>
     </channel>

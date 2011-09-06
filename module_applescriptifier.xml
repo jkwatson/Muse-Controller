@@ -68,10 +68,10 @@
             description="Compile module applescriptifier"/>
 
 
-    <property name="scala.home" value="lib/scala"/>
+    <property name="scala.home" value="lib-dev/scala"/>
     <taskdef resource="scala/tools/ant/antlib.xml">
         <classpath>
-            <pathelement location="${scala.home}/scala-compiler.jar"/>
+            <pathelement location="lib-dev/scala/scala-compiler.jar"/>
             <pathelement location="lib/scala-library.jar"/>
         </classpath>
     </taskdef>
