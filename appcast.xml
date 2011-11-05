@@ -128,5 +128,18 @@
                        sparkle:dsaSignature="MC0CFHU9it9fPWVexTt2yb/4HwAsVhviAhUAzbpWtrTE446HNKHsL6FI8oGUR/4="/>
 
         </item>
+        <item>
+            <title>Version 3.3.1</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                <h2>New Features</h2>
+                    <h3>Updated pianobar for latest Pandora API version.</h3>
+                ]]></description>
+            <pubDate>Mon, 22 Sep 2011 19:41:00 +0800</pubDate>
+            <enclosure url="http://www.musecontrol.com/downloads/MuseController3.3.1.dmg" sparkle:version="3.3.1"
+                       length="32106026" type="application/octet-stream"
+                       sparkle:dsaSignature="MC4CFQCTklx4R4EObeWSMuSRpMAMf0Od5wIVAI3uqyNpEeEv59CQd3vTTiAzNNQV"/>
+
+        </item>
     </channel>
 </rss>
