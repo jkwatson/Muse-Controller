@@ -5,6 +5,7 @@ import java.util.*;
 
 public class NativePianobarSupport implements ApplicationSupport {
 
+    private static final String CERT_FILENAME = "pianobar-cacert.pem";
     private Process pianobar;
     private InputStream inputStream;
     private OutputStream outputStream;
@@ -305,7 +306,7 @@ public class NativePianobarSupport implements ApplicationSupport {
 
     public static boolean isPianoBarConfigured() {
         File pianoBarConfigDirectory = getPianobarConfigDirectory();
-        return pianoBarConfigDirectory.isDirectory();
+        return pianoBarConfigDirectory.isDirectory() && new File(pianoBarConfigDirectory, CERT_FILENAME).exists();
     }
 
     private static File getPianobarConfigDirectory() {
@@ -401,14 +402,17 @@ public class NativePianobarSupport implements ApplicationSupport {
         writer.newLine();
         writer.write("event_command = " + pianobarConfigDirectory.getAbsolutePath() + "/echo.pl");
         writer.newLine();
+        writer.write("tls_ca_path = " + pianobarConfigDirectory.getAbsolutePath() + "/pianobar-cacert.pem");
+        writer.newLine();
         writer.close();
+
+        copy(new File(System.getProperty("user.dir") + "/Muse Controller.app/native/pianobar-cacert.pem"), new File(pianobarConfigDirectory, CERT_FILENAME));
 
         File echoFile = new File(System.getProperty("user.dir") + "/Muse Controller.app/native/echo.pl");
         File outputFile = new File(pianobarConfigDirectory, "/echo.pl");
-
         copy(echoFile, outputFile);
-
         outputFile.setExecutable(true);
+
     }
 
     private void copy(File echoFile, File outputFile) throws IOException {

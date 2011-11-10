@@ -141,5 +141,19 @@
                        sparkle:dsaSignature="MC4CFQCTklx4R4EObeWSMuSRpMAMf0Od5wIVAI3uqyNpEeEv59CQd3vTTiAzNNQV"/>
 
         </item>
+        <item>
+            <title>Version 3.3.2</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                <h2>New Features</h2>
+                    <h3>Updated pianobar for latest Pandora API version.</h3>
+                ]]></description>
+            <pubDate>Mon, 22 Sep 2011 19:41:00 +0800</pubDate>
+            <enclosure url="https://github.com/downloads/jkwatson/Muse-Controller/Muse%20Controller%203.3.2.dmg"
+                       sparkle:version="3.3.2"
+                       length="32106026" type="application/octet-stream"
+                       sparkle:dsaSignature="MCwCFBbuv+e4U4kq5rVagNOEEaK7rArwAhQ7AmyFtx2VAF0BeuQ38rr8FJXu3g=="/>
+
+        </item>
     </channel>
 </rss>

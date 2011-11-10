@@ -147,10 +147,21 @@
               todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
         <copy file="native/${app.name}.app/Contents/Resources/Java/libfaad.2.dylib"
               todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
+        <copy file="native/${app.name}.app/Contents/Resources/Java/libgnutls.26.dylib"
+              todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
+        <copy file="native/${app.name}.app/Contents/Resources/Java/libtasn1.3.dylib"
+              todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
+        <copy file="native/${app.name}.app/Contents/Resources/Java/libgcrypt.11.dylib"
+              todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
+        <copy file="native/${app.name}.app/Contents/Resources/Java/libgpg-error.0.dylib"
+              todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
+        <copy file="native/${app.name}.app/Contents/Resources/Java/libintl.8.dylib"
+              todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
         <copy file="native/${app.name}.app/Contents/Resources/Java/libmacosx.so"
               todir="${macosx.app}/${app.name}.app/${app.internal}/"/>
         <copy file="native/${app.name}.app/native/pianobar" todir="${macosx.app}/${app.name}.app/native/"/>
         <copy file="native/Muse Controller.app/native/echo.pl" todir="${macosx.app}/${app.name}.app/native/"/>
+        <copy file="resources/pianobar-cacert.pem" todir="${macosx.app}/${app.name}.app/native/"/>
         <chmod file="${macosx.app}/${app.name}.app/native/pianobar" perm="ugo+rx"/>
 
     </target>
