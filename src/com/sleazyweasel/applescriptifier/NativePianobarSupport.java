@@ -6,6 +6,7 @@ import java.util.*;
 public class NativePianobarSupport implements ApplicationSupport {
 
     private static final String CERT_FILENAME = "pianobar-cacert.pem";
+    private static final int RETRIES = 50;
     private Process pianobar;
     private InputStream inputStream;
     private OutputStream outputStream;
@@ -138,7 +139,7 @@ public class NativePianobarSupport implements ApplicationSupport {
 
     private void waitForPianobarStartup() {
         int tries = 0;
-        while (tries < 5) {
+        while (tries < RETRIES) {
             String currentScreenContents = getCurrentScreenContents();
             String[] lines = currentScreenContents.split("\n");
             System.out.println("lines = " + Arrays.toString(lines));
