@@ -19,19 +19,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static layout.TableLayoutConstants.FILL;
 import static layout.TableLayoutConstants.PREFERRED;
 
-public class PianobarUI implements MuseControllerFrame {
+public class PandoraUI implements MuseControllerFrame {
 
     private final AtomicBoolean executionLock = new AtomicBoolean(false);
 
     private final Widgets widgets = new Widgets();
     private final Models models = new Models();
 
-    private final NativePianobarSupport pianobarSupport;
+    private final MusicPlayer musicPlayer;
     private final JMenuBar mainMenuBar;
     private final JMenuItem pandoraMenuItem;
 
-    public PianobarUI(NativePianobarSupport pianobarSupport, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, MuseControllerPreferences preferences) {
-        this.pianobarSupport = pianobarSupport;
+    public PandoraUI(MusicPlayer musicPlayer, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, MuseControllerPreferences preferences) {
+        this.musicPlayer = musicPlayer;
         this.mainMenuBar = mainMenuBar;
         this.pandoraMenuItem = pandoraMenuItem;
         initUserInterface();
@@ -94,7 +94,7 @@ public class PianobarUI implements MuseControllerFrame {
         JMenuItem menuItem = new JMenuItem("Volume Down");
         menuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                pianobarSupport.volumeDown();
+                musicPlayer.volumeDown();
             }
         });
         menuItem.setEnabled(false);
@@ -106,7 +106,7 @@ public class PianobarUI implements MuseControllerFrame {
         JMenuItem menuItem = new JMenuItem("Volume Up");
         menuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                pianobarSupport.volumeUp();
+                musicPlayer.volumeUp();
             }
         });
         menuItem.setEnabled(false);
@@ -118,7 +118,7 @@ public class PianobarUI implements MuseControllerFrame {
         JMenuItem menuItem = new JMenuItem("Thumbs Down");
         menuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                pianobarSupport.thumbsDown();
+                musicPlayer.thumbsDown();
             }
         });
         menuItem.setEnabled(false);
@@ -130,7 +130,7 @@ public class PianobarUI implements MuseControllerFrame {
         JMenuItem menuItem = new JMenuItem("Thumbs Up");
         menuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                pianobarSupport.thumbsUp();
+                musicPlayer.thumbsUp();
             }
         });
         menuItem.setEnabled(false);
@@ -142,7 +142,7 @@ public class PianobarUI implements MuseControllerFrame {
         JMenuItem menuItem = new JMenuItem("Next");
         menuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                pianobarSupport.next();
+                musicPlayer.next();
             }
         });
         menuItem.setEnabled(false);
@@ -154,7 +154,7 @@ public class PianobarUI implements MuseControllerFrame {
         JMenuItem menuItem = new JMenuItem("Play/Pause");
         menuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                pianobarSupport.playPause();
+                musicPlayer.playPause();
             }
         });
         menuItem.setEnabled(false);
@@ -166,22 +166,22 @@ public class PianobarUI implements MuseControllerFrame {
         JMenuItem restartMenuItem = new JMenuItem("Restart Pandora");
         restartMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                pianobarSupport.bounce();
+                musicPlayer.bounce();
             }
         });
         return restartMenuItem;
     }
 
     private void initStationComboBox() {
-        models.stationComboBoxModel = new StationComboBoxModel(pianobarSupport);
+        models.stationComboBoxModel = new StationComboBoxModel(musicPlayer);
         widgets.stationComboBox = new JComboBox(models.stationComboBoxModel);
         widgets.stationComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (acquireLock()) {
-                    pianobarSupport.askToChooseStation();
+                    musicPlayer.askToChooseStation();
                     StationChoice selectedItem = models.stationComboBoxModel.getSelectedStation();
                     if (selectedItem != null) {
-                        pianobarSupport.selectStation(selectedItem.getKey());
+                        musicPlayer.selectStation(selectedItem.getKey());
                     }
                     releaseLock();
                 }
@@ -238,7 +238,7 @@ public class PianobarUI implements MuseControllerFrame {
         widgets.playPauseButton.setEnabled(false);
         widgets.playPauseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                pianobarSupport.playPause();
+                musicPlayer.playPause();
             }
         });
     }
@@ -258,7 +258,7 @@ public class PianobarUI implements MuseControllerFrame {
         widgets.nextButton.setEnabled(false);
         widgets.nextButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                pianobarSupport.next();
+                musicPlayer.next();
             }
         });
     }
@@ -269,7 +269,7 @@ public class PianobarUI implements MuseControllerFrame {
         widgets.thumbsUpButton.setEnabled(false);
         widgets.thumbsUpButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                pianobarSupport.thumbsUp();
+                musicPlayer.thumbsUp();
             }
         });
     }
@@ -280,7 +280,7 @@ public class PianobarUI implements MuseControllerFrame {
         widgets.thumbsDownButton.setEnabled(false);
         widgets.thumbsDownButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                pianobarSupport.thumbsDown();
+                musicPlayer.thumbsDown();
             }
         });
     }
@@ -291,7 +291,7 @@ public class PianobarUI implements MuseControllerFrame {
         widgets.volumeUpButton.setEnabled(false);
         widgets.volumeUpButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                pianobarSupport.volumeUp();
+                musicPlayer.volumeUp();
             }
         });
     }
@@ -302,7 +302,7 @@ public class PianobarUI implements MuseControllerFrame {
         widgets.volumeDownButton.setEnabled(false);
         widgets.volumeDownButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                pianobarSupport.volumeDown();
+                musicPlayer.volumeDown();
             }
         });
     }
@@ -320,7 +320,7 @@ public class PianobarUI implements MuseControllerFrame {
         widgets.infoLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                String detailUrl = pianobarSupport.getState().getDetailUrl();
+                String detailUrl = musicPlayer.getState().getDetailUrl();
                 if (detailUrl != null && detailUrl.length() > 0) {
                     try {
                         open(new URI(detailUrl));
@@ -373,12 +373,12 @@ public class PianobarUI implements MuseControllerFrame {
     }
 
     public void initialize() {
-        pianobarSupport.addListener(new PianobarStateChangeListener());
-        pianobarSupport.activatePianoBar();
+        musicPlayer.addListener(new MusicPlayerStateChangeListener());
+        musicPlayer.activate();
     }
 
     public void close() {
-        pianobarSupport.close();
+        musicPlayer.close();
         mainMenuBar.remove(widgets.menu);
         pandoraMenuItem.setEnabled(true);
         widgets.window.dispose();
@@ -413,9 +413,9 @@ public class PianobarUI implements MuseControllerFrame {
         private StationComboBoxModel stationComboBoxModel;
     }
 
-    private class PianobarStateChangeListener implements NativePianobarSupport.PianobarStateChangeListener {
+    private class MusicPlayerStateChangeListener implements MusicPlayer.MusicPlayerStateChangeListener {
 
-        public void stateChanged(final NativePianobarSupport pianobarSupport, PianobarState state) {
+        public void stateChanged(final MusicPlayer pianobarSupport, MusicPlayerState state) {
             if (acquireLock()) {
                 widgets.playPauseButton.setEnabled(!state.isInputRequested());
                 widgets.nextButton.setEnabled(!state.isInputRequested());

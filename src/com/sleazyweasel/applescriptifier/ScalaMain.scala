@@ -39,16 +39,16 @@ class ScalaMain {
   private final val PORT: Int = 23233
 
   private val preferences: MuseControllerPreferences = new MuseControllerPreferences(Preferences.userNodeForPackage(classOf[ScalaMain]))
-  private val pianobarSupport: NativePianobarSupport = new NativePianobarSupport
+  private val musicPlayer: MusicPlayer = new JavaPandoraPlayer
 
   private def start() {
     println("start")
     val main = new GuiMain()
     activateSparkle()
-    main.startupGui(pianobarSupport, preferences)
+    main.startupGui(musicPlayer, preferences)
 
     if (preferences.isMuseControlEnabled) {
-      startupWebServer(pianobarSupport)
+      startupWebServer(musicPlayer)
     }
   }
 
@@ -63,7 +63,7 @@ class ScalaMain {
     }
   }
 
-  private def startupWebServer(pianobarSupport: NativePianobarSupport) {
+  private def startupWebServer(pianobarSupport: MusicPlayer) {
     register(0, 0, InetAddress.getLocalHost.getHostName, "_asrunner._udp", "local.", null, PORT, null, new RegisterListener {
       def serviceRegistered(dnssdRegistration: DNSSDRegistration, port: Int, s: String, s1: String, s2: String) {
       }
@@ -83,7 +83,7 @@ class ScalaMain {
     context.addServlet(new ServletHolder(new PandoraBoyServlet), "/pandoraboy/*")
     context.addServlet(new ServletHolder(new PulsarServlet), "/pulsar/*")
 
-    val nativePianobarServlet = new NativePianobarServlet(pianobarSupport)
+    val nativePianobarServlet = new MusicPlayerServlet(pianobarSupport)
     context.addServlet(new ServletHolder(nativePianobarServlet), "/pianobar/*")
     context.addServlet(new ServletHolder(new SpotifyServlet), "/spotify/*")
     context.addServlet(new ServletHolder(new ControlServlet), "/control/*")

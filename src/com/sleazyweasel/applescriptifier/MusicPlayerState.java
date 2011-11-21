@@ -5,20 +5,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class PianobarState {
+public class MusicPlayerState {
     private final boolean currentSongIsLoved;
     private final String title;
     private final String artist;
     private final String station;
     private final String album;
-    private final NativePianobarSupport.InputType inputTypeRequested;
+    private final MusicPlayerInputType inputTypeRequested;
     private final Map<Integer, String> stations;
     private final String albumArtUrl;
     private final String detailUrl;
     private final String currentTimeInTrack;
     private final boolean playing;
 
-    public PianobarState(boolean currentSongIsLoved, String title, String artist, String station, String album, NativePianobarSupport.InputType inputTypeRequested, Map<Integer, String> stations, String albumArtUrl, String currentTimeInTrack, boolean isPlaying, String detailUrl) {
+    public MusicPlayerState(boolean currentSongIsLoved, String title, String artist, String station, String album, MusicPlayerInputType inputTypeRequested, Map<Integer, String> stations, String albumArtUrl, String currentTimeInTrack, boolean isPlaying, String detailUrl) {
         this.currentSongIsLoved = currentSongIsLoved;
         this.title = title;
         this.artist = artist;
@@ -56,12 +56,12 @@ public class PianobarState {
         return album;
     }
 
-    public NativePianobarSupport.InputType getInputTypeRequested() {
+    public MusicPlayerInputType getInputTypeRequested() {
         return inputTypeRequested;
     }
 
     public boolean isInputRequested() {
-        return !NativePianobarSupport.InputType.NONE.equals(getInputTypeRequested());
+        return !MusicPlayerInputType.NONE.equals(getInputTypeRequested());
     }
 
     public Map<Integer, String> getStations() {
@@ -112,8 +112,7 @@ public class PianobarState {
             int minutes = Integer.parseInt(minutesAndSeconds[0]);
             int seconds = Integer.parseInt(minutesAndSeconds[1]);
             return minutes * 60 + seconds;
-        }
-        else {
+        } else {
             return 0;
         }
     }

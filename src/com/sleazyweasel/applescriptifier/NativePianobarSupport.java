@@ -3,7 +3,7 @@ package com.sleazyweasel.applescriptifier;
 import java.io.*;
 import java.util.*;
 
-public class NativePianobarSupport implements ApplicationSupport {
+public class NativePianobarSupport implements MusicPlayer {
 
     private static final String CERT_FILENAME = "pianobar-cacert.pem";
     private static final int RETRIES = 50;
@@ -14,7 +14,7 @@ public class NativePianobarSupport implements ApplicationSupport {
     private String currentTimeInTrack = "";
     private String previousCurrentTimeInTrack = "";
 
-    private List<PianobarStateChangeListener> listeners = new ArrayList<PianobarStateChangeListener>();
+    private List<MusicPlayerStateChangeListener> listeners = new ArrayList<MusicPlayerStateChangeListener>();
 
     public NativePianobarSupport() {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
@@ -38,25 +38,27 @@ public class NativePianobarSupport implements ApplicationSupport {
     }
 
     public void playPause() {
-        activatePianoBar();
+        activate();
         sendKeyStroke('p');
     }
 
     public void next() {
-        activatePianoBar();
+        activate();
         sendKeyStroke('n');
         resetCurrentTime();
     }
 
+    @Override
     public void volumeUp() {
-        activatePianoBar();
+        activate();
         sendKeyStroke(')');
         sendKeyStroke(')');
         sendKeyStroke(')');
     }
 
+    @Override
     public void volumeDown() {
-        activatePianoBar();
+        activate();
         sendKeyStroke('(');
         sendKeyStroke('(');
         sendKeyStroke('(');
@@ -72,15 +74,16 @@ public class NativePianobarSupport implements ApplicationSupport {
     }
 
     public void thumbsUp() {
-        activatePianoBar();
+        activate();
         sendKeyStroke('+');
     }
 
     public void thumbsDown() {
-        activatePianoBar();
+        activate();
         sendKeyStroke('-');
     }
 
+    @Override
     public void close() {
         if (pianobar != null) {
             pianobar.destroy();
@@ -89,16 +92,18 @@ public class NativePianobarSupport implements ApplicationSupport {
         data = new LineBuffer(20000);
     }
 
+    @Override
     public synchronized void bounce() {
         if (pianobar != null) {
             pianobar.destroy();
             pianobar = null;
         }
         data = new LineBuffer(20000);
-        activatePianoBar();
+        activate();
     }
 
-    public synchronized void activatePianoBar() {
+    @Override
+    public synchronized void activate() {
         if (pianobar == null) {
             try {
                 String libraryPath = "DYLD_LIBRARY_PATH=" + System.getProperty("user.dir") + "/Muse Controller.app/Contents/Resources/Java/";
@@ -197,7 +202,7 @@ public class NativePianobarSupport implements ApplicationSupport {
     }
 
     public void sendKeyStroke(char key) {
-        activatePianoBar();
+        activate();
         try {
             data.add(key);
             outputStream.write(key);
@@ -216,7 +221,7 @@ public class NativePianobarSupport implements ApplicationSupport {
     }
 
     public void sendTextCommand(String command) {
-        activatePianoBar();
+        activate();
         try {
             byte[] bytes = command.getBytes();
             for (byte aByte : bytes) {
@@ -296,13 +301,13 @@ public class NativePianobarSupport implements ApplicationSupport {
         return rating.equals("1");
     }
 
-    public InputType inputTypeRequested() {
+    public MusicPlayerInputType inputTypeRequested() {
         String[] lines = getCurrentScreenContents().split("\n");
         if (lines.length < 1) {
-            return InputType.NONE;
+            return MusicPlayerInputType.NONE;
         }
         String lastLine = lines[lines.length - 1];
-        return lastLine.startsWith("[?] Select station:") ? InputType.CHOOSE_STATION : InputType.NONE;
+        return lastLine.startsWith("[?] Select station:") ? MusicPlayerInputType.CHOOSE_STATION : MusicPlayerInputType.NONE;
     }
 
     public static boolean isPianoBarConfigured() {
@@ -315,16 +320,27 @@ public class NativePianobarSupport implements ApplicationSupport {
         return new File(userHome + "/.config/pianobar");
     }
 
-    public void addListener(PianobarStateChangeListener listener) {
+    @Override
+    public void addListener(MusicPlayerStateChangeListener listener) {
         listeners.add(listener);
+    }
+
+    @Override
+    public void cancelStationSelection() {
+        sendTextCommand("\n");
+    }
+
+    @Override
+    public boolean isConfigured() {
+        return isPianoBarConfigured();
     }
 
 //    private AtomicLong lastNotificationPoint = new AtomicLong(System.currentTimeMillis());
 
     private void notifyListeners() {
 //        System.out.println("NativePianobarSupport.notifyListeners firing");
-        PianobarState state = getState();
-        for (PianobarStateChangeListener listener : listeners) {
+        MusicPlayerState state = getState();
+        for (MusicPlayerStateChangeListener listener : listeners) {
             try {
                 listener.stateChanged(this, state);
             } catch (Exception e) {
@@ -333,9 +349,10 @@ public class NativePianobarSupport implements ApplicationSupport {
         }
     }
 
-    public PianobarState getState() {
+    @Override
+    public MusicPlayerState getState() {
         List<String> data = getDataFromFile();
-        return new PianobarState(currentSongIsLoved(data), extractTitle(data), extractArtist(data), extractStation(data), extractAlbum(data), inputTypeRequested(), parseStationList(data), getAlbumArtUrl(data), currentTimeInTrack, isPlaying(), getDetailUrl(data));
+        return new MusicPlayerState(currentSongIsLoved(data), extractTitle(data), extractArtist(data), extractStation(data), extractAlbum(data), inputTypeRequested(), parseStationList(data), getAlbumArtUrl(data), currentTimeInTrack, isPlaying(), getDetailUrl(data));
     }
 
     private String getAlbumArtUrl(List<String> data) {
@@ -360,7 +377,7 @@ public class NativePianobarSupport implements ApplicationSupport {
     }
 
     private void checkForPossibleNotificationPoint() {
-        if (!inputTypeRequested().equals(InputType.NONE)) {
+        if (!inputTypeRequested().equals(MusicPlayerInputType.NONE)) {
             notifyListeners();
         } else {
             String[] split = getCurrentScreenContents().split("[\n\r]");
@@ -374,6 +391,7 @@ public class NativePianobarSupport implements ApplicationSupport {
         }
     }
 
+    @Override
     public void selectStation(Integer stationNumber) {
         if (stationNumber != null) {
             sendTextCommand(stationNumber.toString());
@@ -382,14 +400,16 @@ public class NativePianobarSupport implements ApplicationSupport {
         }
     }
 
+    @Override
     public void askToChooseStation() {
-        if (inputTypeRequested().equals(InputType.CHOOSE_STATION)) {
+        if (inputTypeRequested().equals(MusicPlayerInputType.CHOOSE_STATION)) {
             return;
         }
         sendKeyStroke('s');
     }
 
-    public void savePianobarConfig(String username, char[] password) throws IOException {
+    @Override
+    public void saveConfig(String username, char[] password) throws IOException {
         File pianobarConfigDirectory = getPianobarConfigDirectory();
         if (!pianobarConfigDirectory.exists()) {
             pianobarConfigDirectory.mkdirs();
@@ -426,10 +446,6 @@ public class NativePianobarSupport implements ApplicationSupport {
 
         in.close();
         out.close();
-    }
-
-    enum InputType {
-        NONE, CHOOSE_STATION
     }
 
     private class PianobarStandardOutReader implements Runnable {
@@ -486,11 +502,9 @@ public class NativePianobarSupport implements ApplicationSupport {
         currentTimeInTrack = timeData;
     }
 
+    @Override
     public boolean isPlaying() {
         return !currentTimeInTrack.equals(previousCurrentTimeInTrack);
     }
 
-    public interface PianobarStateChangeListener {
-        void stateChanged(NativePianobarSupport pianobarSupport, PianobarState state);
-    }
 }

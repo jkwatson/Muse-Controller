@@ -6,11 +6,11 @@ import java.util.Vector;
 
 public class StationComboBoxModel extends DefaultComboBoxModel {
 
-    private final NativePianobarSupport pianobarSupport;
+    private final MusicPlayer musicPlayer;
 
-    public StationComboBoxModel(NativePianobarSupport pianobarSupport) {
-        super(new Vector<StationChoice>(pianobarSupport.getState().getStationChoices()));
-        this.pianobarSupport = pianobarSupport;
+    public StationComboBoxModel(MusicPlayer musicPlayer) {
+        super(new Vector<StationChoice>(musicPlayer.getState().getStationChoices()));
+        this.musicPlayer = musicPlayer;
     }
 
     public StationChoice getSelectedStation() {
@@ -18,14 +18,13 @@ public class StationComboBoxModel extends DefaultComboBoxModel {
     }
 
     public void refreshContents() {
-        List<StationChoice> stationChoices = pianobarSupport.getState().getStationChoices();
+        List<StationChoice> stationChoices = musicPlayer.getState().getStationChoices();
         Object selectedItem = getSelectedItem();
         for (StationChoice stationChoice : stationChoices) {
             Object existingItem = getElementAt(stationChoice.getKey());
             if (existingItem == null) {
                 insertElementAt(stationChoice, stationChoice.getKey());
-            }
-            else if (!existingItem.equals(stationChoice)) {
+            } else if (!existingItem.equals(stationChoice)) {
                 removeElementAt(stationChoice.getKey());
                 insertElementAt(stationChoice, stationChoice.getKey());
             }

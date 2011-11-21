@@ -44,7 +44,8 @@ public class XmlRpc extends org.xmlrpc.android.XMLRPCClient {
     /* This method is extracted from the parent class with slight modifications
       * for sending a request with a predetermined body content. */
     public Object callWithBody(String url, String body) throws XMLRPCException {
-
+//        System.out.println("url = " + url);
+//        System.out.println("body = " + body);
         postMethod.setURI(URI.create(url));
 
         try {
@@ -69,7 +70,7 @@ public class XmlRpc extends org.xmlrpc.android.XMLRPCClient {
             // setup pull parser
             XmlPullParser pullParser = XmlPullParserFactory.newInstance().newPullParser();
             entity = response.getEntity();
-            Reader reader = new InputStreamReader(new BufferedInputStream(entity.getContent()));
+            Reader reader = new InputStreamReader(new BufferedInputStream(entity.getContent()), "UTF-8");
             // for testing purposes only
             // reader = new StringReader("<?xml version='1.0'?><methodResponse><params><param><value>\n\n\n</value></param></params></methodResponse>");
             pullParser.setInput(reader);

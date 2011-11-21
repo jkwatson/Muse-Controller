@@ -68,6 +68,28 @@ public class Song {
         }
     }
 
+    public Song(Song copy, Integer newRating) {
+        album = copy.album;
+        artist = copy.artist;
+        artistMusicId = copy.artistMusicId;
+        audioUrl = copy.audioUrl;
+        fileGain = copy.fileGain;
+        identity = copy.identity;
+        rating = newRating;
+        stationId = copy.stationId;
+        title = copy.title;
+        songDetailURL = copy.songDetailURL;
+        albumDetailURL = copy.albumDetailURL;
+        artRadio = copy.artRadio;
+        trackToken = copy.trackToken;
+        audioUrl = copy.audioUrl;
+        tired = copy.tired;
+        message = copy.message;
+        startTime = copy.startTime;
+        finished = copy.finished;
+        playlistTime = copy.playlistTime;
+    }
+
     public boolean isStillValid() {
         return ((System.currentTimeMillis() / 1000L) - playlistTime) < PandoraRadio.PLAYLIST_VALIDITY_TIME;
     }

@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 
 public class PandoraPasswordUI implements MuseControllerFrame {
 
-    private final NativePianobarSupport pianobarSupport;
+    private final MusicPlayer pianobarSupport;
     private final MuseControllerPreferences preferences;
 
     private final Widgets widgets = new Widgets();
@@ -18,7 +18,7 @@ public class PandoraPasswordUI implements MuseControllerFrame {
     private final JMenuItem pandoraMenuItem;
     private final MuseControllerMain main;
 
-    public PandoraPasswordUI(NativePianobarSupport pianobarSupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, MuseControllerMain main) {
+    public PandoraPasswordUI(MusicPlayer pianobarSupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, MuseControllerMain main) {
         this.pianobarSupport = pianobarSupport;
         this.preferences = preferences;
         this.mainMenuBar = mainMenuBar;

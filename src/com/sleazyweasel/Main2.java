@@ -16,7 +16,7 @@ public class Main2 {
 
     public static void main(String[] args) throws Exception {
         PandoraRadio pandoraRadio = new PandoraRadio();
-        pandoraRadio.connect("username", "password");
+        pandoraRadio.connect("jkwatson@gmail.com", "landheart");
         List<Station> stations = pandoraRadio.getStations();
         for (Station station : stations) {
             System.out.println("station = " + station.getName());

@@ -69,7 +69,7 @@ public enum Application {
         return thumbsDownSupport;
     }
 
-    public ApplicationSupport getApplicationSupport(AppleScriptTemplate appleScriptTemplate, NativePianobarSupport pianobarSupport) {
+    public ApplicationSupport getApplicationSupport(AppleScriptTemplate appleScriptTemplate, MusicPlayer pianobarSupport) {
         switch (this) {
             case PANDORABOY:
                 return new PandoraBoySupport(appleScriptTemplate);

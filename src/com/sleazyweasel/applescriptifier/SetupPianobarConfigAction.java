@@ -9,7 +9,7 @@ import java.io.IOException;
 
 class SetupPianobarConfigAction implements ActionListener {
 
-    private final NativePianobarSupport pianobarSupport;
+    private final MusicPlayer pianobarSupport;
     private final JTextField usernameField;
     private final JPasswordField passwordField;
     private final JFrame parent;
@@ -18,7 +18,7 @@ class SetupPianobarConfigAction implements ActionListener {
     private final JMenuItem pandoraMenuItem;
     private final MuseControllerMain main;
 
-    public SetupPianobarConfigAction(JFrame parent, NativePianobarSupport pianobarSupport, JTextField usernameField, JPasswordField passwordField, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, MuseControllerMain main) {
+    public SetupPianobarConfigAction(JFrame parent, MusicPlayer pianobarSupport, JTextField usernameField, JPasswordField passwordField, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, MuseControllerMain main) {
         this.parent = parent;
         this.pianobarSupport = pianobarSupport;
         this.usernameField = usernameField;
@@ -31,12 +31,12 @@ class SetupPianobarConfigAction implements ActionListener {
 
     public void actionPerformed(ActionEvent event) {
         try {
-            pianobarSupport.savePianobarConfig(usernameField.getText(), passwordField.getPassword());
+            pianobarSupport.saveConfig(usernameField.getText(), passwordField.getPassword());
             parent.dispose();
-            PianobarUI pianobarUI = new PianobarUI(pianobarSupport, mainMenuBar, pandoraMenuItem, preferences);
-            pianobarUI.initialize();
-            main.setActiveFrame(pianobarUI);
-            pianobarUI.getWindow().setVisible(true);
+            PandoraUI pandoraUI = new PandoraUI(pianobarSupport, mainMenuBar, pandoraMenuItem, preferences);
+            pandoraUI.initialize();
+            main.setActiveFrame(pandoraUI);
+            pandoraUI.getWindow().setVisible(true);
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(parent, "Failed to Configure Pianobar", "Error", JOptionPane.ERROR_MESSAGE);

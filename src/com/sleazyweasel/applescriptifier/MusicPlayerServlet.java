@@ -12,19 +12,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class NativePianobarServlet extends HttpServlet {
-    private final NativePianobarSupport pianobarSupport;
+public class MusicPlayerServlet extends HttpServlet {
+    private final MusicPlayer musicPlayer;
 
-    private AtomicReference<PianobarState> pianobarState = new AtomicReference<PianobarState>(new PianobarState(false, "", "", "", "", NativePianobarSupport.InputType.NONE, new HashMap<Integer, String>(), "", "", false, ""));
+    private AtomicReference<MusicPlayerState> musicPlayerState = new AtomicReference<MusicPlayerState>(new MusicPlayerState(false, "", "", "", "", MusicPlayerInputType.NONE, new HashMap<Integer, String>(), "", "", false, ""));
 
-    public NativePianobarServlet(NativePianobarSupport pianobarSupport) {
-        this.pianobarSupport = pianobarSupport;
+    public MusicPlayerServlet(MusicPlayer musicPlayer) {
+        this.musicPlayer = musicPlayer;
     }
 
     public void init() {
-        pianobarSupport.addListener(new NativePianobarSupport.PianobarStateChangeListener() {
-            public void stateChanged(NativePianobarSupport pianobarSupport, PianobarState state) {
-                pianobarState.set(state);
+        musicPlayer.addListener(new MusicPlayer.MusicPlayerStateChangeListener() {
+            public void stateChanged(MusicPlayer pianobarSupport, MusicPlayerState state) {
+                musicPlayerState.set(state);
             }
         });
     }
@@ -44,63 +44,69 @@ public class NativePianobarServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
         if (pathInfo.startsWith("/airfoilstatusdata")) {
             PrintWriter writer = response.getWriter();
-            PianobarState pianobarState = this.pianobarState.get();
-            writer.println(pianobarState.getAlbumArtUrl());
-            writer.println(pianobarState.getTitle());
-            writer.println(pianobarState.getArtist());
-            writer.println(pianobarState.getAlbum());
-            writer.println(pianobarState.getDuration());
+            MusicPlayerState musicPlayerState = this.musicPlayerState.get();
+            writer.println(musicPlayerState.getAlbumArtUrl());
+            writer.println(musicPlayerState.getTitle());
+            writer.println(musicPlayerState.getArtist());
+            writer.println(musicPlayerState.getAlbum());
+            writer.println(musicPlayerState.getDuration());
             writer.println();
             writer.flush();
             return;
         } else if (pathInfo.startsWith("/playpause")) {
-            pianobarSupport.playPause();
+            musicPlayer.playPause();
             sleep();
         } else if (pathInfo.startsWith("/thumbsup")) {
-            pianobarSupport.thumbsUp();
+            musicPlayer.thumbsUp();
             sleep();
         } else if (pathInfo.startsWith("/thumbsdown")) {
-            pianobarSupport.thumbsDown();
+            musicPlayer.thumbsDown();
             sleep();
         } else if (pathInfo.startsWith("/next")) {
-            pianobarSupport.next();
+            musicPlayer.next();
             sleep();
         } else if (pathInfo.startsWith("/keyStroke")) {
-            pianobarSupport.sendKeyStroke(req.getParameter("key").charAt(0));
-            sleep();
+            char key = req.getParameter("key").charAt(0);
+            if (key == 's') {
+                musicPlayer.askToChooseStation();
+                sleep();
+            }
         } else if (pathInfo.startsWith("/bounce")) {
-            pianobarSupport.bounce();
+            musicPlayer.bounce();
             sleep();
         } else if (pathInfo.startsWith("/volumeUp")) {
-            pianobarSupport.volumeUp();
+            musicPlayer.volumeUp();
             sleep();
         } else if (pathInfo.startsWith("/volumeDown")) {
-            pianobarSupport.volumeDown();
+            musicPlayer.volumeDown();
             sleep();
         } else if (pathInfo.startsWith("/textEntry")) {
+            //todo deprecate this command altogether, as it's a giant hack.
             String text = req.getParameter("text");
-            //trim the user data to protect against buffer overflows in pianobar.
+            //trim the user data to protect against possible buffer overflows in pianobar.
             if (text.length() > 100) {
                 text = text.substring(0, 100);
             }
             if (text != null && text.length() != 0) {
-                if (text.length() == 1 && !Character.isDigit(text.charAt(0))) {
-                    pianobarSupport.sendKeyStroke(text.charAt(0));
-                } else {
-                    sendTextCommand(text);
-                }
+                //the only time we ever do this is from the client is to enter "" to cancel station selection.
+                //so do nothing for now...?
+//                if (text.length() == 1 && !Character.isDigit(text.charAt(0))) {
+//                    musicPlayer.sendKeyStroke(text.charAt(0));
+//                } else {
+//                    sendTextCommand(text);
+//                }
             } else {
-                sendTextCommand("\n");
+                musicPlayer.cancelStationSelection();
             }
             sleep();
         } else if (pathInfo.startsWith("/selectStation")) {
             String stationId = req.getParameter("id");
-            pianobarSupport.selectStation(Integer.valueOf(stationId));
+            musicPlayer.selectStation(Integer.valueOf(stationId));
         } else if (pathInfo.startsWith("/albumArt")) {
             populateResponseDataFromFile(new HashMap<String, Object>());
 
             Map<String, String> responseData = new HashMap<String, String>(1);
-            responseData.put("albumArtUrl", pianobarState.get().getAlbumArtUrl());
+            responseData.put("albumArtUrl", musicPlayerState.get().getAlbumArtUrl());
             response.getWriter().append(new Gson().toJson(responseData));
             return;
         }
@@ -118,19 +124,19 @@ public class NativePianobarServlet extends HttpServlet {
     }
 
     private void populateResponseDataFromFile(Map<String, Object> responseData) {
-        pianobarSupport.activatePianoBar();
-        PianobarState state = pianobarState.get();
+        musicPlayer.activate();
+        MusicPlayerState state = musicPlayerState.get();
 
         boolean inputRequested = state.isInputRequested();
-
+        System.out.println("inputRequested = " + inputRequested);
         responseData.put("station", state.getStation());
         responseData.put("artist", state.getArtist());
         responseData.put("album", state.getAlbum());
         responseData.put("title", state.getTitle());
         responseData.put("heart", state.isCurrentSongIsLoved() ? "YES" : "NO");
         responseData.put("playing", state.isPlaying() ? "YES" : "NO");
-
-        if (inputRequested && state.getInputTypeRequested().equals(NativePianobarSupport.InputType.CHOOSE_STATION)) {
+        System.out.println("state.getInputTypeRequested() = " + state.getInputTypeRequested());
+        if (inputRequested && state.getInputTypeRequested().equals(MusicPlayerInputType.CHOOSE_STATION)) {
             Map<Integer, String> stations = state.getStations();
             responseData.put("stations", stations);
             responseData.put("inputType", "stationSelection");
@@ -147,8 +153,8 @@ public class NativePianobarServlet extends HttpServlet {
         }
     }
 
-    private void sendTextCommand(String command) {
-        pianobarSupport.sendTextCommand(command);
-    }
+//    private void sendTextCommand(String command) {
+//        musicPlayer.sendTextCommand(command);
+//    }
 
 }

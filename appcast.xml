@@ -169,5 +169,20 @@
                        sparkle:dsaSignature="MC4CFQDdFtzQs56ovGB18mE8xMlAcYuCtwIVALWq7VcAqUz7Hys6zwlpDCW97NVp"/>
 
         </item>
+        <item>
+            <title>Version 3.4.0</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>New Features</h2>
+                    <h3>Replaced pianobar as the Pandora client. Now using a pure java client.</h3>
+                    <h3>(Many thanks to the many android Pandora clients based on pandroid. In particular, thanks to Jervis Muindi for pointing me in a good direction.)</h3>
+                ]]></description>
+            <pubDate>Sun, 20 Nov 2011 20:20:20 +0800</pubDate>
+            <enclosure url="https://github.com/downloads/jkwatson/Muse-Controller/Muse Controller_3.4.0.dmg"
+                       sparkle:version="3.4.0"
+                       length="28014122" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFGNcbhcRVM1EC8WQMkMwytgVwkP8AhUA3ajjxnhaoLCwsWeD5bxZ2QTEO7E="/>
+
+        </item>
     </channel>
 </rss>

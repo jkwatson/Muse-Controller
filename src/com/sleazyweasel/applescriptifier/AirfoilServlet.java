@@ -15,9 +15,9 @@ public class AirfoilServlet extends HttpServlet {
     private static final String NAME_KEY = "name";
     private static final String STATE_KEY = "state";
     private AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
-    private final NativePianobarSupport pianobarSupport;
+    private final MusicPlayer pianobarSupport;
 
-    public AirfoilServlet(NativePianobarSupport pianobarSupport) {
+    public AirfoilServlet(MusicPlayer pianobarSupport) {
         this.pianobarSupport = pianobarSupport;
     }
 
@@ -98,7 +98,7 @@ public class AirfoilServlet extends HttpServlet {
 
     }
 
-    private ApplicationSupport getCurrentApplicationSupport(Map<String, Object> runningStatus, NativePianobarSupport pianobarSupport) {
+    private ApplicationSupport getCurrentApplicationSupport(Map<String, Object> runningStatus, MusicPlayer pianobarSupport) {
         Map<String, Object> state = (Map<String, Object>) runningStatus.get(STATE_KEY);
         Map<String, Object> currentSource = (Map<String, Object>) state.get(CURRENT_SOURCE_KEY);
         String sourceName = (String) currentSource.get(NAME_KEY);

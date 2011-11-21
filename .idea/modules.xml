@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Musecontroller.iml" filepath="$PROJECT_DIR$/Musecontroller.iml" />
-      <module fileurl="file://$USER_HOME$/code/pandoradesktop/pandoradesktop.iml" filepath="$USER_HOME$/code/pandoradesktop/pandoradesktop.iml" />
     </modules>
   </component>
 </project>

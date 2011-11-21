@@ -23,6 +23,7 @@ package com.sleazyweasel.pandora;/* Pandoroid Radio - open source pandora.com cl
 
 //import java.io.Console; //Not supported by android's JVM - used for testing this class with java6 on PC/Mac
 
+import com.sleazyweasel.applescriptifier.BadPandoraPasswordException;
 import org.xmlrpc.android.XMLRPCException;
 
 import java.net.URLEncoder;
@@ -168,10 +169,10 @@ public class PandoraRadio {
         return formatUrlArg(v.iterator());
     }
 
-    /*public static void printXmlRpc(String xml) {
-         xml = xml.replace("<param>", "\n\t<param>").replace("</params>", "\n</params>");
-         System.err.println(xml);
-     }*/
+    public static void printXmlRpc(String xml) {
+        xml = xml.replace("<param>", "\n\t<param>").replace("</params>", "\n</params>");
+        System.err.println(xml);
+    }
 
     //@SuppressWarnings("unchecked")
     private Object xmlrpcCall(String method, ArrayList<Object> args, ArrayList<Object> urlArgs) {
@@ -183,7 +184,7 @@ public class PandoraRadio {
             args.add(1, authToken);
 
         String xml = XmlRpc.makeCall(method, args);
-        //printXmlRpc(xml);
+//        printXmlRpc(xml);
         String data = pandoraEncrypt(xml);
 
         ArrayList<String> urlArgStrings = new ArrayList<String>();
@@ -213,7 +214,9 @@ public class PandoraRadio {
         try {
             result = xmlrpc.callWithBody(url.toString(), data);
         } catch (XMLRPCException e) {
-            // TODO Auto-generated catch block
+            if (e.getMessage().contains("AUTH_INVALID_USERNAME_PASSWORD")) {
+                throw new BadPandoraPasswordException();
+            }
             e.printStackTrace();
         }
 
@@ -237,7 +240,6 @@ public class PandoraRadio {
         args.add(user);
         args.add(password);
         Object result = xmlrpcCall("listener.authenticateListener", args, EMPTY_ARGS);
-
         if (result instanceof HashMap<?, ?>) {
             HashMap<String, Object> userInfo = (HashMap<String, Object>) result;
 
@@ -286,12 +288,10 @@ public class PandoraRadio {
     }
 
     public void rate(Station station, Song song, boolean rating) {
-        ArrayList<Object> args = new ArrayList<Object>(7);
+        ArrayList<Object> args = new ArrayList<Object>(3);
         args.add(String.valueOf(station.getId()));
         args.add(song.getTrackToken());
-        args.add(""/*testStrategy*/);
         args.add(rating);
-        args.add(false);
 
         xmlrpcCall("station.addFeedback", args);
     }
