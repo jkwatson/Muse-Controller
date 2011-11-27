@@ -217,7 +217,7 @@ public class PandoraRadio {
             if (e.getMessage().contains("AUTH_INVALID_USERNAME_PASSWORD")) {
                 throw new BadPandoraPasswordException();
             }
-            e.printStackTrace();
+            throw new RuntimeException("Pandora command failed.", e);
         }
 
         return result;

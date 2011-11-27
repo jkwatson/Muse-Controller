@@ -107,13 +107,16 @@ public class MusicPlayerState {
     public int getDuration() {
         if (currentTimeInTrack != null && currentTimeInTrack.length() > 0) {
             String[] parts = currentTimeInTrack.split("/");
-            String totalTimePart = parts[1];
-            String[] minutesAndSeconds = totalTimePart.split(":");
-            int minutes = Integer.parseInt(minutesAndSeconds[0]);
-            int seconds = Integer.parseInt(minutesAndSeconds[1]);
-            return minutes * 60 + seconds;
+            if (parts.length > 1) {
+                String totalTimePart = parts[1];
+                String[] minutesAndSeconds = totalTimePart.split(":");
+                int minutes = Integer.parseInt(minutesAndSeconds[0]);
+                int seconds = Integer.parseInt(minutesAndSeconds[1]);
+                return minutes * 60 + seconds;
+            }
         } else {
             return 0;
         }
+        return 0;
     }
 }

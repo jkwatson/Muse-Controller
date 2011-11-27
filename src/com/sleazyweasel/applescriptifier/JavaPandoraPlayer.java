@@ -16,15 +16,11 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     private Song song;
     private Song[] playlist;
     private int currentSongPointer = -1;
-    private BasicPlayer player = new BasicPlayer();
+    private BasicPlayer player;
     private List<MusicPlayerStateChangeListener> listeners = new ArrayList<MusicPlayerStateChangeListener>();
     private int currentTime;
     private double volume = 0.7d;
     private MusicPlayerInputType currentInputType = MusicPlayerInputType.CHOOSE_STATION;
-
-    public JavaPandoraPlayer() {
-        player.addBasicPlayerListener(this);
-    }
 
     @Override
     public void volumeUp() {
@@ -55,7 +51,12 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     @Override
     public void close() {
         try {
-            player.stop();
+            if (!isStopped()) {
+                player.stop();
+            }
+            pandoraRadio.disconnect();
+            pandoraRadio = null;
+            player = null;
         } catch (BasicPlayerException e) {
             e.printStackTrace();
         }
@@ -64,20 +65,27 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     @Override
     public void bounce() {
         try {
-            player.stop();
+            if (!isStopped()) {
+                player.stop();
+            }
+            pandoraRadio.disconnect();
         } catch (BasicPlayerException e) {
             throw new RuntimeException("Failed to restart Pandora stream", e);
         }
+        player = null;
         pandoraRadio = null;
         activate();
     }
 
     @Override
     public void activate() {
-        if (pandoraRadio != null) {
+        if (pandoraRadio != null && player != null) {
             return;
         }
+        player = new BasicPlayer();
+        player.addBasicPlayerListener(this);
         pandoraRadio = new PandoraRadio();
+        System.out.println("player.getStatus() = " + player.getStatus());
         try {
             LoginInfo loginInfo = getLogin();
             pandoraRadio.connect(loginInfo.userName, loginInfo.password);
@@ -103,11 +111,36 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         }
     }
 
-    private PandoraRadio getRadio() {
+    private void validateRadioState() {
+        System.out.println("JavaPandoraPlayer.validateRadioState");
         if (pandoraRadio != null && pandoraRadio.isAlive()) {
-            return pandoraRadio;
+            try {
+                pandoraRadio.getStations();
+            } catch (Exception e) {
+                //error means we've lost the connection.
+                pandoraRadio.disconnect();
+                try {
+                    if (!isStopped()) {
+                        player.stop();
+                    }
+                } catch (BasicPlayerException e1) {
+                    e1.printStackTrace();
+                }
+                player = null;
+                pandoraRadio = null;
+                song = null;
+                activate();
+                pandoraRadio.getStations();
+                station = pandoraRadio.getStationById(station.getId());
+                refreshPlaylist();
+            }
         }
-        activate();
+    }
+
+    private PandoraRadio getRadio() {
+        if (pandoraRadio == null || !pandoraRadio.isAlive()) {
+            activate();
+        }
         return pandoraRadio;
     }
 
@@ -175,9 +208,12 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     }
 
     private void play(Song song) {
+        validateRadioState();
         this.song = song;
         try {
-            player.open(new URL(song.getAudioUrl()));
+            URL url = new URL(song.getAudioUrl());
+            BufferedInputStream inputStream = new BufferedInputStream(url.openStream());
+            player.open(inputStream);
             player.setGain(this.volume);
             player.play();
         } catch (Exception e) {
@@ -237,6 +273,10 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         return player.getStatus() == BasicPlayer.PLAYING;
     }
 
+    private boolean isStopped() {
+        return player.getStatus() == BasicPlayer.STOPPED || player.getStatus() == BasicPlayer.UNKNOWN;
+    }
+
     @Override
     public void addListener(MusicPlayerStateChangeListener listener) {
         listeners.add(listener);
@@ -248,8 +288,11 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void playPause() {
+        validateRadioState();
         try {
-            if (isPlaying()) {
+            if (isStopped()) {
+                next();
+            } else if (isPlaying()) {
                 player.pause();
             } else {
                 player.resume();
@@ -263,7 +306,16 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void next() {
+        validateRadioState();
+        currentTime = 0;
+        currentFrame = null;
+        frameDupeCount = 0;
         if (station != null && playlist != null && playlist.length > 1) {
+            try {
+                player.stop();
+            } catch (BasicPlayerException e) {
+                e.printStackTrace();
+            }
             play(nextSongToPlay());
         }
         System.out.println("playlist = " + Arrays.toString(playlist));
@@ -288,28 +340,61 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void thumbsUp() {
+        validateRadioState();
         pandoraRadio.rate(station, song, true);
         song = new Song(song, 1);
+        notifyListeners();
     }
 
     @Override
     public void thumbsDown() {
+        validateRadioState();
         pandoraRadio.rate(station, song, false);
         next();
     }
 
     @Override
     public void opened(Object stream, Map properties) {
+        System.out.println("JavaPandoraPlayer.opened");
     }
+
+    private Long currentFrame = null;
+    private int frameDupeCount = 0;
 
     @Override
     public void progress(int bytesread, long microseconds, byte[] pcmdata, Map properties) {
-        Long positionInMicroseconds = (Long) properties.get("mp3.position.microseconds");
-        int seconds = (int) (positionInMicroseconds / 1000000);
+//        System.out.println("JavaPandoraPlayer.progress");
+//        System.out.println("pcmdata = " + Arrays.toString(pcmdata));
+//        System.out.println("microseconds = " + microseconds);
+//        System.out.println("properties = " + properties);
+//        if (bytesread == -1 && microseconds > 0) {
+//            next();
+//        }
+        Long frame = (Long) properties.get("mp3.frame");
+        int seconds = (int) (microseconds / 1000000);
+        if (currentFrame != null && currentFrame.equals(frame)) {
+            frameDupeCount++;
+            if (frameDupeCount > 50) {
+                System.out.println("frame = " + frame);
+                System.out.println("replacing player, nexting due to frame check.");
+                try {
+                    player.stop();
+                } catch (BasicPlayerException e) {
+                    e.printStackTrace();
+                }
+                player = null;
+                player = new BasicPlayer();
+                player.addBasicPlayerListener(this);
+                next();
+            }
+        } else {
+            frameDupeCount = 0;
+        }
         boolean shouldNotify = false;
         if (seconds - currentTime >= 1) {
             shouldNotify = true;
         }
+        currentFrame = frame;
         currentTime = seconds;
         if (shouldNotify) {
             notifyListeners();
@@ -318,6 +403,8 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void stateUpdated(BasicPlayerEvent event) {
+        System.out.println("JavaPandoraPlayer.stateUpdated");
+        System.out.println("event = " + event);
         if (BasicPlayerEvent.EOM == event.getCode()) {
             next();
         }
