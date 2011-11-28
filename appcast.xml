@@ -184,5 +184,22 @@
                        sparkle:dsaSignature="MC0CFGNcbhcRVM1EC8WQMkMwytgVwkP8AhUA3ajjxnhaoLCwsWeD5bxZ2QTEO7E="/>
 
         </item>
+        <item>
+            <title>Version 3.4.1</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>New Features</h2>
+                    <h3>Fixed bugs with the new Java Pandora client:</h3>
+                    <p>Fixed volume control.</p>
+                    <p>Fixed issues with restarting the Pandora stream after session timeout.</p>
+                    <p>Fixed issues with restarting the Pandora stream after stream is broken.</p>
+                ]]></description>
+            <pubDate>Sun, 27 Nov 2011 19:19:19 +0800</pubDate>
+            <enclosure url="https://github.com/downloads/jkwatson/Muse-Controller/Muse Controller 3.4.1.dmg"
+                       sparkle:version="3.4.1"
+                       length="28014122" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFQCxSa4LGMB/rIQYzlbytCKSb2hQSgIUO0/fRLCpwAqIsB1v/uj2APMGdwQ="/>
+
+        </item>
     </channel>
 </rss>
