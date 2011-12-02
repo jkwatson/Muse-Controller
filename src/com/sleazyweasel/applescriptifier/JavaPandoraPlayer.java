@@ -196,6 +196,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void selectStation(Integer stationNumber) {
+        validateRadioState();
         station = stations.get(stationNumber);
         refreshPlaylist();
         next();

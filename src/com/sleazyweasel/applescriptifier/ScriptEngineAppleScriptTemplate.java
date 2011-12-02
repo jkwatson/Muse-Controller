@@ -6,7 +6,6 @@ import java.util.List;
 
 public class ScriptEngineAppleScriptTemplate implements AppleScriptTemplate {
 
-
     private ScriptEngine getEngine() {
         return new ScriptEngineManager().getEngineByName("AppleScript");
     }
@@ -73,11 +72,6 @@ public class ScriptEngineAppleScriptTemplate implements AppleScriptTemplate {
     }
 
     public boolean applicationExists(Application application) {
-        //this is a bad, bad hack. fix it.
-        if (application.equals(Application.MUSECONTROLLER)) {
-            return NativePianobarSupport.isPianoBarConfigured();
-        }
-
         String query = "try\n" +
                 "  tell application \"Finder\"\n" +
                 "    return application file id \"" + application.getIdentifier() + "\"\n" +

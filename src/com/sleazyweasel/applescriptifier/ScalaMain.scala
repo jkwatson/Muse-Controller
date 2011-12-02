@@ -86,7 +86,7 @@ class ScalaMain {
     val nativePianobarServlet = new MusicPlayerServlet(pianobarSupport)
     context.addServlet(new ServletHolder(nativePianobarServlet), "/pianobar/*")
     context.addServlet(new ServletHolder(new SpotifyServlet), "/spotify/*")
-    context.addServlet(new ServletHolder(new ControlServlet), "/control/*")
+    context.addServlet(new ServletHolder(new ControlServlet(musicPlayer)), "/control/*")
 
     spawn({
       server.start();

@@ -19,6 +19,11 @@ public class ControlServlet extends HttpServlet {
     private AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
 
     private List<String> applications = new ArrayList<String>();
+    private final MusicPlayer musicPlayer;
+
+    public ControlServlet(MusicPlayer musicPlayer) {
+        this.musicPlayer = musicPlayer;
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
@@ -49,9 +54,16 @@ public class ControlServlet extends HttpServlet {
                 continue;
             }
             System.out.println("checking: " + application);
-            if (appleScriptTemplate.applicationExists(application)) {
-                System.out.println("adding: " + application);
-                applications.add(application.getDisplayName());
+            if (Application.MUSECONTROLLER.equals(application)) {
+                if (musicPlayer.isConfigured()) {
+                    System.out.println("adding: " + application);
+                    applications.add(Application.MUSECONTROLLER.getDisplayName());
+                }
+            } else {
+                if (appleScriptTemplate.applicationExists(application)) {
+                    System.out.println("adding: " + application);
+                    applications.add(application.getDisplayName());
+                }
             }
         }
     }
