@@ -1,5 +1,7 @@
 package com.sleazyweasel.applescriptifier;
 
+import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
+
 import java.io.*;
 import java.util.*;
 
@@ -328,6 +330,11 @@ public class NativePianobarSupport implements MusicPlayer {
     @Override
     public void cancelStationSelection() {
         sendTextCommand("\n");
+    }
+
+    @Override
+    public void initializeFromSavedUserState(MuseControllerPreferences preferences) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

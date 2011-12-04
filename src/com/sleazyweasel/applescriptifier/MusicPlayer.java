@@ -1,5 +1,7 @@
 package com.sleazyweasel.applescriptifier;
 
+import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
+
 import java.io.IOException;
 
 public interface MusicPlayer extends ApplicationSupport {
@@ -27,6 +29,8 @@ public interface MusicPlayer extends ApplicationSupport {
     void addListener(MusicPlayerStateChangeListener listener);
 
     void cancelStationSelection();
+
+    void initializeFromSavedUserState(MuseControllerPreferences preferences);
 
     public interface MusicPlayerStateChangeListener {
         void stateChanged(MusicPlayer pianobarSupport, MusicPlayerState state);

@@ -1,5 +1,6 @@
 package com.sleazyweasel.applescriptifier;
 
+import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
 import com.sleazyweasel.pandora.PandoraRadio;
 import com.sleazyweasel.pandora.Song;
 import com.sleazyweasel.pandora.Station;
@@ -89,6 +90,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         try {
             LoginInfo loginInfo = getLogin();
             pandoraRadio.connect(loginInfo.userName, loginInfo.password);
+            stations = pandoraRadio.getStations();
             notifyListeners();
         } catch (BadPandoraPasswordException b) {
             pandoraRadio = null;
@@ -130,7 +132,6 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
                 pandoraRadio = null;
                 song = null;
                 activate();
-                pandoraRadio.getStations();
                 station = pandoraRadio.getStationById(station.getId());
                 refreshPlaylist();
             }
@@ -285,6 +286,12 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void cancelStationSelection() {
+        currentInputType = MusicPlayerInputType.NONE;
+    }
+
+    @Override
+    public void initializeFromSavedUserState(MuseControllerPreferences preferences) {
+        //todo implement me!
     }
 
     @Override

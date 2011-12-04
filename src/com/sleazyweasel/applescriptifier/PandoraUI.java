@@ -29,13 +29,16 @@ public class PandoraUI implements MuseControllerFrame {
     private final MusicPlayer musicPlayer;
     private final JMenuBar mainMenuBar;
     private final JMenuItem pandoraMenuItem;
+    private final MuseControllerPreferences preferences;
 
     public PandoraUI(MusicPlayer musicPlayer, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, MuseControllerPreferences preferences) {
         this.musicPlayer = musicPlayer;
         this.mainMenuBar = mainMenuBar;
         this.pandoraMenuItem = pandoraMenuItem;
+        this.preferences = preferences;
         initUserInterface();
         preferences.setPandoraAsStreamer();
+        musicPlayer.initializeFromSavedUserState(preferences);
     }
 
     private void initUserInterface() {
