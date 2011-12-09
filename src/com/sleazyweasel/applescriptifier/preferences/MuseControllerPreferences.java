@@ -11,6 +11,8 @@ public class MuseControllerPreferences {
     private static final String LAST_STREAMER_KEY = "last.streamer";
     private static final String PANDORA_STREAMER_VALUE = "Pandora";
     private static final String SPOTIFY_STREAMER_VALUE = "Spotify";
+    private static final String PREVIOUS_PANDORA_STATION_ID_KEY = "PREVIOUS_PANDORA_STATION_ID_KEY";
+    private static final String PREVIOUS_PANDORA_VOLUME_KEY = "PREVIOUS_PANDORA_VOLUME_KEY";
 
     private final Preferences preferences;
 
@@ -64,4 +66,42 @@ public class MuseControllerPreferences {
     public void setSpotifyAsStreamer() {
         preferences.put(LAST_STREAMER_KEY, SPOTIFY_STREAMER_VALUE);
     }
+
+    public Long getPreviousPandoraStationId() {
+        if (keyExists(PREVIOUS_PANDORA_STATION_ID_KEY)) {
+            return preferences.getLong(PREVIOUS_PANDORA_STATION_ID_KEY, 0);
+        }
+        return null;
+    }
+
+    public void setPandoraStationId(Long stationId) {
+        preferences.putLong(PREVIOUS_PANDORA_STATION_ID_KEY, stationId);
+    }
+
+    public Double getPreviousPandoraVolume() {
+        if (keyExists(PREVIOUS_PANDORA_VOLUME_KEY)) {
+            return preferences.getDouble(PREVIOUS_PANDORA_VOLUME_KEY, 0);
+        }
+        return null;
+    }
+
+    public void setPandoraVolume(double volume) {
+        preferences.putDouble(PREVIOUS_PANDORA_VOLUME_KEY, volume);
+    }
+
+    private boolean keyExists(String keyToCheck) {
+        try {
+            String[] keys = preferences.keys();
+            for (String key : keys) {
+                if (keyToCheck.equals(key)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (BackingStoreException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

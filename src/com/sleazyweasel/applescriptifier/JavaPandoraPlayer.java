@@ -20,8 +20,13 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     private BasicPlayer player;
     private List<MusicPlayerStateChangeListener> listeners = new ArrayList<MusicPlayerStateChangeListener>();
     private int currentTime;
-    private double volume = 0.7d;
+    private double volume = 0.5d;
     private MusicPlayerInputType currentInputType = MusicPlayerInputType.CHOOSE_STATION;
+    private final MuseControllerPreferences preferences;
+
+    public JavaPandoraPlayer(MuseControllerPreferences preferences) {
+        this.preferences = preferences;
+    }
 
     @Override
     public void volumeUp() {
@@ -38,6 +43,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         } catch (BasicPlayerException e) {
             e.printStackTrace();
         }
+        preferences.setPandoraVolume(volume);
     }
 
     @Override
@@ -65,17 +71,24 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void bounce() {
+        boolean playing = isPlaying();
         try {
             if (!isStopped()) {
                 player.stop();
             }
             pandoraRadio.disconnect();
         } catch (BasicPlayerException e) {
-            throw new RuntimeException("Failed to restart Pandora stream", e);
+            e.printStackTrace();
         }
         player = null;
         pandoraRadio = null;
         activate();
+        station = pandoraRadio.getStationById(station.getId());
+        refreshPlaylist();
+        if (playing) {
+            playPause();
+        }
+        notifyListeners();
     }
 
     @Override
@@ -202,6 +215,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         refreshPlaylist();
         next();
         currentInputType = MusicPlayerInputType.NONE;
+        preferences.setPandoraStationId(station.getId());
         notifyListeners();
     }
 
@@ -216,8 +230,8 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             URL url = new URL(song.getAudioUrl());
             BufferedInputStream inputStream = new BufferedInputStream(url.openStream());
             player.open(inputStream);
-            player.setGain(this.volume);
             player.play();
+            applyGain();
         } catch (Exception e) {
             //not sure what I can do here!?
             e.printStackTrace();
@@ -291,7 +305,17 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void initializeFromSavedUserState(MuseControllerPreferences preferences) {
-        //todo implement me!
+        Long stationId = preferences.getPreviousPandoraStationId();
+        Double volume = preferences.getPreviousPandoraVolume();
+        if (volume != null) {
+            this.volume = volume;
+        }
+        if (stationId != null) {
+            station = pandoraRadio.getStationById(stationId);
+            currentInputType = MusicPlayerInputType.NONE;
+            refreshPlaylist();
+            notifyListeners();
+        }
     }
 
     @Override

@@ -39,7 +39,7 @@ class ScalaMain {
   private final val PORT: Int = 23233
 
   private val preferences: MuseControllerPreferences = new MuseControllerPreferences(Preferences.userNodeForPackage(classOf[ScalaMain]))
-  private val musicPlayer: MusicPlayer = new JavaPandoraPlayer
+  private val musicPlayer: MusicPlayer = new JavaPandoraPlayer(preferences)
 
   private def start() {
     println("start")
@@ -64,6 +64,10 @@ class ScalaMain {
   }
 
   private def startupWebServer(pianobarSupport: MusicPlayer) {
+    //big todo: make the port dynamic...search until you find a free one.
+
+
+    val server = new Server(PORT)
     register(0, 0, InetAddress.getLocalHost.getHostName, "_asrunner._udp", "local.", null, PORT, null, new RegisterListener {
       def serviceRegistered(dnssdRegistration: DNSSDRegistration, port: Int, s: String, s1: String, s2: String) {
       }
@@ -72,7 +76,6 @@ class ScalaMain {
         throw new RuntimeException("Failed to register Muse Controller service with local DNS.")
       }
     })
-    val server = new Server(PORT)
 
     val context = new ServletContextHandler(ServletContextHandler.SESSIONS)
     context.setContextPath("/")
