@@ -102,6 +102,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         System.out.println("player.getStatus() = " + player.getStatus());
         try {
             LoginInfo loginInfo = getLogin();
+            pandoraRadio.sync();
             pandoraRadio.connect(loginInfo.userName, loginInfo.password);
             stations = pandoraRadio.getStations();
             notifyListeners();

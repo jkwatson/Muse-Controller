@@ -24,6 +24,9 @@ package com.sleazyweasel.pandora;/* Pandoroid Radio - open source pandora.com cl
  */
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Blowfish {
 
     // Cipher directions
@@ -122,8 +125,17 @@ public class Blowfish {
     }
 
     public String decrypt(char[] data) {
+        List<Character> characters = decryptToBytes(data);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Character character : characters) {
+            stringBuilder.append(character);
+        }
+        return stringBuilder.toString();
+    }
+
+    public List<Character> decryptToBytes(char[] data) {
         long[] chars = new long[8];
-        StringBuilder result = new StringBuilder(8);
+
 
         if (data.length != 8) {
             throw new RuntimeException("Attempted to encrypt data of invalid block length: " + data.length);
@@ -146,11 +158,12 @@ public class Blowfish {
         chars[6] = ((xr >> 8) & 0xff);
         chars[7] = (xr & 0xff);
 
-        for (int c = 0; c < chars.length; c++) {
-            result.append(String.valueOf((char) chars[c]));
+        List<Character> results = new ArrayList<Character>();
+        for (long character : chars) {
+            results.add((char) character);
         }
 
-        return result.toString();
+        return results;
     }
 
     public int blocksize() {

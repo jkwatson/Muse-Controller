@@ -49,6 +49,7 @@ public class PandoraRadio {
     private String lid;
     private String webAuthToken;
     private ArrayList<Station> stations;
+    private long offset = 0L;
 
     public PandoraRadio() {
         xmlrpc = new XmlRpc(RPC_URL);
@@ -113,6 +114,18 @@ public class PandoraRadio {
         return result.toString().trim();
     }
 
+    public List<Character> pandoraDecryptToBytes(String s) {
+        List<Character> results = new ArrayList<Character>();
+        int length = s.length();
+        int i16 = 0;
+        for (int i = 0; i < length; i += 16) {
+            i16 = (i + 16 > length) ? (length - 1) : (i + 16);
+            List<Character> decrypt = blowfish_decode.decryptToBytes(pad(fromHex(s.substring(i, i16)), 8).toCharArray());
+            results.addAll(decrypt);
+        }
+        return results;
+    }
+
     private String formatUrlArg(boolean v) {
         return v ? "true" : "false";
     }
@@ -175,16 +188,19 @@ public class PandoraRadio {
     }
 
     //@SuppressWarnings("unchecked")
-    private Object xmlrpcCall(String method, ArrayList<Object> args, ArrayList<Object> urlArgs) {
+    private Object xmlrpcCall(String method, ArrayList<Object> args, ArrayList<Object> urlArgs, boolean includeTimestamp) {
         if (urlArgs == null)
             urlArgs = (ArrayList<Object>) args.clone();
 
-        args.add(0, new Long(System.currentTimeMillis() / 1000L));
+//        args.add(0, new Long(System.currentTimeMillis() / 1000L) + 15552000);
+        if (includeTimestamp) {
+            args.add(0, (System.currentTimeMillis() / 1000L) + offset);
+        }
         if (authToken != null)
             args.add(1, authToken);
 
         String xml = XmlRpc.makeCall(method, args);
-//        printXmlRpc(xml);
+        printXmlRpc(xml);
         String data = pandoraEncrypt(xml);
 
         ArrayList<String> urlArgStrings = new ArrayList<String>();
@@ -224,22 +240,43 @@ public class PandoraRadio {
     }
 
     Object xmlrpcCall(String method, ArrayList<Object> args) {
-        return xmlrpcCall(method, args, null);
+        return xmlrpcCall(method, args, null, true);
     }
 
-    private Object xmlrpcCall(String method) {
+    private Object xmlrpcCall(String method, boolean includeTimestamp) {
         EMPTY_ARGS.clear();
-        return xmlrpcCall(method, EMPTY_ARGS, null);
+        return xmlrpcCall(method, EMPTY_ARGS, null, includeTimestamp);
     }
 
     public void connect(String user, String password) {
         rid = String.format("%07dP", System.currentTimeMillis() % 1000L);
         authToken = null;
 
-        ArrayList<Object> args = new ArrayList<Object>(2);
+        ArrayList<Object> args = new ArrayList<Object>();
         args.add(user);
         args.add(password);
-        Object result = xmlrpcCall("listener.authenticateListener", args, EMPTY_ARGS);
+        args.add("html5tuner");
+        args.add("");
+        args.add("");
+        args.add("HTML5");
+        args.add(true);
+
+//        <?scala.xml version=\"1.0\"?><methodCall>"
+//                                                        "<methodName>listener.authenticateListener</methodName>"
+//                                                        "<params><param><value><int>%lu</int></value></param>"
+//                                                        /* user */
+//                                                        "<param><value><string>%s</string></value></param>"
+//                                                        /* password */
+//                                                        "<param><value><string>%s</string></value></param>"
+//                                                        /* vendor */
+//                                                        "<param><value><string>html5tuner</string></value></param>"
+//                                                        "<param><value><string/></value></param>"
+//                                                        "<param><value><string/></value></param>"
+//                                                        "<param><value><string>HTML5</string></value></param>"
+//                                                        "<param><value><boolean>1</boolean></value></param>"
+//                                                        "</params></methodCall>
+
+        Object result = xmlrpcCall("listener.authenticateListener", args, EMPTY_ARGS, true);
         if (result instanceof HashMap<?, ?>) {
             HashMap<String, Object> userInfo = (HashMap<String, Object>) result;
 
@@ -247,6 +284,19 @@ public class PandoraRadio {
             authToken = (String) userInfo.get("authToken");
             lid = (String) userInfo.get("listenerId");
         }
+    }
+
+    public void sync() {
+        long currentSystemTime = System.currentTimeMillis() / 1000L;
+        String result = (String) xmlrpcCall("misc.sync", false);
+        List<Character> s = pandoraDecryptToBytes(result);
+        //first 4 bytes appear to be junk?
+        StringBuilder timestampAsString = new StringBuilder();
+        for (int i = 4; i < s.size(); i++) {
+            timestampAsString.append(s.get(i));
+        }
+        long currentPandoraTime = Long.valueOf(timestampAsString.toString().trim());
+        offset = currentPandoraTime - currentSystemTime;
     }
 
     public void disconnect() {
@@ -261,7 +311,7 @@ public class PandoraRadio {
 
     public ArrayList<Station> getStations() {
         // get stations
-        Object result = xmlrpcCall("station.getStations");
+        Object result = xmlrpcCall("station.getStations", true);
 
         if (result instanceof Object[]) {
             Object[] stationsResult = (Object[]) result;
