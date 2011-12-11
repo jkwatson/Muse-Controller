@@ -261,21 +261,6 @@ public class PandoraRadio {
         args.add("HTML5");
         args.add(true);
 
-//        <?scala.xml version=\"1.0\"?><methodCall>"
-//                                                        "<methodName>listener.authenticateListener</methodName>"
-//                                                        "<params><param><value><int>%lu</int></value></param>"
-//                                                        /* user */
-//                                                        "<param><value><string>%s</string></value></param>"
-//                                                        /* password */
-//                                                        "<param><value><string>%s</string></value></param>"
-//                                                        /* vendor */
-//                                                        "<param><value><string>html5tuner</string></value></param>"
-//                                                        "<param><value><string/></value></param>"
-//                                                        "<param><value><string/></value></param>"
-//                                                        "<param><value><string>HTML5</string></value></param>"
-//                                                        "<param><value><boolean>1</boolean></value></param>"
-//                                                        "</params></methodCall>
-
         Object result = xmlrpcCall("listener.authenticateListener", args, EMPTY_ARGS, true);
         if (result instanceof HashMap<?, ?>) {
             HashMap<String, Object> userInfo = (HashMap<String, Object>) result;

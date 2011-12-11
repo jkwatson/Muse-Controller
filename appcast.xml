@@ -245,5 +245,22 @@
                        sparkle:dsaSignature="MC0CFE3/+xqhAzEEMHtIs0DeeQJL1i+hAhUAkeTfautKBc8o+4PUz9HMKvV/llU="/>
 
         </item>
+        <item>
+            <title>Version 3.4.3</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>New Features/Bugs Fixed:</h2>
+                    <h3>Updated Pandora code to properly sync the time to the pandora servers.</h3>
+                    <h3>Properly saves volume from song to song.</h3>
+                    <h3>Saves volume and the previous played station across Muse Controller sessions.</h3>
+                    <h3>Fixed the "Restart Pandora" functionality.</h3>
+                ]]></description>
+            <pubDate>Sat, 10 Dec 2011 15:15:15 +0800</pubDate>
+            <enclosure url="https://github.com/downloads/jkwatson/Muse-Controller/Muse Controller 3.4.3.dmg"
+                       sparkle:version="3.4.3"
+                       length="28014122" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFCi7mFa+VbsiU9OGc5hdPH2i6hlGAhUA8kStkOShHEWmWjZ6myP5qVzlPs8="/>
+
+        </item>
     </channel>
 </rss>
