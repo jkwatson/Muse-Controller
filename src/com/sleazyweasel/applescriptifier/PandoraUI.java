@@ -202,6 +202,7 @@ public class PandoraUI implements MuseControllerFrame {
                 return component;
             }
         });
+        models.stationComboBoxModel.setSelectedItem(null);
     }
 
     private void initStationNameLabel() {
@@ -461,7 +462,10 @@ public class PandoraUI implements MuseControllerFrame {
                     if (albumArtUrl.startsWith("http")) {
                         try {
                             URL imageUrl = new URL(albumArtUrl);
-                            widgets.imageLabel.setIcon(new ImageIcon(imageUrl));
+                            ImageIcon icon = new ImageIcon(imageUrl);
+                            Image scaledImage = icon.getImage().getScaledInstance(130, 130, Image.SCALE_SMOOTH);
+                            icon.setImage(scaledImage);
+                            widgets.imageLabel.setIcon(icon);
                         } catch (MalformedURLException e) {
                             //do nothing, I guess/
                         }

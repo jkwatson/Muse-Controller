@@ -374,7 +374,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     @Override
     public void thumbsUp() {
         validateRadioState();
-        pandoraRadio.rate(station, song, true);
+        pandoraRadio.rate(song, true);
         song = new Song(song, 1);
         notifyListeners();
     }
@@ -382,7 +382,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     @Override
     public void thumbsDown() {
         validateRadioState();
-        pandoraRadio.rate(station, song, false);
+        pandoraRadio.rate(song, false);
         next();
     }
 
@@ -396,13 +396,6 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void progress(int bytesread, long microseconds, byte[] pcmdata, Map properties) {
-//        System.out.println("JavaPandoraPlayer.progress");
-//        System.out.println("pcmdata = " + Arrays.toString(pcmdata));
-//        System.out.println("microseconds = " + microseconds);
-//        System.out.println("properties = " + properties);
-//        if (bytesread == -1 && microseconds > 0) {
-//            next();
-//        }
         Long frame = (Long) properties.get("mp3.frame");
         int seconds = (int) (microseconds / 1000000);
         if (currentFrame != null && currentFrame.equals(frame)) {

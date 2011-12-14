@@ -200,7 +200,7 @@ public class PandoraRadio {
             args.add(1, authToken);
 
         String xml = XmlRpc.makeCall(method, args);
-        printXmlRpc(xml);
+        //printXmlRpc(xml);
         String data = pandoraEncrypt(xml);
 
         ArrayList<String> urlArgStrings = new ArrayList<String>();
@@ -322,9 +322,9 @@ public class PandoraRadio {
         return null;
     }
 
-    public void rate(Station station, Song song, boolean rating) {
+    public void rate(Song song, boolean rating) {
         ArrayList<Object> args = new ArrayList<Object>(3);
-        args.add(String.valueOf(station.getId()));
+        args.add(String.valueOf(song.getStationId()));
         args.add(song.getTrackToken());
         args.add(rating);
 
