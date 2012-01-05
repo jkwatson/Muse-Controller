@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"
-     xmlns:dc="http://purl.org/dc/elements/1.1/">
+        >
     <channel>
         <title>Muse Controller Changelog</title>
         <link>http://www.musecontrol.com/sparkle/appcast.xml</link>
@@ -260,6 +260,36 @@
                        sparkle:version="3.4.3"
                        length="28014122" type="application/octet-stream"
                        sparkle:dsaSignature="MC0CFCi7mFa+VbsiU9OGc5hdPH2i6hlGAhUA8kStkOShHEWmWjZ6myP5qVzlPs8="/>
+
+        </item>
+        <item>
+            <title>Version 3.4.4</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>New Features/Bugs Fixed:</h2>
+                    <h3>Fixed Pandora album art scaling.</h3>
+                    <h3>Thumbs up/down on Pandora quickmix stations no longer causes an error.</h3>
+                    <h3>Initial Pandora startup now properly shows the "Select a Station" option.</h3>
+                ]]></description>
+            <pubDate>Wed, 14 Dec 2011 20:20:20 +0800</pubDate>
+            <enclosure url="https://github.com/downloads/jkwatson/Muse-Controller/Muse Controller 3.4.4.dmg"
+                       sparkle:version="3.4.4"
+                       length="28014122" type="application/octet-stream"
+                       sparkle:dsaSignature="MC4CFQDY7OMTCu+CyIdnPOBi+znCySqXjQIVAIvH5yBbpdLet9i1Qs+riVclVrC6"/>
+
+        </item>
+        <item>
+            <title>Version 3.4.5</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>New Features/Bugs Fixed:</h2>
+                    <h3>Re-enabled Spotify streaming after API changes. WARNING: Spotify support is still very alpha-quality, and may stop working unexpectedly at any time.</h3>
+                ]]></description>
+            <pubDate>Wed, 4 Jan 2012 22:22:22 +0800</pubDate>
+            <enclosure url="https://github.com/downloads/jkwatson/Muse-Controller/Muse Controller 3.4.5.dmg"
+                       sparkle:version="3.4.5"
+                       length="28014122" type="application/octet-stream"
+                       sparkle:dsaSignature="MC4CFQCLJfKVrYv4CDnLgiGEFq4SFAyhlgIVAMoW9RBzpmfd6qFWI0hWUznygiuA"/>
 
         </item>
     </channel>
