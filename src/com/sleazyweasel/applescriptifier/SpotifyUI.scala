@@ -70,7 +70,7 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.nextButton.reactions += {
       case ButtonClicked(`nextButton`) => doWithLock {
         () =>
-          spotifySupport nextTrack()
+          spotifySupport next()
       }
     }
   }
@@ -128,7 +128,7 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.previousButton.enabled = false
     widgets.previousButton.reactions += {
       case ButtonClicked(`previousButton`) => doWithLock {
-        () => spotifySupport previousTrack()
+        () => spotifySupport previous()
       }
     }
   }

@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static layout.TableLayoutConstants.FILL;
@@ -419,7 +420,7 @@ public class PandoraUI implements MuseControllerFrame {
 
     private class MusicPlayerStateChangeListener implements MusicPlayer.MusicPlayerStateChangeListener {
 
-        public void stateChanged(final MusicPlayer pianobarSupport, MusicPlayerState state) {
+        public void stateChanged(final MusicPlayer player, MusicPlayerState state) {
             if (acquireLock()) {
                 widgets.playPauseButton.setEnabled(!state.isInputRequested());
                 widgets.nextButton.setEnabled(!state.isInputRequested());
@@ -460,15 +461,7 @@ public class PandoraUI implements MuseControllerFrame {
                     widgets.imageLabel.setName(albumArtUrl);
 
                     if (albumArtUrl.startsWith("http")) {
-                        try {
-                            URL imageUrl = new URL(albumArtUrl);
-                            ImageIcon icon = new ImageIcon(imageUrl);
-                            Image scaledImage = icon.getImage().getScaledInstance(130, 130, Image.SCALE_SMOOTH);
-                            icon.setImage(scaledImage);
-                            widgets.imageLabel.setIcon(icon);
-                        } catch (MalformedURLException e) {
-                            //do nothing, I guess/
-                        }
+                        setAlbumImage(albumArtUrl);
                     } else {
                         widgets.imageLabel.setIcon(null);
                     }
@@ -478,6 +471,36 @@ public class PandoraUI implements MuseControllerFrame {
                 releaseLock();
             }
         }
+    }
+
+    private void setAlbumImage(final String albumArtUrl) {
+        new SwingWorker() {
+            @Override
+            protected Object doInBackground() throws Exception {
+                ImageIcon icon = null;
+                try {
+                    URL imageUrl = new URL(albumArtUrl);
+                    icon = new ImageIcon(imageUrl);
+                    Image scaledImage = icon.getImage().getScaledInstance(130, 130, Image.SCALE_SMOOTH);
+                    icon.setImage(scaledImage);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+                return icon;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    widgets.imageLabel.setIcon((Icon) get());
+                } catch (InterruptedException e) {
+                    //make sure that anyone else gets notified that something should be done.
+                    Thread.currentThread().interrupt();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
     }
 
     private static void open(URI uri) {

@@ -196,7 +196,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         }
 
         boolean isPlaying = isPlaying();
-        return new MusicPlayerState(currentSongIsLoved, title, artist, stationName, album, currentInputType, stationData, albumArtUrl, currentTimeInTrack, isPlaying, detailUrl);
+        return new MusicPlayerState(currentSongIsLoved, title, artist, stationName, album, currentInputType, stationData, albumArtUrl, currentTimeInTrack, isPlaying, detailUrl, volume);
     }
 
     private String formatCurrentTime() {
@@ -228,9 +228,49 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         validateRadioState();
         this.song = song;
         try {
-            URL url = new URL(song.getAudioUrl());
-            BufferedInputStream inputStream = new BufferedInputStream(url.openStream());
-            player.open(inputStream);
+            final URL url = new URL(song.getAudioUrl());
+            final InputStream inputStream = url.openStream();
+            File tempFile = File.createTempFile("pandora", "mp3");
+            tempFile.deleteOnExit();
+            final OutputStream bigBuffer = new FileOutputStream(tempFile);
+            final Object monitor = new Object();
+            new Thread(new Runnable() {
+                long totalBytes = 0;
+
+                public void run() {
+                    try {
+                        byte[] buf = new byte[8192];
+                        while (true) {
+                            int length = inputStream.read(buf);
+                            if (length < 0) {
+                                break;
+                            }
+                            totalBytes += length;
+                            bigBuffer.write(buf, 0, length);
+                            bigBuffer.flush();
+                            if (totalBytes > 64000) {
+                                synchronized (monitor) {
+                                    monitor.notify();
+                                }
+                            }
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (inputStream != null) {
+                            try {
+                                inputStream.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }).start();
+            synchronized (monitor) {
+                monitor.wait();
+            }
+            player.open(tempFile);
             player.play();
             applyGain();
         } catch (Exception e) {
@@ -238,6 +278,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             e.printStackTrace();
             throw new RuntimeException("Failed to play music.", e);
         }
+
     }
 
     @Override
@@ -321,7 +362,6 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void playPause() {
-        validateRadioState();
         try {
             if (isStopped()) {
                 next();
@@ -339,7 +379,6 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void next() {
-        validateRadioState();
         currentTime = 0;
         currentFrame = null;
         frameDupeCount = 0;

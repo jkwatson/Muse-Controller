@@ -13,6 +13,7 @@ public class MuseControllerPreferences {
     private static final String SPOTIFY_STREAMER_VALUE = "Spotify";
     private static final String PREVIOUS_PANDORA_STATION_ID_KEY = "PREVIOUS_PANDORA_STATION_ID_KEY";
     private static final String PREVIOUS_PANDORA_VOLUME_KEY = "PREVIOUS_PANDORA_VOLUME_KEY";
+    private static final String PREVIOUS_SPOTIFY_VOLUME_KEY = "PREVIOUS_SPOTIFY_VOLUME_KEY";
 
     private final Preferences preferences;
 
@@ -87,6 +88,14 @@ public class MuseControllerPreferences {
 
     public void setPandoraVolume(double volume) {
         preferences.putDouble(PREVIOUS_PANDORA_VOLUME_KEY, volume);
+    }
+
+    public Float getPreviousSpotifyVolume() {
+        return preferences.getFloat(PREVIOUS_SPOTIFY_VOLUME_KEY, 1.0f);
+    }
+
+    public void setSpotifyVolume(float volume) {
+        preferences.putFloat(PREVIOUS_SPOTIFY_VOLUME_KEY, volume);
     }
 
     private boolean keyExists(String keyToCheck) {

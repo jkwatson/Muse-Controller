@@ -17,8 +17,9 @@ public class MusicPlayerState {
     private final String detailUrl;
     private final String currentTimeInTrack;
     private final boolean playing;
+    private final double volume;
 
-    public MusicPlayerState(boolean currentSongIsLoved, String title, String artist, String station, String album, MusicPlayerInputType inputTypeRequested, Map<Integer, String> stations, String albumArtUrl, String currentTimeInTrack, boolean isPlaying, String detailUrl) {
+    public MusicPlayerState(boolean currentSongIsLoved, String title, String artist, String station, String album, MusicPlayerInputType inputTypeRequested, Map<Integer, String> stations, String albumArtUrl, String currentTimeInTrack, boolean isPlaying, String detailUrl, double volume) {
         this.currentSongIsLoved = currentSongIsLoved;
         this.title = title;
         this.artist = artist;
@@ -28,6 +29,7 @@ public class MusicPlayerState {
         this.stations = stations;
         this.albumArtUrl = albumArtUrl;
         this.detailUrl = detailUrl;
+        this.volume = volume;
         currentTimeInTrack = currentTimeInTrack.trim();
         if (currentTimeInTrack.startsWith("-")) {
             currentTimeInTrack = currentTimeInTrack.substring(1);
@@ -118,5 +120,9 @@ public class MusicPlayerState {
             return 0;
         }
         return 0;
+    }
+
+    public double getVolume() {
+        return volume;
     }
 }

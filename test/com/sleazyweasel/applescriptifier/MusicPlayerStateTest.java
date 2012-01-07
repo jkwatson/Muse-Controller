@@ -8,7 +8,7 @@ public class MusicPlayerStateTest {
 
     @Test
     public void testTimeInTrack() {
-        MusicPlayerState testClass = new MusicPlayerState(false, null, null, null, null, null, null, null, "-02:19/03:11", false, null);
+        MusicPlayerState testClass = new MusicPlayerState(false, null, null, null, null, null, null, null, "-02:19/03:11", false, null, 1);
 
         int duration = testClass.getDuration();
         assertEquals(191, duration);

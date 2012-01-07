@@ -1,5 +1,6 @@
 package com.sleazyweasel.applescriptifier;
 
+import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
 import de.felixbruns.jotify.JotifyPool;
 import de.felixbruns.jotify.exceptions.AuthenticationException;
 import de.felixbruns.jotify.exceptions.ConnectionException;
@@ -16,12 +17,20 @@ import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-public class NativeSpotifySupportImpl implements NativeSpotifySupport {
+public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerListener {
 
     private JotifyPool jotifyPool;
     private JotifyPlayer jotifyPlayer;
+    private float volume;
+    private Status playerStatus;
+    private Track currentTrack;
+    private int currentPlayerPosition;
+    private Playlist currentPlaylist;
+    private MusicPlayerInputType currentInputType = MusicPlayerInputType.NONE;
+    private List<MusicPlayerStateChangeListener> listeners = new ArrayList<MusicPlayerStateChangeListener>();
 
     public NativeSpotifySupportImpl() {
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -42,6 +51,7 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
         if (jotifyPlayer == null) {
             try {
                 jotifyPlayer = new JotifyPlayer(getJotifyPool());
+                JotifyBroadcast.getInstance().addPlayerListener(this);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);
@@ -95,7 +105,7 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
     public boolean authorize(String username, char[] password) {
         try {
             getJotifyPool().login(username, new String(password));
-            saveSpotifyConfig(username, password);
+            saveConfig(username, password);
         } catch (ConnectionException e) {
             e.printStackTrace();
             return false;
@@ -109,7 +119,7 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
         return true;
     }
 
-    public void saveSpotifyConfig(String username, char[] password) throws IOException {
+    public void saveConfig(String username, char[] password) throws IOException {
         File spotifyConfigDirectory = getSpotifyConfigDirectory();
         if (!spotifyConfigDirectory.exists()) {
             spotifyConfigDirectory.mkdirs();
@@ -175,6 +185,7 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
 
     @Override
     public void play(Playlist playlist) {
+        this.currentPlaylist = playlist;
         JotifyPlayer player = getJotifyPlayer();
         List<Track> tracks = playlist.getTracks();
         List<Track> browsedTracks;
@@ -196,7 +207,7 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
     }
 
     @Override
-    public void nextTrack() {
+    public void next() {
         getJotifyPlayer().controlNext();
     }
 
@@ -211,13 +222,48 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
     }
 
     @Override
-    public void previousTrack() {
+    public void previous() {
         getJotifyPlayer().controlPrevious();
     }
 
     @Override
     public void setVolume(float volume) {
+        this.volume = volume;
         getJotifyPlayer().controlVolume(volume);
+    }
+
+    @Override
+    public void volumeUp() {
+        setVolume(Math.min(volume + .1f, 1f));
+    }
+
+    @Override
+    public void volumeDown() {
+        setVolume(Math.max(0, volume - .1f));
+    }
+
+    @Override
+    public void initializeFromSavedUserState(MuseControllerPreferences preferences) {
+        setVolume(preferences.getPreviousSpotifyVolume());
+    }
+
+    @Override
+    public void playPause() {
+        if (Status.PLAY.equals(playerStatus)) {
+            pause();
+        } else {
+            play();
+        }
+    }
+
+    @Override
+    public void thumbsUp() {
+        //spotify doesn't support this idea.
+    }
+
+    @Override
+    public void thumbsDown() {
+        //spotify doesn't support this idea.
     }
 
     @Override
@@ -227,5 +273,86 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport {
         } catch (TimeoutException e) {
             return new ImageIcon(JotifyApplication.class.getResource("images/cover.png")).getImage().getScaledInstance(130, 130, Image.SCALE_SMOOTH);
         }
+    }
+
+    @Override
+    public void bounce() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void activate() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public MusicPlayerState getState() {
+        return new MusicPlayerState(false, currentTrack.getTitle(), currentTrack.getArtist().getName(), currentPlaylist.getName(), currentTrack.getAlbum().getName(), currentInputType,
+                buildStationMap(), currentTrack.getCover(), renderCurrentPosition(), isPlaying(), null, volume);
+    }
+
+    private String renderCurrentPosition() {
+        //todo prettify.
+        return String.valueOf(currentPlayerPosition);
+    }
+
+    private Map<Integer, String> buildStationMap() {
+        return null;
+    }
+
+    @Override
+    public void selectStation(Integer stationNumber) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void askToChooseStation() {
+        currentInputType = MusicPlayerInputType.CHOOSE_STATION;
+    }
+
+
+    @Override
+    public boolean isPlaying() {
+        return Status.PLAY.equals(playerStatus);
+    }
+
+    @Override
+    public void addListener(MusicPlayerStateChangeListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void cancelStationSelection() {
+        currentInputType = MusicPlayerInputType.NONE;
+    }
+
+    @Override
+    public boolean isConfigured() {
+        return getConfigFile().exists();
+    }
+
+    private void notifyListeners() {
+        for (MusicPlayerStateChangeListener listener : listeners) {
+            listener.stateChanged(this, getState());
+        }
+    }
+
+    //*************************  methods from PlayerListener
+    @Override
+    public void playerTrackChanged(Track track) {
+        currentTrack = track;
+        notifyListeners();
+    }
+
+    @Override
+    public void playerStatusChanged(Status status) {
+        this.playerStatus = status;
+        notifyListeners();
+    }
+
+    @Override
+    public void playerPositionChanged(int position) {
+        currentPlayerPosition = position;
+        notifyListeners();
     }
 }

@@ -33,7 +33,7 @@ public interface MusicPlayer extends ApplicationSupport {
     void initializeFromSavedUserState(MuseControllerPreferences preferences);
 
     public interface MusicPlayerStateChangeListener {
-        void stateChanged(MusicPlayer pianobarSupport, MusicPlayerState state);
+        void stateChanged(MusicPlayer player, MusicPlayerState state);
     }
 
     public boolean isConfigured();

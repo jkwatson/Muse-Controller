@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MusicPlayerServlet extends HttpServlet {
     private final MusicPlayer musicPlayer;
 
-    private AtomicReference<MusicPlayerState> musicPlayerState = new AtomicReference<MusicPlayerState>(new MusicPlayerState(false, "", "", "", "", MusicPlayerInputType.NONE, new HashMap<Integer, String>(), "", "", false, ""));
+    private AtomicReference<MusicPlayerState> musicPlayerState = new AtomicReference<MusicPlayerState>(new MusicPlayerState(false, "", "", "", "", MusicPlayerInputType.NONE, new HashMap<Integer, String>(), "", "", false, "", 1.0));
 
     public MusicPlayerServlet(MusicPlayer musicPlayer) {
         this.musicPlayer = musicPlayer;
@@ -23,7 +23,7 @@ public class MusicPlayerServlet extends HttpServlet {
 
     public void init() {
         musicPlayer.addListener(new MusicPlayer.MusicPlayerStateChangeListener() {
-            public void stateChanged(MusicPlayer pianobarSupport, MusicPlayerState state) {
+            public void stateChanged(MusicPlayer player, MusicPlayerState state) {
                 musicPlayerState.set(state);
             }
         });
