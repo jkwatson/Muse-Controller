@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="applescriptifier" default="all">
 
-    <property name="BUILD_NUMBER" value="3.4.5"/>
+    <property name="BUILD_NUMBER" value="3.4.6"/>
 
     <property file="applescriptifier.properties"/>
     <!-- Uncomment the following property if no tests compilation is needed -->
@@ -56,38 +56,6 @@
     </patternset>
 
     <!-- JDK definitions -->
-
-    <property name="jdk.bin.1.6" value="${jdk.home.1.6}/bin"/>
-    <path id="jdk.classpath.1.6">
-        <fileset dir="${jdk.home.1.6}">
-            <include
-                    name="/Frameworks/JavaVM.framework/Versions/A/Resources/Deploy.bundle/Contents/Resources/Java/deploy.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/dt.jar"/>
-            <include
-                    name="/Frameworks/JavaVM.framework/Versions/A/Resources/Deploy.bundle/Contents/Resources/Java/javaws.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jce.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/management-agent.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/sa-jdi.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/alt-rt.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/charsets.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/classes.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jconsole.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsse.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/laf.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/ui.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/ext/apple_provider.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/ext/dnsns.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/ext/localedata.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/ext/sunjce_provider.jar"/>
-            <include name="/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/ext/sunpkcs11.jar"/>
-        </fileset>
-    </path>
-
-    <property name="project.jdk.home" value="${jdk.home.1.6}"/>
-    <property name="project.jdk.bin" value="${jdk.bin.1.6}"/>
-    <property name="project.jdk.classpath" value="jdk.classpath.1.6"/>
-
-
     <!-- Project Libraries -->
 
     <path id="library.aslib.classpath">

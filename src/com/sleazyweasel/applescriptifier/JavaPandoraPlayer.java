@@ -221,6 +221,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     }
 
     private void refreshPlaylist() {
+        validateRadioState();
         playlist = station.getPlaylist("mp3-hifi");
     }
 
@@ -273,6 +274,10 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             player.open(tempFile);
             player.play();
             applyGain();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            //this seems to happen when the pandora servers are rejecting our URLs.  maybe just try again?
+            next();
         } catch (Exception e) {
             //not sure what I can do here!?
             e.printStackTrace();

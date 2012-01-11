@@ -292,5 +292,19 @@
                        sparkle:dsaSignature="MC4CFQCLJfKVrYv4CDnLgiGEFq4SFAyhlgIVAMoW9RBzpmfd6qFWI0hWUznygiuA"/>
 
         </item>
+        <item>
+            <title>Version 3.4.6</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>New Features/Bugs Fixed:</h2>
+                    <h3>Re-enabled Pandora streaming after Pandora API change.</h3>
+                ]]></description>
+            <pubDate>Tue, 10 Jan 2012 21:21:21 +0800</pubDate>
+            <enclosure url="https://github.com/downloads/jkwatson/Muse-Controller/Muse Controller 3.4.6.dmg"
+                       sparkle:version="3.4.6"
+                       length="28014122" type="application/octet-stream"
+                       sparkle:dsaSignature="MCwCFCaNQfyn3GHtXfr/U0QqpzGHsrsjAhQ8PblW6GjWqLAy4iondq5gZju81A=="/>
+
+        </item>
     </channel>
 </rss>

@@ -2,10 +2,6 @@
 <project name="module_applescriptifier" default="compile.module.applescriptifier">
     <dirname property="module.applescriptifier.basedir" file="${ant.file.module_applescriptifier}"/>
 
-    <property name="module.jdk.home.applescriptifier" value="${project.jdk.home}"/>
-    <property name="module.jdk.bin.applescriptifier" value="${project.jdk.bin}"/>
-    <property name="module.jdk.classpath.applescriptifier" value="${project.jdk.classpath}"/>
-
     <property name="compiler.args.applescriptifier" value="${compiler.args}"/>
 
     <property name="applescriptifier.output.dir"
@@ -19,7 +15,6 @@
     </path>
 
     <path id="applescriptifier.module.production.classpath">
-        <path refid="${module.jdk.classpath.applescriptifier}"/>
         <pathelement location="/System/Library/Java/Extensions/dns_sd.jar"/>
         <path refid="library.aslib.classpath"/>
         <pathelement location="${basedir}/resources"/>
@@ -33,7 +28,6 @@
     </path>
 
     <path id="applescriptifier.module.classpath">
-        <path refid="${module.jdk.classpath.applescriptifier}"/>
         <pathelement location="${applescriptifier.output.dir}"/>
         <pathelement location="/System/Library/Java/Extensions/dns_sd.jar"/>
         <path refid="library.aslib.classpath"/>
@@ -87,9 +81,8 @@
     <target name="compile.module.applescriptifier.production"
             description="Compile module applescriptifier; production classes">
         <mkdir dir="${applescriptifier.output.dir}"/>
-        <javac destdir="${applescriptifier.output.dir}" debug="${compiler.debug}" target="1.5"
-               nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true"
-               executable="${module.jdk.bin.applescriptifier}/javac">
+        <javac destdir="${applescriptifier.output.dir}" debug="${compiler.debug}" target="1.6"
+               nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
             <compilerarg line="${compiler.args.applescriptifier}"/>
             <!--<bootclasspath refid="applescriptifier.module.bootclasspath"/>-->
             <classpath refid="applescriptifier.module.production.classpath"/>

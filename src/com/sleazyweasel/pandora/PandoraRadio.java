@@ -1,16 +1,16 @@
 package com.sleazyweasel.pandora;/* Pandoroid Radio - open source pandora.com client for android
  * Copyright (C) 2011  Andrew Regner <andrew@aregner.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -34,6 +34,7 @@ public class PandoraRadio {
 
     public static final String PROTOCOL_VERSION = "33";
     private static final String RPC_URL = "https://www.pandora.com/radio/xmlrpc/v" + PROTOCOL_VERSION + "?";
+    private static final String NON_SSL_RPC_URL = "http://www.pandora.com/radio/xmlrpc/v" + PROTOCOL_VERSION + "?";
     private static final String USER_AGENT = "com.magicbos.doombox";
 
     public static final long PLAYLIST_VALIDITY_TIME = 3600 * 3;
@@ -42,6 +43,7 @@ public class PandoraRadio {
     private static final ArrayList<Object> EMPTY_ARGS = new ArrayList<Object>();
 
     private XmlRpc xmlrpc;
+    private XmlRpc nonSslXmlrpc;
     private Blowfish blowfish_encode;
     private Blowfish blowfish_decode;
     private String authToken;
@@ -54,6 +56,8 @@ public class PandoraRadio {
     public PandoraRadio() {
         xmlrpc = new XmlRpc(RPC_URL);
         xmlrpc.addHeader("User-agent", USER_AGENT);
+        nonSslXmlrpc = new XmlRpc(NON_SSL_RPC_URL);
+        nonSslXmlrpc.addHeader("User-agent", USER_AGENT);
 
         blowfish_encode = new Blowfish(PandoraKeys.out_key_p, PandoraKeys.out_key_s);
         blowfish_decode = new Blowfish(PandoraKeys.in_key_p, PandoraKeys.in_key_s);
@@ -188,7 +192,7 @@ public class PandoraRadio {
     }
 
     //@SuppressWarnings("unchecked")
-    private Object xmlrpcCall(String method, ArrayList<Object> args, ArrayList<Object> urlArgs, boolean includeTimestamp) {
+    private Object xmlrpcCall(String method, ArrayList<Object> args, ArrayList<Object> urlArgs, boolean includeTimestamp, boolean useSsl) {
         if (urlArgs == null)
             urlArgs = (ArrayList<Object>) args.clone();
 
@@ -218,7 +222,7 @@ public class PandoraRadio {
             urlArgStrings.add("arg" + (count++) + "=" + formatUrlArg(urlArgsIter.next()));
         }
 
-        StringBuilder url = new StringBuilder(RPC_URL);
+        StringBuilder url = new StringBuilder(useSsl ? RPC_URL : NON_SSL_RPC_URL);
         Iterator<String> argIter = urlArgStrings.iterator();
         while (argIter.hasNext()) {
             url.append(argIter.next());
@@ -228,7 +232,8 @@ public class PandoraRadio {
 
         Object result = null;
         try {
-            result = xmlrpc.callWithBody(url.toString(), data);
+            XmlRpc rpc = useSsl ? xmlrpc : nonSslXmlrpc;
+            result = rpc.callWithBody(url.toString(), data);
         } catch (XMLRPCException e) {
             if (e.getMessage().contains("AUTH_INVALID_USERNAME_PASSWORD")) {
                 throw new BadPandoraPasswordException();
@@ -240,12 +245,16 @@ public class PandoraRadio {
     }
 
     Object xmlrpcCall(String method, ArrayList<Object> args) {
-        return xmlrpcCall(method, args, null, true);
+        return xmlrpcCall(method, args, true);
+    }
+
+    Object xmlrpcCall(String method, ArrayList<Object> args, boolean useSsl) {
+        return xmlrpcCall(method, args, null, true, useSsl);
     }
 
     private Object xmlrpcCall(String method, boolean includeTimestamp) {
         EMPTY_ARGS.clear();
-        return xmlrpcCall(method, EMPTY_ARGS, null, includeTimestamp);
+        return xmlrpcCall(method, EMPTY_ARGS, null, includeTimestamp, true);
     }
 
     public void connect(String user, String password) {
@@ -261,7 +270,7 @@ public class PandoraRadio {
         args.add("HTML5");
         args.add(true);
 
-        Object result = xmlrpcCall("listener.authenticateListener", args, EMPTY_ARGS, true);
+        Object result = xmlrpcCall("listener.authenticateListener", args, EMPTY_ARGS, true, true);
         if (result instanceof HashMap<?, ?>) {
             HashMap<String, Object> userInfo = (HashMap<String, Object>) result;
 
