@@ -65,8 +65,6 @@ class ScalaMain {
 
   private def startupWebServer(pianobarSupport: MusicPlayer) {
     //big todo: make the port dynamic...search until you find a free one.
-
-
     val server = new Server(PORT)
     register(0, 0, InetAddress.getLocalHost.getHostName, "_asrunner._udp", "local.", null, PORT, null, new RegisterListener {
       def serviceRegistered(dnssdRegistration: DNSSDRegistration, port: Int, s: String, s1: String, s2: String) {
@@ -85,6 +83,7 @@ class ScalaMain {
     context.addServlet(new ServletHolder(airfoilServlet), "/airfoil/*")
     context.addServlet(new ServletHolder(new PandoraBoyServlet), "/pandoraboy/*")
     context.addServlet(new ServletHolder(new PulsarServlet), "/pulsar/*")
+    context.addServlet(new ServletHolder(new RdioServlet), "/rdio/*")
 
     val nativePianobarServlet = new MusicPlayerServlet(pianobarSupport)
     context.addServlet(new ServletHolder(nativePianobarServlet), "/pianobar/*")
