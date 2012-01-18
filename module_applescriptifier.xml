@@ -115,7 +115,9 @@
         </jar>
     </target>
 
-    <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler"/>
+    <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler">
+        <classpath refid="library.aslib.classpath"/>
+    </taskdef>
 
     <target name="bundle" depends="jar">
         <mkdir dir="release"/>
@@ -139,7 +141,7 @@
         <exec executable="codesign">
             <arg value="-f"/>
             <arg value="-s"/>
-            <arg value="John Watson Code Signing Cert"/>
+            <arg value="Muse Controller"/>
             <arg value="release/Muse Controller.app"/>
         </exec>
     </target>
