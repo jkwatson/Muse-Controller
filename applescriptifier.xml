@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="applescriptifier" default="all">
 
-    <property name="BUILD_NUMBER" value="3.4.6"/>
-
+    <property name="BUILD_NUMBER" value="3.4.7"/>
+    <property name="image_name" value="Muse Controller ${BUILD_NUMBER}"/>
     <property file="applescriptifier.properties"/>
     <!-- Uncomment the following property if no tests compilation is needed -->
     <!--
@@ -79,6 +79,29 @@
 
     <target name="build.modules" depends="init, clean, bundle-and-sign" description="build all modules"/>
 
-    <target name="build.cloudbees" depends="init, clean, bundle-sparkle" description="build without code signing (for cloudbees)"/>
-    <target name="all" depends="build.modules" description="build all"/>
+    <target name="build.cloudbees" depends="init, clean, bundle-sparkle"
+            description="build without code signing (for cloudbees)"/>
+
+    <target name="all" depends="build.modules, dmg" description="build all"/>
+
+    <target name="dmg" description="create the dmg for distribution">
+        <exec executable="ln">
+            <arg value="-s"/>
+            <arg value="/Applications"/>
+            <arg value="release/Applications"/>
+        </exec>
+        <exec executable="hdiutil">
+            <arg value="create"/>
+            <arg value="-volname"/>
+            <arg value="${image_name}"/>
+            <arg value="-srcfolder"/>
+            <arg value="release"/>
+            <arg value="release/${image_name}.dmg"/>
+        </exec>
+        <exec executable="src/sign.sh">
+            <arg value="release/${image_name}.dmg"/>
+        </exec>
+        <!--`openssl dgst -sha1 -binary < "#{ARGV[0]}" | openssl dgst -dss1 -sign "#{ARGV[1]}" | openssl enc -base64`-->
+        <!--hdiutil create -volname foo -srcfolder ~/projects/Muse-Controller/release  foo.dmg-->
+    </target>
 </project>

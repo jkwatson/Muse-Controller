@@ -104,7 +104,8 @@
     <target name="clean.module.applescriptifier" description="cleanup module">
         <delete dir="${applescriptifier.output.dir}"/>
         <delete dir="${applescriptifier.testoutput.dir}"/>
-        <delete dir="${applescriptifier.release.dir}"/>
+        <delete dir="${applescriptifier.release.dir}" followsymlinks="false" removenotfollowedsymlinks="true"/>
+        <delete dir="${applescriptifier.release.dir}/Muse Controller.app"/>
     </target>
 
 
