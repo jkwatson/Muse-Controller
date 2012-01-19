@@ -79,5 +79,6 @@
 
     <target name="build.modules" depends="init, clean, bundle-and-sign" description="build all modules"/>
 
+    <target name="build.cloudbees" depends="init, clean, bundle-sparkle" description="build without code signing (for cloudbees)"/>
     <target name="all" depends="build.modules" description="build all"/>
 </project>
