@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="module_applescriptifier" default="compile.module.applescriptifier">
-    <dirname property="module.applescriptifier.basedir" file="${ant.file.module_applescriptifier}"/>
+<project name="musecontroller" default="all">
+    <!-- Set this property value to your application name.
+Do not include the .app extension -->
+    <property name="app.name" value="Muse Controller"/>
+    <property name="BUILD_NUMBER" value="3.4.7"/>
+    <property name="image_name" value="${app.name} ${BUILD_NUMBER}"/>
+    <property file="applescriptifier.properties"/>
+    <echo message="basedir = ${basedir}"/>
 
+    <property name="module.applescriptifier.basedir" value="${basedir}"/>
+    <echo message="module basedir = ${module.applescriptifier.basedir}"/>
+
+    <property name="compiler.debug" value="on"/>
+    <property name="compiler.generate.no.warnings" value="off"/>
+    <property name="compiler.args" value=""/>
+    <property name="compiler.max.memory" value="128m"/>
     <property name="compiler.args.applescriptifier" value="${compiler.args}"/>
 
     <property name="applescriptifier.output.dir"
@@ -9,6 +22,122 @@
     <property name="applescriptifier.testoutput.dir"
               value="${module.applescriptifier.basedir}/out/test/applescriptifier"/>
     <property name="applescriptifier.release.dir" value="${module.applescriptifier.basedir}/release"/>
+    <property name="scala.home" value="lib-dev/scala"/>
+    <!-- Set this property value to the directory where your
+application package has been created (when you invoked
+the "ant macosx" target -->
+    <property name="macosx.app" value="release"/>
+
+    <!-- Set this property value to your application resource
+directory (where is located your Sparkle jar, the
+Zip of the Sparkle framework and the public key) -->
+    <property name="app.resrc" value="resources"/>
+
+    <!-- Set this property value to your native library
+  directory (where is located your Sparkle JNI library,
+  e.g. lib/native/) -->
+    <property name="app.native" value="lib/native"/>
+
+    <!-- This property is set to the path where are stored
+ the files inside the .app package. You should not need
+ to change it -->
+    <property name="app.internal" value="Contents/Resources/Java"/>
+
+    <!-- Uncomment the following property if no tests compilation is needed -->
+    <!--
+   <property name="skip.tests" value="true"/>
+    -->
+
+    <!-- Compiler options -->
+
+    <patternset id="ignored.files">
+        <exclude name="**/CVS/**"/>
+        <exclude name="**/SCCS/**"/>
+        <exclude name="**/RCS/**"/>
+        <exclude name="**/rcs/**"/>
+        <exclude name="**/.DS_Store/**"/>
+        <exclude name="**/.svn/**"/>
+        <exclude name="**/.pyc/**"/>
+        <exclude name="**/.pyo/**"/>
+        <exclude name="**/*.pyc/**"/>
+        <exclude name="**/*.pyo/**"/>
+        <exclude name="**/.git/**"/>
+        <exclude name="**/*.hprof/**"/>
+        <exclude name="**/_svn/**"/>
+        <exclude name="**/.hg/**"/>
+        <exclude name="**/*.lib/**"/>
+        <exclude name="**/*~/**"/>
+        <exclude name="**/*.scala/**"/>
+    </patternset>
+    <patternset id="library.patterns">
+        <include name="*.zip"/>
+        <include name="*.war"/>
+        <include name="*.egg"/>
+        <include name="*.ear"/>
+        <include name="*.swc"/>
+        <include name="*.jar"/>
+    </patternset>
+    <patternset id="compiler.resources">
+        <include name="**/?*.properties"/>
+        <include name="**/?*.xml"/>
+        <include name="**/?*.gif"/>
+        <include name="**/?*.png"/>
+        <include name="**/?*.jpeg"/>
+        <include name="**/?*.jpg"/>
+        <include name="**/?*.html"/>
+        <include name="**/?*.dtd"/>
+        <include name="**/?*.tld"/>
+        <include name="**/?*.ftl"/>
+    </patternset>
+
+    <!-- JDK definitions -->
+    <!-- Project Libraries -->
+
+    <path id="library.aslib.classpath">
+        <fileset dir="${basedir}/lib">
+            <patternset refid="library.patterns"/>
+        </fileset>
+    </path>
+
+
+    <!-- Global Libraries -->
+
+    <!-- Modules -->
+
+
+    <target name="init" description="Build initialization">
+        <!-- Perform any build initialization in this target -->
+    </target>
+
+    <target name="clean" depends="clean.module.applescriptifier" description="cleanup all"/>
+
+    <target name="build.modules" depends="init, clean, bundle-and-sign" description="build all modules"/>
+
+    <target name="build.cloudbees" depends="init, clean, bundle-sparkle"
+            description="build without code signing (for cloudbees)"/>
+
+    <target name="all" depends="build.modules, dmg" description="build all"/>
+
+    <target name="dmg" description="create the dmg for distribution">
+        <exec executable="ln">
+            <arg value="-s"/>
+            <arg value="/Applications"/>
+            <arg value="release/Applications"/>
+        </exec>
+        <exec executable="hdiutil">
+            <arg value="create"/>
+            <arg value="-volname"/>
+            <arg value="${image_name}"/>
+            <arg value="-srcfolder"/>
+            <arg value="release"/>
+            <arg value="release/${image_name}.dmg"/>
+        </exec>
+        <exec executable="src/sign.sh">
+            <arg value="release/${image_name}.dmg"/>
+        </exec>
+        <!--`openssl dgst -sha1 -binary < "#{ARGV[0]}" | openssl dgst -dss1 -sign "#{ARGV[1]}" | openssl enc -base64`-->
+        <!--hdiutil create -volname foo -srcfolder ~/projects/Muse-Controller/release  foo.dmg-->
+    </target>
 
     <path id="applescriptifier.module.bootclasspath">
         <!-- Paths to be included in compilation bootclasspath -->
@@ -62,7 +191,6 @@
             description="Compile module applescriptifier"/>
 
 
-    <property name="scala.home" value="lib-dev/scala"/>
     <taskdef resource="scala/tools/ant/antlib.xml">
         <classpath>
             <pathelement location="lib-dev/scala/scala-compiler.jar"/>
@@ -81,7 +209,7 @@
     <target name="compile.module.applescriptifier.production"
             description="Compile module applescriptifier; production classes">
         <mkdir dir="${applescriptifier.output.dir}"/>
-        <javac destdir="${applescriptifier.output.dir}" debug="${compiler.debug}" target="1.6"
+        <javac destdir="${applescriptifier.output.dir}" debug="${compiler.debug}" target="1.6" srcdir="src"
                nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
             <compilerarg line="${compiler.args.applescriptifier}"/>
             <!--<bootclasspath refid="applescriptifier.module.bootclasspath"/>-->
@@ -104,7 +232,8 @@
     <target name="clean.module.applescriptifier" description="cleanup module">
         <delete dir="${applescriptifier.output.dir}"/>
         <delete dir="${applescriptifier.testoutput.dir}"/>
-        <delete dir="${applescriptifier.release.dir}"/>
+        <delete dir="${applescriptifier.release.dir}" followsymlinks="false" removenotfollowedsymlinks="true"/>
+        <delete dir="${applescriptifier.release.dir}/Muse Controller.app"/>
     </target>
 
 
@@ -115,7 +244,9 @@
         </jar>
     </target>
 
-    <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler"/>
+    <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler">
+        <classpath refid="library.aslib.classpath"/>
+    </taskdef>
 
     <target name="bundle" depends="jar">
         <mkdir dir="release"/>
@@ -139,34 +270,11 @@
         <exec executable="codesign">
             <arg value="-f"/>
             <arg value="-s"/>
-            <arg value="John Watson Code Signing Cert"/>
+            <arg value="Muse Controller"/>
             <arg value="release/Muse Controller.app"/>
         </exec>
     </target>
 
-    <!-- Set this property value to the directory where your
-application package has been created (when you invoked
-the "ant macosx" target -->
-    <property name="macosx.app" value="release"/>
-
-    <!-- Set this property value to your application name.
-  Do not include the .app extension -->
-    <property name="app.name" value="Muse Controller"/>
-
-    <!-- Set this property value to your application resource
-directory (where is located your Sparkle jar, the
-Zip of the Sparkle framework and the public key) -->
-    <property name="app.resrc" value="resources"/>
-
-    <!-- Set this property value to your native library
-  directory (where is located your Sparkle JNI library,
-  e.g. lib/native/) -->
-    <property name="app.native" value="lib/native"/>
-
-    <!-- This property is set to the path where are stored
- the files inside the .app package. You should not need
- to change it -->
-    <property name="app.internal" value="Contents/Resources/Java"/>
 
     <!-- Create a MacOSX application package with Sparkle support,
      invoked with "ant macosx-sparkle" -->
