@@ -1,6 +1,5 @@
 package com.sleazyweasel.applescriptifier;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -100,17 +99,4 @@ public class SpotifySupportTest {
         assertEquals("", state.get("artist"));
     }
 
-    @Test
-    @Ignore
-    public void testRealDeal() {
-        SpotifySupport spotifySupport = new SpotifySupport(new ScriptEngineAppleScriptTemplate());
-        Map<String, Object> status = spotifySupport.getStatus();
-        System.out.println("status = " + status);
-
-//        spotifySupport.playPause();
-
-//        status = spotifySupport.getStatus();
-//        System.out.println("status = " + status);
-
-    }
 }
