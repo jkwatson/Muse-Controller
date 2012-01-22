@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,16 +57,32 @@ public class RdioServlet extends HttpServlet {
     private void appendStatus(HttpServletResponse response) throws IOException {
         Map<String, Object> status = new HashMap<String, Object>();
 
-        List<String> currentTrack;
-        List<String> playerState;
+        Map<String, Object> currentTrack = new HashMap<String, Object>();
+        Map<String, Object> playerState = new HashMap<String, Object>();
         try {
             List<List<String>> data = appleScriptTemplate.execute(Application.RDIO, "[get [name, artist, album, duration, rdio url] of current track, get [player position, player state as string, sound volume]]");
-            currentTrack = data.get(0);
-            playerState = data.get(1);
+            List<String> trackData = data.get(0);
+            currentTrack.put("title", trackData.get(0));
+            currentTrack.put("artist", trackData.get(1));
+            currentTrack.put("album", trackData.get(2));
+            currentTrack.put("duration", trackData.get(3));
+            currentTrack.put("rdioUrl", trackData.get(4));
+
+            List<String> playerData = data.get(1);
+            playerState.put("position", playerData.get(0));
+            playerState.put("playing", playerData.get(1).equalsIgnoreCase("playing") ? "YES" : "NO");
+            playerState.put("volume", playerData.get(2));
+
         } catch (Exception e) {
             e.printStackTrace();
-            currentTrack = Arrays.asList("", "", "", "", "");
-            playerState = Arrays.asList("", "", "");
+            currentTrack.put("title", "");
+            currentTrack.put("artist", "");
+            currentTrack.put("album", "");
+            currentTrack.put("duration", "");
+            currentTrack.put("rdioUrl", "");
+            playerState.put("position", "");
+            playerState.put("playing", "NO");
+            playerState.put("volume", "");
         }
 
         status.put("currentTrack", currentTrack);

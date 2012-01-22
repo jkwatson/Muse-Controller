@@ -8,15 +8,15 @@ public class RdioSupport implements ApplicationSupport {
     }
 
     public void playPause() {
-        appleScriptTemplate.executeKeyStroke(Application.RDIO, " ");
+        appleScriptTemplate.execute(Application.RDIO, "playpause");
     }
 
     public void next() {
-        appleScriptTemplate.executeKeyCode(Application.RDIO, AppleScriptTemplate.RIGHT_ARROW);
+        appleScriptTemplate.execute(Application.RDIO, "next track");
     }
 
     public void previous() {
-        appleScriptTemplate.executeKeyCode(Application.RDIO, AppleScriptTemplate.LEFT_ARROW);
+        appleScriptTemplate.execute(Application.RDIO, "previous track");
     }
 
     public void thumbsUp() {
