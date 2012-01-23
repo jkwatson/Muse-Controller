@@ -45,7 +45,7 @@ public class RdioServlet extends HttpServlet {
             appendStatus(response);
         } else if (pathInfo.startsWith("/artwork")) {
             try {
-                Thread.sleep(1000L);
+                Thread.sleep(500L);
             } catch (InterruptedException e) {
                 Thread.interrupted();
                 return;
