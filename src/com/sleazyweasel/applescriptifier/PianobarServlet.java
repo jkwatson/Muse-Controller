@@ -56,23 +56,6 @@ public class PianobarServlet extends HttpServlet {
         appendStatus(response);
     }
 
-    private void pause() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            //we're done.
-        }
-    }
-
-    private void appendScreenContents(HttpServletResponse response) throws IOException {
-        Map<String, String> responseData = new HashMap<String, String>();
-        String currentScreenContents = pianobarSupport.getCurrentScreenContents(appleScriptTemplate);
-        responseData.put("screen", currentScreenContents);
-        responseData.put("inputRequested", extractInputRequested(currentScreenContents));
-
-        response.getWriter().append(new Gson().toJson(responseData));
-    }
-
     private void appendStatus(HttpServletResponse response) throws IOException {
         appendStatus(response, new HashMap<String, Object>());
     }
@@ -126,14 +109,6 @@ public class PianobarServlet extends HttpServlet {
 
         responseData.put("inputRequested", inputRequested ? "YES" : "NO");
         response.getWriter().append(new Gson().toJson(responseData));
-    }
-
-    private void sleep() {
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException("interrupted");
-        }
     }
 
     String extractStation(String nowPlaying) {

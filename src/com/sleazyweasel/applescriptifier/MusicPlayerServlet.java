@@ -128,14 +128,12 @@ public class MusicPlayerServlet extends HttpServlet {
         MusicPlayerState state = musicPlayerState.get();
 
         boolean inputRequested = state.isInputRequested();
-        System.out.println("inputRequested = " + inputRequested);
         responseData.put("station", state.getStation());
         responseData.put("artist", state.getArtist());
         responseData.put("album", state.getAlbum());
         responseData.put("title", state.getTitle());
         responseData.put("heart", state.isCurrentSongIsLoved() ? "YES" : "NO");
         responseData.put("playing", state.isPlaying() ? "YES" : "NO");
-        System.out.println("state.getInputTypeRequested() = " + state.getInputTypeRequested());
         if (inputRequested && state.getInputTypeRequested().equals(MusicPlayerInputType.CHOOSE_STATION)) {
             Map<Integer, String> stations = state.getStations();
             responseData.put("stations", stations);
