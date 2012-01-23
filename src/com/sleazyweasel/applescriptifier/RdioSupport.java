@@ -24,4 +24,8 @@ public class RdioSupport implements ApplicationSupport {
 
     public void thumbsDown() {
     }
+
+    public void setVolume(Integer volume) {
+        appleScriptTemplate.execute(Application.RDIO, "set sound volume to " + volume);
+    }
 }

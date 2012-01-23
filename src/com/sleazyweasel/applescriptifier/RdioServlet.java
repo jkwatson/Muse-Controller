@@ -44,11 +44,22 @@ public class RdioServlet extends HttpServlet {
             rdioSupport.previous();
             appendStatus(response);
         } else if (pathInfo.startsWith("/artwork")) {
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                Thread.interrupted();
+                return;
+            }
             appleScriptTemplate.execute(Application.RDIO, imageCommand);
             BufferedImage image = ImageIO.read(new File("/tmp/rdio.tiff"));
             response.setContentType("image/png");
             ImageIO.write(image, "PNG", response.getOutputStream());
             response.setStatus(HttpServletResponse.SC_OK);
+        } else if (pathInfo.startsWith("/setVolume")) {
+            String value = req.getParameter("value");
+            Integer volume = Integer.valueOf(value);
+            rdioSupport.setVolume(volume);
+            appendStatus(response);
         } else {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -60,29 +71,37 @@ public class RdioServlet extends HttpServlet {
         Map<String, Object> currentTrack = new HashMap<String, Object>();
         Map<String, Object> playerState = new HashMap<String, Object>();
         try {
-            List<List<String>> data = appleScriptTemplate.execute(Application.RDIO, "[get [name, artist, album, duration, rdio url] of current track, get [player position, player state as string, sound volume]]");
-            List<String> trackData = data.get(0);
+            List<List<Object>> data = appleScriptTemplate.execute(Application.RDIO, "[get [name, artist, album, duration, rdio url] of current track, get [player position, sound volume]]");
+            List<Object> trackData = data.get(0);
             currentTrack.put("title", trackData.get(0));
             currentTrack.put("artist", trackData.get(1));
             currentTrack.put("album", trackData.get(2));
             currentTrack.put("duration", trackData.get(3));
             currentTrack.put("rdioUrl", trackData.get(4));
 
-            List<String> playerData = data.get(1);
-            playerState.put("position", playerData.get(0));
-            playerState.put("playing", playerData.get(1).equalsIgnoreCase("playing") ? "YES" : "NO");
-            playerState.put("volume", playerData.get(2));
+            List<Object> playerData = data.get(1);
+//            Double position = (Double) playerData.get(0);
+//            playerState.put("position", position.isNaN() || position.isInfinite() ? 0 : position);
+            playerState.put("volume", playerData.get(1));
 
         } catch (Exception e) {
             e.printStackTrace();
+            List<List<Object>> data = appleScriptTemplate.execute(Application.RDIO, "[get [player position, sound volume]]");
             currentTrack.put("title", "");
             currentTrack.put("artist", "");
             currentTrack.put("album", "");
             currentTrack.put("duration", "");
             currentTrack.put("rdioUrl", "");
-            playerState.put("position", "");
+            List<Object> playerData = data.get(0);
+//            Double position = (Double) playerData.get(0);
+//            playerState.put("position", position.isNaN() || position.isInfinite() ? 0 : position);
+            playerState.put("volume", playerData.get(1));
+        }
+        try {
+            String running = appleScriptTemplate.execute(Application.RDIO, "get player state as string");
+            playerState.put("playing", "playing".equalsIgnoreCase(running) ? "YES" : "NO");
+        } catch (Exception e) {
             playerState.put("playing", "NO");
-            playerState.put("volume", "");
         }
 
         status.put("currentTrack", currentTrack);

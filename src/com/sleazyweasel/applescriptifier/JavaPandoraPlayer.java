@@ -222,7 +222,12 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     private void refreshPlaylist() {
         validateRadioState();
-        playlist = station.getPlaylist("mp3-hifi");
+        try {
+            playlist = station.getPlaylist("mp3-hifi");
+        } catch (Exception e) {
+            station = null;
+            notifyListeners();
+        }
     }
 
     private void play(Song song) {
