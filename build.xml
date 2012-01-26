@@ -270,7 +270,7 @@ Zip of the Sparkle framework and the public key) -->
         <exec executable="codesign">
             <arg value="-f"/>
             <arg value="-s"/>
-            <arg value="Muse Controller"/>
+            <arg value="John Watson Code Signing"/>
             <arg value="release/Muse Controller.app"/>
         </exec>
     </target>
