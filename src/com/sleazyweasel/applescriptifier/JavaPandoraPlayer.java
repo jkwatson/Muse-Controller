@@ -216,7 +216,11 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         refreshPlaylist();
         next();
         currentInputType = MusicPlayerInputType.NONE;
-        preferences.setPandoraStationId(station.getId());
+        if (station != null) {
+            preferences.setPandoraStationId(station.getId());
+        } else {
+            preferences.setPandoraStationId(null);
+        }
         notifyListeners();
     }
 
@@ -225,8 +229,15 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         try {
             playlist = station.getPlaylist("mp3-hifi");
         } catch (Exception e) {
-            station = null;
-            notifyListeners();
+            e.printStackTrace();
+            try {
+                playlist = station.getPlaylist("mp3");
+            } catch (Exception e1) {
+                e1.printStackTrace();
+                station = null;
+                notifyListeners();
+                throw new RuntimeException("Unable to retrieve station information from Pandora. Please contact musecontrol@gmail.com.", e1);
+            }
         }
     }
 
