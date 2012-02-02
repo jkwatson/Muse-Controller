@@ -322,5 +322,21 @@
                        sparkle:dsaSignature="MC0CFQDDwU5JiTvAV2g7nFACT/PERh5LQwIUIRQnfIu6Zk4rUJ3eJ4RH2Qp6zNo="/>
 
         </item>
+        <item>
+            <title>Version 3.5.1</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>New Features:</h2>
+                    <h3>Enabled Full Rdio screen for Muse Control.</h3>
+                    <h2>Alert:</h2>
+                    <p>Pandora is actively trying to disable 3rd party clients. It is likely that Pandora streaming support will break at any point. If Pandora suceeds in completely disabling it, I will remove Pandora streaming from Muse Controller.
+                ]]></description>
+            <pubDate>Tue, 1 Feb 2012 21:21:21 +0800</pubDate>
+            <enclosure url="https://github.com/downloads/jkwatson/Muse-Controller/Muse Controller 3.5.1.dmg"
+                       sparkle:version="3.5.1"
+                       length="17783841" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFQCpc/6N/obFkkyv1Eog9wM8TMoEAAIUTHzfnrCHG/tDlqGvEtPe7sVpHF4="/>
+
+        </item>
     </channel>
 </rss>
