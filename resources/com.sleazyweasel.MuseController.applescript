@@ -14,6 +14,7 @@ tell application id "com.sleazyweasel.MuseController"
 				launch
 				set imagedata to open "/tmp/imagedata.jpg"
 				tell imagedata
+				    scale to size 512
 					save in ("/tmp/imagedata.tiff") as TIFF
 				end tell
 			end tell
