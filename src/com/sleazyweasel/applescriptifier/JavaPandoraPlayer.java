@@ -190,6 +190,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             artist = song.getArtist();
             album = song.getAlbum();
             albumArtUrl = song.getAlbumCoverUrl();
+            System.out.println("albumArtUrl = " + albumArtUrl);
             detailUrl = song.getAlbumDetailURL();
             //todo figure out how to get total track time.
             currentTimeInTrack = formatCurrentTime();
@@ -348,6 +349,11 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     }
 
     @Override
+    public boolean isAuthorized() {
+        return isConfigured();
+    }
+
+    @Override
     public boolean isPlaying() {
         return player.getStatus() == BasicPlayer.PLAYING;
     }
@@ -359,6 +365,11 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     @Override
     public void addListener(MusicPlayerStateChangeListener listener) {
         listeners.add(listener);
+    }
+
+    @Override
+    public void removeListener(MusicPlayerStateChangeListener listener) {
+        listeners.remove(listener);
     }
 
     @Override

@@ -30,32 +30,31 @@ class GuiMain extends MuseControllerMain {
     macApp.setDefaultMenuBar(menubar.peer)
   }
 
-  private def createPandoraMenuItem(preferences: MuseControllerPreferences, pianobarSupport: MusicPlayer, menubar: MenuBar): MenuItem = {
+  private def createPandoraMenuItem(preferences: MuseControllerPreferences, pandoraPlayer: MusicPlayer, menubar: MenuBar, playerSupplier: MusicPlayerSupplier): MenuItem = {
     val pandoraMenuItem = new MenuItem("Pandora")
     pandoraMenuItem.enabled = preferences.isPianoBarEnabled
     pandoraMenuItem.reactions += {
-      case ButtonClicked(`pandoraMenuItem`) => startupPandora(pandoraMenuItem, pianobarSupport, preferences, menubar)
+      case ButtonClicked(`pandoraMenuItem`) => startupPandora(pandoraMenuItem, pandoraPlayer, preferences, menubar, playerSupplier)
     }
     pandoraMenuItem
   }
 
-  private def createSpotifyMenuItem(preferences: MuseControllerPreferences, spotifySupport: NativeSpotifySupportImpl, menubar: MenuBar): MenuItem = {
+  private def createSpotifyMenuItem(preferences: MuseControllerPreferences, spotifySupport: NativeSpotifySupport, menubar: MenuBar, playerSupplier: MusicPlayerSupplier): MenuItem = {
     val spotifyMenuItem = new MenuItem("Spotify")
     spotifyMenuItem.enabled = true
     spotifyMenuItem.reactions += {
-      case ButtonClicked(`spotifyMenuItem`) => startupSpotify(spotifyMenuItem, spotifySupport, preferences, menubar)
+      case ButtonClicked(`spotifyMenuItem`) => startupSpotify(spotifyMenuItem, spotifySupport, preferences, menubar, playerSupplier)
     }
     spotifyMenuItem
   }
 
-  def startupGui(musicPlayer: MusicPlayer, preferences: MuseControllerPreferences) {
-    val spotifySupport = new NativeSpotifySupportImpl
+  def startupGui(playerSupplier: MusicPlayerSupplier, preferences: MuseControllerPreferences, spotifyPlayer: NativeSpotifySupport, pandoraPlayer: MusicPlayer) {
 
     Swing.onEDT({
       val menubar = new MenuBar
 
-      val pandoraMenuItem = createPandoraMenuItem(preferences, musicPlayer, menubar)
-      val spotifyMenuItem = createSpotifyMenuItem(preferences, spotifySupport, menubar)
+      val pandoraMenuItem = createPandoraMenuItem(preferences, pandoraPlayer, menubar, playerSupplier)
+      val spotifyMenuItem = createSpotifyMenuItem(preferences, spotifyPlayer, menubar, playerSupplier)
 
       val menu = new Menu("Music")
       menu.contents += pandoraMenuItem
@@ -65,10 +64,10 @@ class GuiMain extends MuseControllerMain {
       setUpMacApplicationState(preferences, menubar)
 
       if (preferences.isPianoBarEnabled && preferences.wasPandoraTheLastStreamerOpen) {
-        startupPandora(pandoraMenuItem, musicPlayer, preferences, menubar)
+        startupPandora(pandoraMenuItem, pandoraPlayer, preferences, menubar, playerSupplier)
       }
       else if (preferences.isSpotifyEnabled && preferences.wasSpotifyTheLastStreamerOpen) {
-        startupSpotify(spotifyMenuItem, spotifySupport, preferences, menubar)
+        startupSpotify(spotifyMenuItem, spotifyPlayer, preferences, menubar, playerSupplier)
       }
       else {
         new Frame pack()
@@ -76,8 +75,9 @@ class GuiMain extends MuseControllerMain {
     })
   }
 
-  private def startupSpotify(spotifyMenuItem: MenuItem, spotifySupport: NativeSpotifySupport, preferences: MuseControllerPreferences, mainMenuBar: MenuBar) {
-    if (spotifySupport.isSpotifyAuthorized) {
+  private def startupSpotify(spotifyMenuItem: MenuItem, spotifySupport: NativeSpotifySupport, preferences: MuseControllerPreferences, mainMenuBar: MenuBar, playerSupplier: MusicPlayerSupplier) {
+    playerSupplier.setCurrentApplication(Application.SPOTIFY)
+    if (spotifySupport.isAuthorized) {
       setActiveFrame(null)
       val spotifyUI = new SpotifyUI(spotifySupport, mainMenuBar.peer, spotifyMenuItem.peer, preferences)
       val window = spotifyUI.getWindow
@@ -99,8 +99,9 @@ class GuiMain extends MuseControllerMain {
     window.setVisible(true)
   }
 
-  private def startupPandora(pandoraMenuItem: MenuItem, musicPlayer: MusicPlayer, preferences: MuseControllerPreferences, mainMenuBar: MenuBar) {
+  private def startupPandora(pandoraMenuItem: MenuItem, musicPlayer: MusicPlayer, preferences: MuseControllerPreferences, mainMenuBar: MenuBar, playerSupplier: MusicPlayerSupplier) {
     setActiveFrame(null)
+    playerSupplier.setCurrentApplication(Application.PANDORAONE)
     if (musicPlayer.isConfigured) {
       try {
         val pianobarUI = new PandoraUI(musicPlayer, mainMenuBar.peer, pandoraMenuItem.peer, preferences)

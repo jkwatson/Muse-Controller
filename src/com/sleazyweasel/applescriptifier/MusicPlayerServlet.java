@@ -13,12 +13,12 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MusicPlayerServlet extends HttpServlet {
-    private final MusicPlayer musicPlayer;
+    private final MusicPlayerSupplier musicPlayer;
 
     private AtomicReference<MusicPlayerState> musicPlayerState = new AtomicReference<MusicPlayerState>(new MusicPlayerState(false, "", "", "", "", MusicPlayerInputType.NONE, new HashMap<Integer, String>(), "", "", false, "", 1.0));
 
-    public MusicPlayerServlet(MusicPlayer musicPlayer) {
-        this.musicPlayer = musicPlayer;
+    public MusicPlayerServlet(MusicPlayerSupplier players) {
+        this.musicPlayer = players;
     }
 
     public void init() {
@@ -103,7 +103,7 @@ public class MusicPlayerServlet extends HttpServlet {
             String stationId = req.getParameter("id");
             musicPlayer.selectStation(Integer.valueOf(stationId));
         } else if (pathInfo.startsWith("/albumArt")) {
-            populateResponseDataFromFile(new HashMap<String, Object>());
+            populateResponseDataFromMusicPlayerState(new HashMap<String, Object>());
 
             Map<String, String> responseData = new HashMap<String, String>(1);
             responseData.put("albumArtUrl", musicPlayerState.get().getAlbumArtUrl());
@@ -119,11 +119,11 @@ public class MusicPlayerServlet extends HttpServlet {
     }
 
     private void appendStatus(HttpServletResponse response, Map<String, Object> responseData) throws IOException {
-        populateResponseDataFromFile(responseData);
+        populateResponseDataFromMusicPlayerState(responseData);
         response.getWriter().append(new Gson().toJson(responseData));
     }
 
-    private void populateResponseDataFromFile(Map<String, Object> responseData) {
+    private void populateResponseDataFromMusicPlayerState(Map<String, Object> responseData) {
         musicPlayer.activate();
         MusicPlayerState state = musicPlayerState.get();
 
@@ -152,7 +152,7 @@ public class MusicPlayerServlet extends HttpServlet {
     }
 
 //    private void sendTextCommand(String command) {
-//        musicPlayer.sendTextCommand(command);
+//        playerSupplier.sendTextCommand(command);
 //    }
 
 }

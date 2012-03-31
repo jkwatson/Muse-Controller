@@ -248,6 +248,11 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
     }
 
     @Override
+    public void removeListener(MusicPlayerStateChangeListener listener) {
+        listeners.remove(listener);
+    }
+
+    @Override
     public void playPause() {
         if (Status.PLAY.equals(playerStatus)) {
             pause();
@@ -277,18 +282,33 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
 
     @Override
     public void bounce() {
-        throw new UnsupportedOperationException();
+        //no op for now...
     }
 
     @Override
     public void activate() {
-        throw new UnsupportedOperationException();
+        //no op?
     }
 
     @Override
     public MusicPlayerState getState() {
-        return new MusicPlayerState(false, currentTrack.getTitle(), currentTrack.getArtist().getName(), currentPlaylist.getName(), currentTrack.getAlbum().getName(), currentInputType,
-                buildStationMap(), currentTrack.getCover(), renderCurrentPosition(), isPlaying(), null, volume);
+        String title = "";
+        String artistName = "";
+        String albumName = "";
+        String cover = "";
+        if (currentTrack != null) {
+            title = currentTrack.getTitle();
+            artistName = currentTrack.getArtist().getName();
+            albumName = currentTrack.getAlbum().getName();
+            //todo this is not a URL that anyone can use to get the image... figure out how to get an image URL from spotify, if it is even possible.
+            cover = currentTrack.getCover();
+        }
+        String playlistName = "";
+        if (currentPlaylist != null) {
+            playlistName = currentPlaylist.getName();
+        }
+        return new MusicPlayerState(false, title, artistName, playlistName, albumName, currentInputType,
+                buildStationMap(), cover, renderCurrentPosition(), isPlaying(), null, volume);
     }
 
     private String renderCurrentPosition() {
@@ -329,6 +349,11 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
     @Override
     public boolean isConfigured() {
         return getConfigFile().exists();
+    }
+
+    @Override
+    public boolean isAuthorized() {
+        return isSpotifyAuthorized();
     }
 
     private void notifyListeners() {

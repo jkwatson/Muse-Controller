@@ -32,9 +32,13 @@ public interface MusicPlayer extends ApplicationSupport {
 
     void initializeFromSavedUserState(MuseControllerPreferences preferences);
 
+    void removeListener(MusicPlayerStateChangeListener listener);
+
+    boolean isConfigured();
+
+    boolean isAuthorized();
+
     public interface MusicPlayerStateChangeListener {
         void stateChanged(MusicPlayer player, MusicPlayerState state);
     }
-
-    public boolean isConfigured();
 }

@@ -15,10 +15,10 @@ public class AirfoilServlet extends HttpServlet {
     private static final String NAME_KEY = "name";
     private static final String STATE_KEY = "state";
     private AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
-    private final MusicPlayer pianobarSupport;
+    private final MusicPlayer musicPlayer;
 
-    public AirfoilServlet(MusicPlayer pianobarSupport) {
-        this.pianobarSupport = pianobarSupport;
+    public AirfoilServlet(MusicPlayer musicPlayer) {
+        this.musicPlayer = musicPlayer;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class AirfoilServlet extends HttpServlet {
             selectApplicationAudioSource(sourceId, response);
         } else if (pathInfo.startsWith("/playpause")) {
             Map<String, Object> runningStatus = getRunningStatus();
-            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
+            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, musicPlayer);
             if (applicationSupport != null) {
                 applicationSupport.playPause();
             }
@@ -64,7 +64,7 @@ public class AirfoilServlet extends HttpServlet {
 
         } else if (pathInfo.startsWith("/next")) {
             Map<String, Object> runningStatus = getRunningStatus();
-            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
+            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, musicPlayer);
             if (applicationSupport != null) {
                 applicationSupport.next();
             }
@@ -72,14 +72,14 @@ public class AirfoilServlet extends HttpServlet {
 
         } else if (pathInfo.startsWith("/previous")) {
             Map<String, Object> runningStatus = getRunningStatus();
-            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
+            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, musicPlayer);
             if (applicationSupport != null) {
                 applicationSupport.previous();
             }
             appendRunningStatus(response, runningStatus);
         } else if (pathInfo.startsWith("/thumbsup")) {
             Map<String, Object> runningStatus = getRunningStatus();
-            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
+            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, musicPlayer);
             if (applicationSupport != null) {
                 applicationSupport.thumbsUp();
             }
@@ -87,7 +87,7 @@ public class AirfoilServlet extends HttpServlet {
 
         } else if (pathInfo.startsWith("/thumbsdown")) {
             Map<String, Object> runningStatus = getRunningStatus();
-            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, pianobarSupport);
+            ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, musicPlayer);
             if (applicationSupport != null) {
                 applicationSupport.thumbsDown();
             }
