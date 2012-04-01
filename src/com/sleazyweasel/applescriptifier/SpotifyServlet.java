@@ -2,11 +2,17 @@ package com.sleazyweasel.applescriptifier;
 
 import com.google.gson.Gson;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SpotifyServlet extends HttpServlet {
 
@@ -29,20 +35,47 @@ public class SpotifyServlet extends HttpServlet {
 
         if (pathInfo.startsWith("/playpause")) {
             spotifySupport.playPause();
-        }
-        else if (pathInfo.startsWith("/previous")) {
+        } else if (pathInfo.startsWith("/previous")) {
             spotifySupport.previous();
-        }
-        else if (pathInfo.startsWith("/next")) {
+        } else if (pathInfo.startsWith("/next")) {
             spotifySupport.next();
+        } else if (pathInfo.startsWith("/artwork")) {
+            File tempFile = File.createTempFile("spotify", ".tiff");
+            tempFile.deleteOnExit();
+            appleScriptTemplate.execute(Application.SPOTIFY, getImageCommand(tempFile));
+            BufferedImage image = ImageIO.read(tempFile);
+            response.setContentType("image/png");
+            ImageIO.write(image, "PNG", response.getOutputStream());
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
         }
-
         response.setStatus(HttpServletResponse.SC_OK);
         appendStatus(response);
     }
 
-
     private void appendStatus(HttpServletResponse response) throws IOException {
         response.getWriter().append(new Gson().toJson(spotifySupport.getStatus()));
     }
+
+    private String[] getImageCommand(File tempFile) {
+        List<String> commands = new ArrayList<String>();
+        commands.add(imageCommandPart1);
+        commands.add(String.format(midPart, tempFile.getAbsolutePath()));
+        commands.addAll(Arrays.asList(imageCommandPart2));
+        return commands.toArray(new String[commands.size()]);
+    }
+
+    private static final String midPart = "set the_file to \"%s\"";
+    private static final String imageCommandPart1 = "set imagedata to artwork of current track";
+    private static final String[] imageCommandPart2 = {
+            "try",
+            "	open for access the_file with write permission",
+            "	set eof of the_file to 0",
+            "	write (imagedata) to the_file starting at eof",
+            "	close access the_file",
+            "on error",
+            "	try",
+            "		close access the_file",
+            "	end try",
+            "end try"};
 }

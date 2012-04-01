@@ -9,11 +9,11 @@ import nl.pascaldevink.jotify.gui.listeners.PlayerListener
 import nl.pascaldevink.jotify.gui.listeners.PlayerListener.Status
 import java.awt.event._
 import java.io.IOException
-import java.net.URI
 import swing._
 import java.awt.{Component, Graphics, Cursor, Desktop, Font, Image}
 import javax.swing._
 import java.util.concurrent.Semaphore
+import java.net.{URL, URI}
 
 class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spotifyMenuItem: JMenuItem, preferences: MuseControllerPreferences) extends PlayerListener with MuseControllerFrame {
   private val executionLock = new Semaphore(1)
@@ -322,7 +322,10 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.pauseButton.enabled = true;
     widgets.nextButton.enabled = true;
     widgets.previousButton.enabled = true;
-    widgets.imageLabel.icon = new ImageIcon(spotifySupport.image(track.getCover).getScaledInstance(130, 130, Image.SCALE_SMOOTH));
+    val imageUrl: URL = spotifySupport.imageUrl(track.getCover)
+    print(imageUrl)
+    val unscaledIcon: ImageIcon = new ImageIcon(imageUrl)
+    widgets.imageLabel.icon = new ImageIcon(unscaledIcon.getImage.getScaledInstance(130, 130, Image.SCALE_SMOOTH));
   }
 
   override def playerStatusChanged(status: Status) {

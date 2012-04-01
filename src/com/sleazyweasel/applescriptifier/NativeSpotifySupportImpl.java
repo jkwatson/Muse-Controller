@@ -15,6 +15,8 @@ import nl.pascaldevink.jotify.gui.listeners.PlayerListener;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -281,6 +283,16 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
     }
 
     @Override
+    public URL imageUrl(String imageCode) {
+        try {
+            return new URL("http://o.scdn.co/image/" + imageCode);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
     public void bounce() {
         //no op for now...
     }
@@ -301,7 +313,7 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
             artistName = currentTrack.getArtist().getName();
             albumName = currentTrack.getAlbum().getName();
             //todo this is not a URL that anyone can use to get the image... figure out how to get an image URL from spotify, if it is even possible.
-            cover = currentTrack.getCover();
+            cover = imageUrl(currentTrack.getCover()).toString();
         }
         String playlistName = "";
         if (currentPlaylist != null) {

@@ -4,6 +4,7 @@ import de.felixbruns.jotify.media.Playlist;
 import nl.pascaldevink.jotify.gui.listeners.PlayerListener;
 
 import java.awt.*;
+import java.net.URL;
 import java.util.List;
 
 public interface NativeSpotifySupport extends MusicPlayer {
@@ -24,6 +25,8 @@ public interface NativeSpotifySupport extends MusicPlayer {
     void pause();
 
     Image image(String imageCode);
+
+    URL imageUrl(String imageCode);
 
     void setVolume(float volume);
 }
