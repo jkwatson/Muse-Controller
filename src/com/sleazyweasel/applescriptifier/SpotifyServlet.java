@@ -48,6 +48,10 @@ public class SpotifyServlet extends HttpServlet {
             ImageIO.write(image, "PNG", response.getOutputStream());
             response.setStatus(HttpServletResponse.SC_OK);
             return;
+        } else if (pathInfo.startsWith("/setVolume")) {
+            String value = req.getParameter("value");
+            Integer volume = Integer.valueOf(value);
+            spotifySupport.setVolume(volume);
         }
         response.setStatus(HttpServletResponse.SC_OK);
         appendStatus(response);

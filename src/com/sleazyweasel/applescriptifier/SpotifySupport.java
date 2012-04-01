@@ -1,6 +1,5 @@
 package com.sleazyweasel.applescriptifier;
 
-import javax.script.ScriptException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,5 +56,9 @@ public class SpotifySupport implements ApplicationSupport {
             }
         }
         return status;
+    }
+
+    public void setVolume(Integer volume) {
+        appleScriptTemplate.execute(Application.SPOTIFY, "set sound volume to " + volume);
     }
 }
