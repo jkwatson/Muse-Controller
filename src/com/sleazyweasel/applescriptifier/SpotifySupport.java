@@ -44,15 +44,19 @@ public class SpotifySupport implements ApplicationSupport {
             state.put("playerPosition", results.get(2));
 
             try {
-                List songInfo = appleScriptTemplate.execute(Application.SPOTIFY, "get [name, artist, album] of current track");
-                state.put("songName", songInfo.get(0));
+                List songInfo = appleScriptTemplate.execute(Application.SPOTIFY, "get [name, artist, album, duration, spotify url] of current track");
+                state.put("title", songInfo.get(0));
                 state.put("artist", songInfo.get(1));
                 state.put("album", songInfo.get(2));
+                state.put("duration", songInfo.get(3));
+                state.put("spotifyUrl", songInfo.get(4));
             } catch (AppleScriptException e) {
                 //this happens when there is no current track
-                state.put("songName", "");
+                state.put("title", "");
                 state.put("artist", "");
                 state.put("album", "");
+                state.put("duration", "");
+                state.put("spotifyUrl", "");
             }
         }
         return status;

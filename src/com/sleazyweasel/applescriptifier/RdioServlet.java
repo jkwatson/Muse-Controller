@@ -80,8 +80,8 @@ public class RdioServlet extends HttpServlet {
             currentTrack.put("rdioUrl", trackData.get(4));
 
             List<Object> playerData = data.get(1);
-//            Double position = (Double) playerData.get(0);
-//            playerState.put("position", position.isNaN() || position.isInfinite() ? 0 : position);
+            Double position = (Double) playerData.get(0);
+            playerState.put("playerPosition", position.isNaN() || position.isInfinite() ? 0 : position);
             playerState.put("volume", playerData.get(1));
 
         } catch (Exception e) {
@@ -94,7 +94,7 @@ public class RdioServlet extends HttpServlet {
             currentTrack.put("rdioUrl", "");
             List<Object> playerData = data.get(0);
 //            Double position = (Double) playerData.get(0);
-//            playerState.put("position", position.isNaN() || position.isInfinite() ? 0 : position);
+            playerState.put("playerPosition", 0);
             playerState.put("volume", playerData.get(1));
         }
         try {

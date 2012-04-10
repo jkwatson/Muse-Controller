@@ -60,7 +60,7 @@ public class SpotifySupportTest {
         assertEquals("stopped", state.get("playerState"));
         assertEquals(64, state.get("volume"));
         assertEquals(3.5, state.get("playerPosition"));
-        assertEquals("New Song", state.get("songName"));
+        assertEquals("New Song", state.get("title"));
         assertEquals("Who Are You", state.get("album"));
         assertEquals("The Who", state.get("artist"));
     }
@@ -94,7 +94,7 @@ public class SpotifySupportTest {
         assertEquals("stopped", state.get("playerState"));
         assertEquals(64, state.get("volume"));
         assertEquals(3.5, state.get("playerPosition"));
-        assertEquals("", state.get("songName"));
+        assertEquals("", state.get("title"));
         assertEquals("", state.get("album"));
         assertEquals("", state.get("artist"));
     }
