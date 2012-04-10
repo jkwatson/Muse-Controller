@@ -8,7 +8,7 @@ public enum Application {
     PANDORAONE("Pandora", "Pandora", "com.pandora.desktop.FB9956FD96E03239939108614098AD95535EE674.1", false, true, true, false, true, true),
     RDIO("Rdio", "Rdio", "com.rdio.desktop", true, true, true, true, false, false),
     MUSECONTROLLER("Muse Controller", "Muse Controller", "com.sleazyweasel.MuseController", true, true, true, false, true, true),
-    SPOTIFY("Spotify", "Spotify", "com.spotify.client", false, true, true, true, false, false),
+    SPOTIFY("Spotify", "Spotify", "com.spotify.client", true, true, true, true, false, false),
     OTHER("Other", "Other", "unknown", false, false, false, false, false, false);
 
     private String displayName;

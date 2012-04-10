@@ -23,12 +23,6 @@ public class SpotifySupportTest {
         SpotifySupport testClass = new SpotifySupport(appleScriptTemplate);
         Map<String, Object> status = testClass.getStatus();
         assertNotNull(status);
-        assertEquals("Spotify", status.get("app"));
-
-        Map<String, Object> state = (Map<String, Object>) status.get("state");
-        assertNotNull(state);
-
-        assertEquals(false, state.get("running"));
     }
 
     @SuppressWarnings({"unchecked"})
@@ -38,11 +32,11 @@ public class SpotifySupportTest {
         AppleScriptTemplate appleScriptTemplate = mock(AppleScriptTemplate.class);
         when(appleScriptTemplate.isRunning(Application.SPOTIFY)).thenReturn(true);
         List<Object> playerInfo = new ArrayList<Object>();
-        playerInfo.add("stopped");
+        playerInfo.add("playing");
         playerInfo.add(64);
         playerInfo.add(3.5);
         when(appleScriptTemplate.execute(Application.SPOTIFY, "[get player state as string, get sound volume, get player position]")).thenReturn(playerInfo);
-        when(appleScriptTemplate.execute(Application.SPOTIFY, "get [name, artist, album] of current track")).thenReturn(Arrays.asList("New Song", "The Who", "Who Are You"));
+        when(appleScriptTemplate.execute(Application.SPOTIFY, "get [name, artist, album, duration, spotify url] of current track")).thenReturn(Arrays.asList("New Song", "The Who", "Who Are You", 3.333, "lemons"));
 
         SpotifySupport testClass = new SpotifySupport(appleScriptTemplate);
 
@@ -51,18 +45,19 @@ public class SpotifySupportTest {
 
         //then
         assertNotNull(status);
-        assertEquals("Spotify", status.get("app"));
+        Map<String, Object> playerState = (Map<String, Object>) status.get("playerState");
+        assertNotNull(playerState);
+        assertEquals("YES", playerState.get("playing"));
+        assertEquals(64, playerState.get("volume"));
+        assertEquals(3.5, playerState.get("playerPosition"));
 
-        Map<String, Object> state = (Map<String, Object>) status.get("state");
-        assertNotNull(state);
+        Map<String, Object> currentTrack = (Map<String, Object>) status.get("currentTrack");
+        assertEquals("New Song", currentTrack.get("title"));
+        assertEquals("Who Are You", currentTrack.get("album"));
+        assertEquals("The Who", currentTrack.get("artist"));
+        assertEquals("lemons", currentTrack.get("spotifyUrl"));
+        assertEquals(3.333, currentTrack.get("duration"));
 
-        assertEquals(true, state.get("running"));
-        assertEquals("stopped", state.get("playerState"));
-        assertEquals(64, state.get("volume"));
-        assertEquals(3.5, state.get("playerPosition"));
-        assertEquals("New Song", state.get("title"));
-        assertEquals("Who Are You", state.get("album"));
-        assertEquals("The Who", state.get("artist"));
     }
 
     @SuppressWarnings({"unchecked"})
@@ -76,7 +71,7 @@ public class SpotifySupportTest {
         playerInfo.add(64);
         playerInfo.add(3.5);
         when(appleScriptTemplate.execute(Application.SPOTIFY, "[get player state as string, get sound volume, get player position]")).thenReturn(playerInfo);
-        when(appleScriptTemplate.execute(Application.SPOTIFY, "get [name, artist, album] of current track")).thenThrow(new AppleScriptException(new Exception()));
+        when(appleScriptTemplate.execute(Application.SPOTIFY, "get [name, artist, album, duration, spotify url] of current track")).thenThrow(new AppleScriptException(new Exception()));
 
         SpotifySupport testClass = new SpotifySupport(appleScriptTemplate);
 
@@ -85,18 +80,20 @@ public class SpotifySupportTest {
 
         //then
         assertNotNull(status);
-        assertEquals("Spotify", status.get("app"));
 
-        Map<String, Object> state = (Map<String, Object>) status.get("state");
-        assertNotNull(state);
+        assertNotNull(status);
+        Map<String, Object> playerState = (Map<String, Object>) status.get("playerState");
+        assertNotNull(playerState);
+        assertEquals("NO", playerState.get("playing"));
+        assertEquals(64, playerState.get("volume"));
+        assertEquals(3.5, playerState.get("playerPosition"));
 
-        assertEquals(true, state.get("running"));
-        assertEquals("stopped", state.get("playerState"));
-        assertEquals(64, state.get("volume"));
-        assertEquals(3.5, state.get("playerPosition"));
-        assertEquals("", state.get("title"));
-        assertEquals("", state.get("album"));
-        assertEquals("", state.get("artist"));
+        Map<String, Object> currentTrack = (Map<String, Object>) status.get("currentTrack");
+        assertEquals("", currentTrack.get("title"));
+        assertEquals("", currentTrack.get("album"));
+        assertEquals("", currentTrack.get("artist"));
+        assertEquals("", currentTrack.get("spotifyUrl"));
+        assertEquals("", currentTrack.get("duration"));
     }
 
 }

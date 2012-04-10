@@ -66,7 +66,6 @@ public class RdioServlet extends HttpServlet {
     }
 
     private void appendStatus(HttpServletResponse response) throws IOException {
-        Map<String, Object> status = new HashMap<String, Object>();
 
         Map<String, Object> currentTrack = new HashMap<String, Object>();
         Map<String, Object> playerState = new HashMap<String, Object>();
@@ -104,6 +103,7 @@ public class RdioServlet extends HttpServlet {
             playerState.put("playing", "NO");
         }
 
+        Map<String, Object> status = new HashMap<String, Object>();
         status.put("currentTrack", currentTrack);
         status.put("playerState", playerState);
         status.put("version", ControlServlet.CURRENT_VERSION);
