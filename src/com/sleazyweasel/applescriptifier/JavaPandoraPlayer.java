@@ -248,7 +248,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         try {
             final URL url = new URL(song.getAudioUrl());
             final InputStream inputStream = url.openStream();
-            File tempFile = File.createTempFile("pandora", "mp3");
+            File tempFile = File.createTempFile("pandora", ".mp3");
             tempFile.deleteOnExit();
             final OutputStream bigBuffer = new FileOutputStream(tempFile);
             final Object monitor = new Object();

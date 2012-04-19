@@ -338,5 +338,19 @@
                        sparkle:dsaSignature="MC0CFQCpc/6N/obFkkyv1Eog9wM8TMoEAAIUTHzfnrCHG/tDlqGvEtPe7sVpHF4="/>
 
         </item>
+        <item>
+            <title>Version 3.6.0</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>New Features:</h2>
+                    <h3>Enabled Full Spotify screen for Muse Control.</h3>
+                ]]></description>
+            <pubDate>Tue, 18 Apr 2012 21:21:21 +0800</pubDate>
+            <enclosure url="https://github.com/downloads/jkwatson/Muse-Controller/Muse Controller 3.6.0.dmg"
+                       sparkle:version="3.6.0"
+                       length="17783841" type="application/octet-stream"
+                       sparkle:dsaSignature="MCwCFG1eC1ssKry+WDSb+GimJ1SU0yz5AhQBYHqUDdXbJqvHCtssJ6H1hMTbew=="/>
+
+        </item>
     </channel>
 </rss>
