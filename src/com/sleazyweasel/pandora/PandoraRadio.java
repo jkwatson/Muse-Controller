@@ -26,13 +26,20 @@ package com.sleazyweasel.pandora;/* Pandoroid Radio - open source pandora.com cl
 import com.sleazyweasel.applescriptifier.BadPandoraPasswordException;
 import org.xmlrpc.android.XMLRPCException;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.*;
 
 
 public class PandoraRadio {
 
-    public static final String PROTOCOL_VERSION = "33";
+    public static final String PROTOCOL_VERSION = "34";
     private static final String RPC_URL = "https://www.pandora.com/radio/xmlrpc/v" + PROTOCOL_VERSION + "?";
     private static final String NON_SSL_RPC_URL = "http://www.pandora.com/radio/xmlrpc/v" + PROTOCOL_VERSION + "?";
     private static final String USER_AGENT = "com.magicbos.doombox";
@@ -204,7 +211,7 @@ public class PandoraRadio {
             args.add(1, authToken);
 
         String xml = XmlRpc.makeCall(method, args);
-        //printXmlRpc(xml);
+        printXmlRpc(xml);
         String data = pandoraEncrypt(xml);
 
         ArrayList<String> urlArgStrings = new ArrayList<String>();
@@ -262,6 +269,7 @@ public class PandoraRadio {
         authToken = null;
 
         ArrayList<Object> args = new ArrayList<Object>();
+        args.add("");
         args.add(user);
         args.add(password);
         args.add("html5tuner");
@@ -282,14 +290,37 @@ public class PandoraRadio {
 
     public void sync() {
         long currentSystemTime = System.currentTimeMillis() / 1000L;
-        String result = (String) xmlrpcCall("misc.sync", false);
-        List<Character> s = pandoraDecryptToBytes(result);
-        //first 4 bytes appear to be junk?
-        StringBuilder timestampAsString = new StringBuilder();
-        for (int i = 4; i < s.size(); i++) {
-            timestampAsString.append(s.get(i));
+        URL url;
+        try {
+            url = new URL("http://ridetheclown.com/s2/synctime.php");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
-        long currentPandoraTime = Long.valueOf(timestampAsString.toString().trim());
+        String timestampAsString;
+        InputStream inputStream = null;
+        try {
+            inputStream = url.openStream();
+            timestampAsString = new BufferedReader(new InputStreamReader(inputStream)).readLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    //ignore this...
+                }
+            }
+        }
+
+//        String result = (String) xmlrpcCall("misc.sync", false);
+//        List<Character> s = pandoraDecryptToBytes(result);
+//        //first 4 bytes appear to be junk?
+//        StringBuilder timestampAsString = new StringBuilder();
+//        for (int i = 4; i < s.size(); i++) {
+//            timestampAsString.append(s.get(i));
+//        }
+        long currentPandoraTime = Long.valueOf(timestampAsString.trim());
         offset = currentPandoraTime - currentSystemTime;
     }
 
