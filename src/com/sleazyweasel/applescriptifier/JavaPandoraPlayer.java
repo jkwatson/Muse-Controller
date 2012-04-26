@@ -190,7 +190,6 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             artist = song.getArtist();
             album = song.getAlbum();
             albumArtUrl = song.getAlbumCoverUrl();
-            System.out.println("albumArtUrl = " + albumArtUrl);
             detailUrl = song.getAlbumDetailURL();
             //todo figure out how to get total track time.
             currentTimeInTrack = formatCurrentTime();
