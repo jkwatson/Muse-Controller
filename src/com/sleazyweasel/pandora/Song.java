@@ -39,7 +39,7 @@ public class Song {
     private boolean finished;
     private long playlistTime;
 
-    public Song(Map<String, Object> data, PandoraRadio pandoraRadio) {
+    public Song(Map<String, Object> data, XmlRpcPandoraRadio pandoraRadio) {
         try {
             album = (String) data.get("albumTitle");
             artist = (String) data.get("artistSummary");
@@ -91,7 +91,7 @@ public class Song {
     }
 
     public boolean isStillValid() {
-        return ((System.currentTimeMillis() / 1000L) - playlistTime) < PandoraRadio.PLAYLIST_VALIDITY_TIME;
+        return ((System.currentTimeMillis() / 1000L) - playlistTime) < XmlRpcPandoraRadio.PLAYLIST_VALIDITY_TIME;
     }
 
     public String getTrackToken() {

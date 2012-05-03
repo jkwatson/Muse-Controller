@@ -32,9 +32,9 @@ public class Station implements Comparable<Station>, Serializable {
 
     transient private Song[] currentPlaylist;
     transient private boolean useQuickMix;
-    transient private PandoraRadio pandora;
+    transient private XmlRpcPandoraRadio pandora;
 
-    public Station(HashMap<String, Object> d, PandoraRadio instance) {
+    public Station(HashMap<String, Object> d, XmlRpcPandoraRadio instance) {
         id = (String) d.get("stationId");
         idToken = (String) d.get("stationIdToken");
         isCreator = (Boolean) d.get("isCreator");
@@ -46,7 +46,7 @@ public class Station implements Comparable<Station>, Serializable {
     }
 
     public Song[] getPlaylist(boolean forceDownload) {
-        return getPlaylist(PandoraRadio.DEFAULT_AUDIO_FORMAT, forceDownload);
+        return getPlaylist(XmlRpcPandoraRadio.DEFAULT_AUDIO_FORMAT, forceDownload);
     }
 
     public Song[] getPlaylist(String format, boolean forceDownload) {

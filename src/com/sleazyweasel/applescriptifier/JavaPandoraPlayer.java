@@ -4,6 +4,7 @@ import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
 import com.sleazyweasel.pandora.PandoraRadio;
 import com.sleazyweasel.pandora.Song;
 import com.sleazyweasel.pandora.Station;
+import com.sleazyweasel.pandora.XmlRpcPandoraRadio;
 import javazoom.jlgui.basicplayer.*;
 
 import java.io.*;
@@ -98,7 +99,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         }
         player = new BasicPlayer();
         player.addBasicPlayerListener(this);
-        pandoraRadio = new PandoraRadio();
+        pandoraRadio = new XmlRpcPandoraRadio();
         System.out.println("player.getStatus() = " + player.getStatus());
         try {
             LoginInfo loginInfo = getLogin();
