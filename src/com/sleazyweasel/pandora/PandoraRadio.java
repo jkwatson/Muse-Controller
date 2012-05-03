@@ -18,4 +18,6 @@ public interface PandoraRadio {
     void rate(Song song, boolean rating);
 
     boolean isAlive();
+
+    Song[] getPlaylist(Station station, String format);
 }

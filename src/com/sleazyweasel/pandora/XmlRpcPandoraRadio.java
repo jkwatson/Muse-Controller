@@ -345,7 +345,7 @@ public class XmlRpcPandoraRadio implements PandoraRadio {
             Object[] stationsResult = (Object[]) result;
             stations = new ArrayList<Station>(stationsResult.length);
             for (int s = 0; s < stationsResult.length; s++) {
-                stations.add(new Station((HashMap<String, Object>) stationsResult[s], this));
+                stations.add(new Station((HashMap<String, Object>) stationsResult[s]));
             }
             Collections.sort(stations);
         }
@@ -355,10 +355,7 @@ public class XmlRpcPandoraRadio implements PandoraRadio {
 
     @Override
     public Station getStationById(long sid) {
-        Iterator<Station> stationIter = stations.iterator();
-        Station station = null;
-        while (stationIter.hasNext()) {
-            station = stationIter.next();
+        for (Station station : stations) {
             if (station.getId() == sid) {
                 return station;
             }
@@ -401,6 +398,31 @@ public class XmlRpcPandoraRadio implements PandoraRadio {
     @Override
     public boolean isAlive() {
         return authToken != null;
+    }
+
+    @Override
+    public Song[] getPlaylist(Station station, String format) {
+        ArrayList<Object> args = new ArrayList<Object>(7);
+        args.add(station.getStationId());
+        args.add("0");
+        args.add("");
+        args.add("");
+        args.add(format);
+        args.add("0");
+        args.add("0");
+
+        Object result = xmlrpcCall("playlist.getFragment", args, false);
+
+        if (result instanceof Object[]) {
+            Object[] fragmentsResult = (Object[]) result;
+            Song[] list = new Song[fragmentsResult.length];
+            for (int f = 0; f < fragmentsResult.length; f++) {
+                list[f] = new Song((HashMap<String, Object>) fragmentsResult[f], this);
+            }
+            return list;
+        }
+
+        return null;
     }
 
 }

@@ -1,23 +1,18 @@
 package com.sleazyweasel.pandora;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.sleazyweasel.applescriptifier.BadPandoraPasswordException;
 import de.felixbruns.jotify.util.Hex;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.security.InvalidKeyException;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +22,7 @@ public class JsonPandoraRadio implements PandoraRadio {
     private static final String ANDROID_ENCRYPTION_KEY = "6#26FRL$ZWD";
     private static final String BLOWFISH_ECB_PKCS5_PADDING = "Blowfish/ECB/PKCS5Padding";
     private static final String BASE_URL = "https://tuner.pandora.com/services/json/?";
+    private static final String BASE_NON_TLS_URL = "http://tuner.pandora.com/services/json/?";
     private static final String ANDROID_PARTNER_PASSWORD = "AC7IBG09A3DTSYM4R41UJWL07VLN8JI7";
 
     private Long syncTime;
@@ -34,13 +30,13 @@ public class JsonPandoraRadio implements PandoraRadio {
     private Integer partnerId;
     private String partnerAuthToken;
     private String userAuthToken;
+    private Long userId;
 
     private List<Station> stations;
 
     @Override
     public void connect(String user, String password) throws BadPandoraPasswordException {
         clientStartTime = System.currentTimeMillis() / 1000L;
-//        System.out.println("clientStartTime = " + clientStartTime);     partnerLogin();
         partnerLogin();
         userLogin(user, password);
     }
@@ -53,24 +49,18 @@ public class JsonPandoraRadio implements PandoraRadio {
         userLoginInputs.put("partnerAuthToken", partnerAuthToken);
         userLoginInputs.put("syncTime", getPandoraTime());
         String userLoginData = new Gson().toJson(userLoginInputs);
-//        System.out.println("userLoginData = " + userLoginData);
         String encryptedUserLoginData = encrypt(userLoginData);
-//        System.out.println("encryptedUserLoginData = " + encryptedUserLoginData);
         String urlEncodedPartnerAuthToken = urlEncode(partnerAuthToken);
 
         String userLoginUrl = String.format(BASE_URL + "method=auth.userLogin&auth_token=%s&partner_id=%d", urlEncodedPartnerAuthToken, partnerId);
-//        System.out.println("userLoginUrl = " + userLoginUrl);
         JsonObject jsonElement = doPost(userLoginUrl, encryptedUserLoginData).getAsJsonObject();
         String loginStatus = jsonElement.get("stat").getAsString();
-//        System.out.println("loginStatus = " + loginStatus);
-        if (loginStatus.equals("ok")) {
+        if ("ok".equals(loginStatus)) {
             JsonObject userLoginResult = jsonElement.get("result").getAsJsonObject();
             userAuthToken = userLoginResult.get("userAuthToken").getAsString();
-//            System.out.println("userAuthToken.getAsString() = " + userAuthToken.getAsString());
-        }
-        else {
+            userId = userLoginResult.get("userId").getAsLong();
+        } else {
             throw new BadPandoraPasswordException();
-//            System.out.println("loginStatus = " + loginStatus);
         }
     }
 
@@ -88,14 +78,13 @@ public class JsonPandoraRadio implements PandoraRadio {
 
     private void partnerLogin() {
         JsonElement partnerLoginData = doPartnerLogin();
-//        System.out.println("parse array = " + partnerLoginData.isJsonArray());
-//        System.out.println("parse object= " + partnerLoginData.isJsonObject());
         JsonObject asJsonObject = partnerLoginData.getAsJsonObject();
-        JsonElement stat = asJsonObject.get("stat");
-//        System.out.println("stat.getAsString() = " + stat.getAsString());
+        String stat = asJsonObject.get("stat").getAsString();
+        if (!"ok".equals(stat)) {
+            throw new RuntimeException("Failed at Partner Login");
+        }
         JsonObject result = asJsonObject.getAsJsonObject("result");
         String encryptedSyncTime = result.get("syncTime").getAsString();
-//        System.out.println("syncTime = " + encryptedSyncTime);
         partnerAuthToken = result.get("partnerAuthToken").getAsString();
         syncTime = Long.valueOf(decrypt(encryptedSyncTime));
         partnerId = result.get("partnerId").getAsInt();
@@ -118,12 +107,44 @@ public class JsonPandoraRadio implements PandoraRadio {
 
     @Override
     public List<Station> getStations() {
-        throw new UnsupportedOperationException();
+        JsonObject result = doStandardCall("user.getStationList", new HashMap<String, Object>());
+        JsonArray stationArray = result.get("result").getAsJsonObject().getAsJsonArray("stations");
+        stations = new ArrayList<Station>();
+        for (JsonElement jsonStationElement : stationArray) {
+            JsonObject jsonStation = jsonStationElement.getAsJsonObject();
+
+            String stationId = jsonStation.get("stationId").getAsString();
+            String stationIdToken = jsonStation.get("stationToken").getAsString();
+            boolean isQuickMix = jsonStation.getAsJsonPrimitive("isQuickMix").getAsBoolean();
+            String stationName = jsonStation.get("stationName").getAsString();
+            stations.add(new Station(stationId, stationIdToken, false, isQuickMix, stationName));
+        }
+        return stations;
+    }
+
+    private JsonObject doStandardCall(String method, Map<String, Object> postData) {
+        String url = String.format(BASE_NON_TLS_URL + "method=%s&auth_token=%s&partner_id=%d&user_id=%s", method, urlEncode(userAuthToken), partnerId, userId);
+        postData.put("userAuthToken", userAuthToken);
+        postData.put("syncTime", getPandoraTime());
+        JsonObject result = doPost(url, encrypt(new Gson().toJson(postData))).getAsJsonObject();
+        String stat = result.get("stat").getAsString();
+        if (!"ok".equals(stat)) {
+            throw new RuntimeException("Failed to get stations");
+        }
+        return result;
     }
 
     @Override
     public Station getStationById(long sid) {
-        throw new UnsupportedOperationException();
+        if (stations == null) {
+            getStations();
+        }
+        for (Station station : stations) {
+            if (sid == station.getId()) {
+                return station;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -133,6 +154,11 @@ public class JsonPandoraRadio implements PandoraRadio {
 
     @Override
     public boolean isAlive() {
+        return userAuthToken != null;
+    }
+
+    @Override
+    public Song[] getPlaylist(Station station, String format) {
         throw new UnsupportedOperationException();
     }
 
@@ -145,7 +171,6 @@ public class JsonPandoraRadio implements PandoraRadio {
         data.put("version", "5");
         data.put("includeUrls", true);
         String stringData = new Gson().toJson(data);
-//        System.out.println("stringData = " + stringData);
 
         return doPost(partnerLoginUrl, stringData);
     }
@@ -153,7 +178,7 @@ public class JsonPandoraRadio implements PandoraRadio {
     private static JsonElement doPost(String urlInput, String stringData) {
         try {
             URL url = new URL(urlInput);
-            HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("POST");
             urlConnection.setDoOutput(true);
             urlConnection.setDoInput(true);
@@ -170,7 +195,7 @@ public class JsonPandoraRadio implements PandoraRadio {
             BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
-    //            System.out.println("line = " + line);
+                System.out.println("response = " + line);
                 JsonParser parser = new JsonParser();
                 return parser.parse(line);
             }
@@ -181,31 +206,16 @@ public class JsonPandoraRadio implements PandoraRadio {
     }
 
 
-    private static void setRequestHeaders(HttpsURLConnection conn) {
+    private static void setRequestHeaders(HttpURLConnection conn) {
         conn.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)");
         conn.setRequestProperty("Content-Type", "text/plain");
         conn.setRequestProperty("Accept", "*/*");
     }
 
-    private static String encrypt(String input)  {
+    private static String encrypt(String input) {
         try {
             Cipher encryptionCipher = Cipher.getInstance(BLOWFISH_ECB_PKCS5_PADDING);
-            encryptionCipher.init(Cipher.ENCRYPT_MODE, new Key() {
-                @Override
-                public String getAlgorithm() {
-                    return "Blowfish";
-                }
-
-                @Override
-                public String getFormat() {
-                    return "RAW";
-                }
-
-                @Override
-                public byte[] getEncoded() {
-                    return ANDROID_ENCRYPTION_KEY.getBytes();
-                }
-            });
+            encryptionCipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(ANDROID_ENCRYPTION_KEY.getBytes(), "Blowfish"));
             byte[] bytes = encryptionCipher.doFinal(input.getBytes());
             return Hex.toHex(bytes);
         } catch (Exception e) {
@@ -214,27 +224,10 @@ public class JsonPandoraRadio implements PandoraRadio {
     }
 
     private static String decrypt(String input) {
-        byte[] result = new byte[0];
+        byte[] result;
         try {
             Cipher decryptionCipher = Cipher.getInstance(BLOWFISH_ECB_PKCS5_PADDING);
-
-            decryptionCipher.init(Cipher.DECRYPT_MODE, new Key() {
-                @Override
-                public String getAlgorithm() {
-                    return "Blowfish";
-                }
-
-                @Override
-                public String getFormat() {
-                    return "RAW";
-                }
-
-                @Override
-                public byte[] getEncoded() {
-                    return ANDROID_DECRYPTION_KEY.getBytes();
-                }
-            });
-
+            decryptionCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(ANDROID_DECRYPTION_KEY.getBytes(), "Blowfish"));
             result = decryptionCipher.doFinal(Hex.toBytes(input));
         } catch (Exception e) {
             throw new RuntimeException("Failed to properly decrypt data", e);

@@ -30,55 +30,24 @@ public class Station implements Comparable<Station>, Serializable {
     private boolean isQuickMix;
     private String name;
 
-    transient private Song[] currentPlaylist;
     transient private boolean useQuickMix;
-    transient private XmlRpcPandoraRadio pandora;
 
-    public Station(HashMap<String, Object> d, XmlRpcPandoraRadio instance) {
-        id = (String) d.get("stationId");
-        idToken = (String) d.get("stationIdToken");
-        isCreator = (Boolean) d.get("isCreator");
-        isQuickMix = (Boolean) d.get("isQuickMix");
-        name = (String) d.get("stationName");
+    public Station(HashMap<String, Object> data) {
+        id = (String) data.get("stationId");
+        idToken = (String) data.get("stationIdToken");
+        isCreator = (Boolean) data.get("isCreator");
+        isQuickMix = (Boolean) data.get("isQuickMix");
+        name = (String) data.get("stationName");
 
-        pandora = instance;
         useQuickMix = false;
     }
 
-    public Song[] getPlaylist(boolean forceDownload) {
-        return getPlaylist(XmlRpcPandoraRadio.DEFAULT_AUDIO_FORMAT, forceDownload);
-    }
-
-    public Song[] getPlaylist(String format, boolean forceDownload) {
-        if (forceDownload || currentPlaylist == null) {
-            return getPlaylist(format);
-        } else {
-            return currentPlaylist;
-        }
-    }
-
-    public Song[] getPlaylist(String format) {
-        ArrayList<Object> args = new ArrayList<Object>(7);
-        args.add(id);
-        args.add("0");
-        args.add("");
-        args.add("");
-        args.add(format);
-        args.add("0");
-        args.add("0");
-
-        Object result = pandora.xmlrpcCall("playlist.getFragment", args, false);
-
-        if (result instanceof Object[]) {
-            Object[] fragmentsResult = (Object[]) result;
-            Song[] list = new Song[fragmentsResult.length];
-            for (int f = 0; f < fragmentsResult.length; f++) {
-                list[f] = new Song((HashMap<String, Object>) fragmentsResult[f], pandora);
-            }
-            currentPlaylist = list;
-        }
-
-        return currentPlaylist;
+    public Station(String id, String idToken, boolean creator, boolean quickMix, String name) {
+        this.id = id;
+        this.idToken = idToken;
+        isCreator = creator;
+        isQuickMix = quickMix;
+        this.name = name;
     }
 
     public long getId() {
@@ -91,11 +60,6 @@ public class Station implements Comparable<Station>, Serializable {
 
     public String getName() {
         return name;
-    }
-
-    public String getStationImageUrl() {
-        getPlaylist(false);
-        return currentPlaylist[0].getAlbumCoverUrl();
     }
 
     public int compareTo(Station another) {

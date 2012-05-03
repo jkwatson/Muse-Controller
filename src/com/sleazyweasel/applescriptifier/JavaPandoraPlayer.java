@@ -1,10 +1,7 @@
 package com.sleazyweasel.applescriptifier;
 
 import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
-import com.sleazyweasel.pandora.PandoraRadio;
-import com.sleazyweasel.pandora.Song;
-import com.sleazyweasel.pandora.Station;
-import com.sleazyweasel.pandora.XmlRpcPandoraRadio;
+import com.sleazyweasel.pandora.*;
 import javazoom.jlgui.basicplayer.*;
 
 import java.io.*;
@@ -99,7 +96,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         }
         player = new BasicPlayer();
         player.addBasicPlayerListener(this);
-        pandoraRadio = new XmlRpcPandoraRadio();
+        pandoraRadio = new JsonPandoraRadio();
         System.out.println("player.getStatus() = " + player.getStatus());
         try {
             LoginInfo loginInfo = getLogin();
@@ -228,11 +225,11 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     private void refreshPlaylist() {
         validateRadioState();
         try {
-            playlist = station.getPlaylist("mp3-hifi");
+            playlist = pandoraRadio.getPlaylist(station, "mp3-hifi");
         } catch (Exception e) {
             e.printStackTrace();
             try {
-                playlist = station.getPlaylist("mp3");
+                playlist = pandoraRadio.getPlaylist(station, "mp3");
             } catch (Exception e1) {
                 e1.printStackTrace();
                 station = null;
