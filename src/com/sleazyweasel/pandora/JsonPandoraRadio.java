@@ -6,12 +6,10 @@ import de.felixbruns.jotify.util.Hex;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,10 +77,7 @@ public class JsonPandoraRadio implements PandoraRadio {
     private void partnerLogin() {
         JsonElement partnerLoginData = doPartnerLogin();
         JsonObject asJsonObject = partnerLoginData.getAsJsonObject();
-        String stat = asJsonObject.get("stat").getAsString();
-        if (!"ok".equals(stat)) {
-            throw new RuntimeException("Failed at Partner Login");
-        }
+        checkForError(asJsonObject, "Failed at Partner Login");
         JsonObject result = asJsonObject.getAsJsonObject("result");
         String encryptedSyncTime = result.get("syncTime").getAsString();
         partnerAuthToken = result.get("partnerAuthToken").getAsString();
@@ -107,7 +102,8 @@ public class JsonPandoraRadio implements PandoraRadio {
 
     @Override
     public List<Station> getStations() {
-        JsonObject result = doStandardCall("user.getStationList", new HashMap<String, Object>());
+        JsonObject result = doStandardCall("user.getStationList", new HashMap<String, Object>(), false);
+        checkForError(result, "Failed to get Stations");
         JsonArray stationArray = result.get("result").getAsJsonObject().getAsJsonArray("stations");
         stations = new ArrayList<Station>();
         for (JsonElement jsonStationElement : stationArray) {
@@ -122,16 +118,14 @@ public class JsonPandoraRadio implements PandoraRadio {
         return stations;
     }
 
-    private JsonObject doStandardCall(String method, Map<String, Object> postData) {
-        String url = String.format(BASE_NON_TLS_URL + "method=%s&auth_token=%s&partner_id=%d&user_id=%s", method, urlEncode(userAuthToken), partnerId, userId);
+    private JsonObject doStandardCall(String method, Map<String, Object> postData, boolean useSsl) {
+        String url = String.format((useSsl ? BASE_URL : BASE_NON_TLS_URL) + "method=%s&auth_token=%s&partner_id=%d&user_id=%s", method, urlEncode(userAuthToken), partnerId, userId);
+        System.out.println("url = " + url);
         postData.put("userAuthToken", userAuthToken);
         postData.put("syncTime", getPandoraTime());
-        JsonObject result = doPost(url, encrypt(new Gson().toJson(postData))).getAsJsonObject();
-        String stat = result.get("stat").getAsString();
-        if (!"ok".equals(stat)) {
-            throw new RuntimeException("Failed to get stations");
-        }
-        return result;
+        String jsonData = new Gson().toJson(postData);
+        System.out.println("jsonData = " + jsonData);
+        return doPost(url, encrypt(jsonData)).getAsJsonObject();
     }
 
     @Override
@@ -149,7 +143,12 @@ public class JsonPandoraRadio implements PandoraRadio {
 
     @Override
     public void rate(Song song, boolean rating) {
-        throw new UnsupportedOperationException();
+        String method = "station.addFeedback";
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("trackToken", song.getTrackToken());
+        data.put("isPositive", rating);
+        JsonObject ratingResult = doStandardCall(method, data, false);
+        checkForError(ratingResult, "failed to rate song");
     }
 
     @Override
@@ -159,7 +158,40 @@ public class JsonPandoraRadio implements PandoraRadio {
 
     @Override
     public Song[] getPlaylist(Station station, String format) {
-        throw new UnsupportedOperationException();
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("stationToken", station.getStationIdToken());
+        data.put("additionalAudioUrl", "HTTP_192_MP3"); // Totally retarded that Pandora lets me get this url, even though the user doesn't pay for the service.
+        JsonObject songResult = doStandardCall("station.getPlaylist", data, true);
+        checkForError(songResult, "Failed to get playlist from station");
+
+        JsonArray songsArray = songResult.get("result").getAsJsonObject().get("items").getAsJsonArray();
+        List<Song> results = new ArrayList<Song>();
+        for (JsonElement songElement : songsArray) {
+            JsonObject songData = songElement.getAsJsonObject();
+            //it is completely retarded that pandora leaves this up to the client. Come on, Pandora! Use your brains!
+            if (songData.get("adToken") != null) {
+                continue;
+            }
+            String album = songData.get("albumName").getAsString();
+            String artist = songData.get("artistName").getAsString();
+            String audioUrl = songData.get("additionalAudioUrl").getAsString();
+
+            String title = songData.get("songName").getAsString();
+            String albumDetailUrl = songData.get("albumDetailUrl").getAsString();
+            String artRadio = songData.get("albumArtUrl").getAsString();
+            String trackToken = songData.get("trackToken").getAsString();
+
+            Integer rating =songData.get("songRating").getAsInt();
+            results.add(new Song(album, artist, audioUrl, station.getStationId(), title, albumDetailUrl, artRadio, trackToken, rating));
+        }
+        return results.toArray(new Song[results.size()]);
+    }
+
+    private void checkForError(JsonObject songResult, String errorMessage) {
+        String stat = songResult.get("stat").getAsString();
+        if (!"ok".equals(stat)) {
+            throw new RuntimeException(errorMessage);
+        }
     }
 
     private static JsonElement doPartnerLogin() {

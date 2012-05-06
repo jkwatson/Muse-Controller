@@ -90,6 +90,18 @@ public class Song {
         playlistTime = copy.playlistTime;
     }
 
+    public Song(String album, String artist, String audioUrl, String stationId, String title, String albumDetailURL, String artRadio, String trackToken, Integer rating) {
+        this.album = album;
+        this.artist = artist;
+        this.audioUrl = audioUrl;
+        this.stationId = stationId;
+        this.title = title;
+        this.albumDetailURL = albumDetailURL;
+        this.artRadio = artRadio;
+        this.trackToken = trackToken;
+        playlistTime = System.currentTimeMillis() / 1000L;
+    }
+
     public boolean isStillValid() {
         return ((System.currentTimeMillis() / 1000L) - playlistTime) < XmlRpcPandoraRadio.PLAYLIST_VALIDITY_TIME;
     }
@@ -163,7 +175,7 @@ public class Song {
     }
 
     public boolean isLoved() {
-        return rating > 0;
+        return rating != null && rating > 0;
     }
 
     @Override
