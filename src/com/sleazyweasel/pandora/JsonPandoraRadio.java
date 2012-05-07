@@ -224,7 +224,7 @@ public class JsonPandoraRadio implements PandoraRadio {
             out.writeBytes(stringData);
             out.flush();
             out.close();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println("response = " + line);
