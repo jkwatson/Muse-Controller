@@ -367,5 +367,20 @@
                        sparkle:dsaSignature="MC4CFQDyV2ruKuf3VsiwgDnS2OL1Sz3q2AIVAOD9AY3GFefHvcp9ApHiPO/p88MF"/>
 
         </item>
+
+        <item>
+            <title>Version 3.6.2</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>New Features:</h2>
+                    <h3>Complete replacement of the Pandora API code.</h3>
+                ]]></description>
+            <pubDate>Wed, 30 May 2012 19:19:19 +0800</pubDate>
+            <enclosure url="https://github.com/downloads/jkwatson/Muse-Controller/Muse Controller 3.6.2.dmg"
+                       sparkle:version="3.6.2"
+                       length="17783841" type="application/octet-stream"
+                       sparkle:dsaSignature="MCwCFGywIvQJjL56FLiiepOU0QW5ng83AhRONgCp1NRjLKxRy/ermzuKT0zRkw=="/>
+
+        </item>
     </channel>
 </rss>

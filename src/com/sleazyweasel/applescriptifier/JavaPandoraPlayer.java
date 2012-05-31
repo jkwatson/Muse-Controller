@@ -303,6 +303,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     @Override
     public void askToChooseStation() {
         currentInputType = MusicPlayerInputType.CHOOSE_STATION;
+        getRadio().getStations();
         notifyListeners();
     }
 
