@@ -160,7 +160,7 @@ public class JsonPandoraRadio implements PandoraRadio {
     public Song[] getPlaylist(Station station, String format) {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("stationToken", station.getStationIdToken());
-        data.put("additionalAudioUrl", "HTTP_192_MP3"); // Totally retarded that Pandora lets me get this url, even though the user doesn't pay for the service.
+        data.put("additionalAudioUrl", "HTTP_192_MP3,HTTP_128_MP3");
         JsonObject songResult = doStandardCall("station.getPlaylist", data, true);
         checkForError(songResult, "Failed to get playlist from station");
 
@@ -174,7 +174,13 @@ public class JsonPandoraRadio implements PandoraRadio {
             }
             String album = songData.get("albumName").getAsString();
             String artist = songData.get("artistName").getAsString();
-            String audioUrl = songData.get("additionalAudioUrl").getAsString();
+            JsonElement additionalAudioUrlElement = songData.get("additionalAudioUrl");
+            String additionalAudioUrl = additionalAudioUrlElement != null ? additionalAudioUrlElement.getAsString() : null;
+            JsonObject audioUrlMap = songData.get("audioUrlMap").getAsJsonObject();
+            JsonObject highQuality = audioUrlMap.get("highQuality").getAsJsonObject();
+            String audioUrl = highQuality.get("audioUrl").getAsString();
+            System.out.println("audioUrl = " + audioUrl);
+            System.out.println("additionalAudioUrl = " + additionalAudioUrl);
 
             String title = songData.get("songName").getAsString();
             String albumDetailUrl = songData.get("albumDetailUrl").getAsString();
@@ -182,7 +188,9 @@ public class JsonPandoraRadio implements PandoraRadio {
             String trackToken = songData.get("trackToken").getAsString();
 
             Integer rating =songData.get("songRating").getAsInt();
-            results.add(new Song(album, artist, audioUrl, station.getStationId(), title, albumDetailUrl, artRadio, trackToken, rating));
+            if (additionalAudioUrl != null) {
+                results.add(new Song(album, artist, additionalAudioUrl, station.getStationId(), title, albumDetailUrl, artRadio, trackToken, rating));
+            }
         }
         return results.toArray(new Song[results.size()]);
     }

@@ -382,5 +382,19 @@
                        sparkle:dsaSignature="MCwCFGywIvQJjL56FLiiepOU0QW5ng83AhRONgCp1NRjLKxRy/ermzuKT0zRkw=="/>
 
         </item>
+        <item>
+            <title>Version 3.6.3</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>New Features:</h2>
+                    <h3>Allow degrading of the Pandora audio stream for non-PandoraOne subscribers.</h3>
+                ]]></description>
+            <pubDate>Tue, 05 Jun 2012 21:21:21 +0800</pubDate>
+            <enclosure url="https://github.com/downloads/jkwatson/Muse-Controller/Muse Controller 3.6.3.dmg"
+                       sparkle:version="3.6.3"
+                       length="17783841" type="application/octet-stream"
+                       sparkle:dsaSignature="MC4CFQCcXkxi8kMO85VA75r+rHKb2nV4eAIVANKLsVf9Z8eRcoScvvN0jS22Wlqw"/>
+
+        </item>
     </channel>
 </rss>
