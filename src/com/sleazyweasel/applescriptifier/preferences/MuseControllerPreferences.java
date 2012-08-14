@@ -76,7 +76,12 @@ public class MuseControllerPreferences {
     }
 
     public void setPandoraStationId(Long stationId) {
-        preferences.putLong(PREVIOUS_PANDORA_STATION_ID_KEY, stationId);
+        if (stationId == null) {
+            preferences.remove(PREVIOUS_PANDORA_STATION_ID_KEY);
+        }
+        else {
+            preferences.putLong(PREVIOUS_PANDORA_STATION_ID_KEY, stationId);
+        }
     }
 
     public Double getPreviousPandoraVolume() {

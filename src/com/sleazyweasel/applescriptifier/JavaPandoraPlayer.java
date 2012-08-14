@@ -384,9 +384,14 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         }
         if (stationId != null) {
             station = pandoraRadio.getStationById(stationId);
-            currentInputType = MusicPlayerInputType.NONE;
-            refreshPlaylist();
-            notifyListeners();
+            if (station != null) {
+                currentInputType = MusicPlayerInputType.NONE;
+                refreshPlaylist();
+                notifyListeners();
+            }
+            else {
+                preferences.setPandoraStationId(null);
+            }
         }
     }
 
