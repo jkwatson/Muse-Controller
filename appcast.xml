@@ -411,5 +411,19 @@
                        sparkle:dsaSignature="MCwCFCjFVPuN5a6o8YJfz+lWRXEtP1IrAhR3RB9I6nEmNSxQBKZ2uSTXLLgn/g=="/>
 
         </item>
+        <item>
+            <title>Version 3.7.1</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>New Features:</h2>
+                    <h3>Corrected issue with attempting to start up Pandora with a station that has been deleted.</h3>
+                ]]></description>
+            <pubDate>Tue, 13 Aug 2012 19:19:19 +0800</pubDate>
+            <enclosure url="https://github.com/downloads/jkwatson/Muse-Controller/Muse Controller 3.7.1.dmg"
+                       sparkle:version="3.7.1"
+                       length="17783841" type="application/octet-stream"
+                       sparkle:dsaSignature="MCwCFAuHeZUkhzYcU0JWzUztTS7mTumtAhRXqd0U+FpNAtxoDN5phEigEtcYnQ=="/>
+
+        </item>
     </channel>
 </rss>
