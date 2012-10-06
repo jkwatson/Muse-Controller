@@ -423,7 +423,6 @@
                        sparkle:version="3.7.1"
                        length="17783841" type="application/octet-stream"
                        sparkle:dsaSignature="MCwCFAuHeZUkhzYcU0JWzUztTS7mTumtAhRXqd0U+FpNAtxoDN5phEigEtcYnQ=="/>
-
         </item>
         <item>
             <title>Version 3.7.2</title>
@@ -437,7 +436,19 @@
                        sparkle:version="3.7.2"
                        length="17783841" type="application/octet-stream"
                        sparkle:dsaSignature="MC0CFQDVsHcAQODcMx0BBlET+Shm+94AMAIUKIMmD2w7nN88hy4WFXVKOqhtZ/E="/>
-
+        </item>
+        <item>
+            <title>Version 3.7.3</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>Bug fix:</h2>
+                    <h3>Re-enabled non-PandoraOne streaming.<h3>
+                ]]></description>
+            <pubDate>Sat, 06 Oct 2012 10:10:10 +0800</pubDate>
+            <enclosure url="https://github.com/downloads/jkwatson/Muse-Controller/Muse Controller 3.7.3.dmg"
+                       sparkle:version="3.7.3"
+                       length="17783841" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFEkdnflBK6sZ6S7H8knuFKcwZKnZAhUA8oZdjMr8J5V0p+NSYxDgKZj9Fjk="/>
         </item>
     </channel>
 </rss>
