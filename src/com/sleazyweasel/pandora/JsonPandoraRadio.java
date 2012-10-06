@@ -172,8 +172,7 @@ public class JsonPandoraRadio implements PandoraRadio {
                 authConfiguration = PandoraAuthConfiguration.ANDROID_CONFIG;
                 reLogin();
                 return getPlaylist(station, format);
-            }
-            else {
+            } else {
                 throw e;
             }
         }
@@ -202,10 +201,9 @@ public class JsonPandoraRadio implements PandoraRadio {
             String trackToken = songData.get("trackToken").getAsString();
 
             Integer rating = songData.get("songRating").getAsInt();
-            if (audioUrl != null) {
+            if (audioUrl != null && authConfiguration == PandoraAuthConfiguration.PANDORAONE_CONFIG) {
                 results.add(new Song(album, artist, audioUrl, station.getStationId(), title, albumDetailUrl, artRadio, trackToken, rating));
-            }
-            else if (additionalAudioUrl != null) {
+            } else if (additionalAudioUrl != null) {
                 results.add(new Song(album, artist, additionalAudioUrl, station.getStationId(), title, albumDetailUrl, artRadio, trackToken, rating));
             }
         }
