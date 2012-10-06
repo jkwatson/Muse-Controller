@@ -127,6 +127,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     private void validateRadioState() {
         System.out.println("JavaPandoraPlayer.validateRadioState");
+        PandoraRadio pandoraRadio = this.pandoraRadio;
         if (pandoraRadio != null && pandoraRadio.isAlive()) {
             try {
                 pandoraRadio.getStations();
@@ -141,9 +142,10 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
                     e1.printStackTrace();
                 }
                 player = null;
-                pandoraRadio = null;
-                song = null;
+                this.pandoraRadio = null;
+                this.song = null;
                 activate();
+                pandoraRadio = getRadio();
                 station = pandoraRadio.getStationById(station.getId());
                 refreshPlaylist();
             }

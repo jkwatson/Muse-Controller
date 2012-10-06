@@ -202,7 +202,10 @@ public class JsonPandoraRadio implements PandoraRadio {
             String trackToken = songData.get("trackToken").getAsString();
 
             Integer rating = songData.get("songRating").getAsInt();
-            if (additionalAudioUrl != null) {
+            if (audioUrl != null) {
+                results.add(new Song(album, artist, audioUrl, station.getStationId(), title, albumDetailUrl, artRadio, trackToken, rating));
+            }
+            else if (additionalAudioUrl != null) {
                 results.add(new Song(album, artist, additionalAudioUrl, station.getStationId(), title, albumDetailUrl, artRadio, trackToken, rating));
             }
         }
