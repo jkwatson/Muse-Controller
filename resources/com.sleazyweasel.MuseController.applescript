@@ -1,7 +1,7 @@
 tell application id "com.sleazyweasel.MuseController"
 	if it is running then
 		try
-			do shell script "curl -L http://localhost:23233/pianobar/airfoilstatusdata -o /tmp/mcstatus.txt"
+			do shell script "curl -L http://localhost:23233/pandora/airfoilstatusdata -o /tmp/mcstatus.txt"
 			set theFileReference to open for access "/tmp/mcstatus.txt"
 			set filedata to read theFileReference
 			close access theFileReference

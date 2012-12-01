@@ -69,7 +69,7 @@ public enum Application {
         return thumbsDownSupport;
     }
 
-    public ApplicationSupport getApplicationSupport(AppleScriptTemplate appleScriptTemplate, MusicPlayer pianobarSupport) {
+    public ApplicationSupport getApplicationSupport(AppleScriptTemplate appleScriptTemplate, MusicPlayer musicPlayer) {
         switch (this) {
             case PANDORABOY:
                 return new PandoraBoySupport(appleScriptTemplate);
@@ -82,7 +82,7 @@ public enum Application {
             case RDIO:
                 return new RdioSupport(appleScriptTemplate);
             case MUSECONTROLLER:
-                return pianobarSupport;
+                return musicPlayer;
             case SPOTIFY:
                 return new SpotifySupport(appleScriptTemplate);
             default:

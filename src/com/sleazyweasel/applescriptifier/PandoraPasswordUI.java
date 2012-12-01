@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 
 public class PandoraPasswordUI implements MuseControllerFrame {
 
-    private final MusicPlayer pianobarSupport;
+    private final MusicPlayer musicPlayer;
     private final MuseControllerPreferences preferences;
 
     private final Widgets widgets = new Widgets();
@@ -18,8 +18,8 @@ public class PandoraPasswordUI implements MuseControllerFrame {
     private final JMenuItem pandoraMenuItem;
     private final MuseControllerMain main;
 
-    public PandoraPasswordUI(MusicPlayer pianobarSupport, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, MuseControllerMain main) {
-        this.pianobarSupport = pianobarSupport;
+    public PandoraPasswordUI(MusicPlayer musicPlayer, MuseControllerPreferences preferences, JMenuBar mainMenuBar, JMenuItem pandoraMenuItem, MuseControllerMain main) {
+        this.musicPlayer = musicPlayer;
         this.preferences = preferences;
         this.mainMenuBar = mainMenuBar;
         this.pandoraMenuItem = pandoraMenuItem;
@@ -56,7 +56,7 @@ public class PandoraPasswordUI implements MuseControllerFrame {
 
     private void initOkButton() {
         widgets.okButton = new JButton("OK");
-        widgets.okButton.addActionListener(new SetupPianobarConfigAction(widgets.window, pianobarSupport, widgets.usernameField, widgets.passwordField, preferences, mainMenuBar, pandoraMenuItem, main));
+        widgets.okButton.addActionListener(new SetupMusicPlayerConfigAction(widgets.window, musicPlayer, widgets.usernameField, widgets.passwordField, preferences, mainMenuBar, pandoraMenuItem, main));
     }
 
     private void initCancelButton() {
@@ -65,7 +65,7 @@ public class PandoraPasswordUI implements MuseControllerFrame {
             public void actionPerformed(ActionEvent e) {
                 widgets.window.dispose();
                 if (widgets.neverShowAgainCheckbox.isSelected()) {
-                    preferences.enablePianoBar(false);
+                    preferences.enablePandora(false);
                 }
             }
         });
