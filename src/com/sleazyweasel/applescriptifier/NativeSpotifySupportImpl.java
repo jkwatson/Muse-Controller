@@ -195,6 +195,8 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
             browsedTracks = getJotifyPool().browse(tracks);
         } catch (TimeoutException e) {
             e.printStackTrace();
+            this.jotifyPool = null;
+            this.jotifyPlayer = null;
             throw new RuntimeException(e);
         } catch (Exception e) {
             e.printStackTrace();
