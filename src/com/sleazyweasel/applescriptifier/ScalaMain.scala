@@ -11,15 +11,18 @@ import com.apple.dnssd.{RegisterListener, DNSSDRegistration, DNSSDService}
 import scala.concurrent.ops.spawn
 import javax.swing.{JMenuBar, JOptionPane}
 import java.util.logging.{SimpleFormatter, FileHandler, Level, Logger}
+import java.io.File
 
 object ScalaMain {
   def logger: Logger  = Logger.getLogger(ScalaMain.getClass.getName)
 
   def main(args: Array[String]) {
-    val fileHandler: FileHandler = new FileHandler("%h/Library/Logs/MuseController.log", 1000000, 10, true)
+    val userHomeDirectory: String = System.getProperty("user.home")
+    new File(userHomeDirectory + "/Library/Logs/MuseController/").mkdirs()
+    val fileHandler: FileHandler = new FileHandler("%h/Library/Logs/MuseController/MuseController.log", 1000000, 10, true)
 
     fileHandler.setFormatter(new SimpleFormatter)
-    Logger.getLogger("com").addHandler(fileHandler);
+    Logger.getLogger("com").addHandler(fileHandler)
     System.setProperty("apple.laf.useScreenMenuBar", "true")
 
     println("environment = " + System.getenv)

@@ -3,7 +3,7 @@
     <!-- Set this property value to your application name.
 Do not include the .app extension -->
     <property name="app.name" value="Muse Controller"/>
-    <property name="BUILD_NUMBER" value="3.7.3"/>
+    <property name="BUILD_NUMBER" value="3.7.4"/>
     <property name="image_name" value="${app.name} ${BUILD_NUMBER}"/>
     <property file="applescriptifier.properties"/>
     <echo message="basedir = ${basedir}"/>
@@ -312,7 +312,7 @@ to the URL where your appcast XML file is located -->
     <key>SUPublicDSAKeyFile</key>
     <string>dsa_pub.pem</string>
     <key>SUFeedURL</key>
-    <string>http://www.musecontrol.com/sparkle/appcast.xml</string>
+    <string>http://downloads.musecontrol.com/appcast.xml</string>
     <key>SUShowReleaseNotes</key>
     <string>YES</string>
     <key>CFBundleName</key>]]></replacevalue>
