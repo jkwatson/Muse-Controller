@@ -10,12 +10,16 @@ import org.eclipse.jetty.servlet.{ServletHolder, ServletContextHandler}
 import com.apple.dnssd.{RegisterListener, DNSSDRegistration, DNSSDService}
 import scala.concurrent.ops.spawn
 import javax.swing.{JMenuBar, JOptionPane}
-import java.util.logging.{Level, Logger}
+import java.util.logging.{SimpleFormatter, FileHandler, Level, Logger}
 
 object ScalaMain {
   def logger: Logger  = Logger.getLogger(ScalaMain.getClass.getName)
 
   def main(args: Array[String]) {
+    val fileHandler: FileHandler = new FileHandler("%h/Library/Logs/MuseController.log", 1000000, 10, true)
+
+    fileHandler.setFormatter(new SimpleFormatter)
+    Logger.getLogger("com").addHandler(fileHandler);
     System.setProperty("apple.laf.useScreenMenuBar", "true")
 
     println("environment = " + System.getenv)

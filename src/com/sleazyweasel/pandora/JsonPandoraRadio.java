@@ -123,11 +123,11 @@ public class JsonPandoraRadio implements PandoraRadio {
 
     private JsonObject doStandardCall(String method, Map<String, Object> postData, boolean useSsl) {
         String url = String.format((useSsl ? authConfiguration.getBaseUrl() : authConfiguration.getNonTlsBaseUrl()) + "method=%s&auth_token=%s&partner_id=%d&user_id=%s", method, urlEncode(userAuthToken), partnerId, userId);
-        logger.info("url = " + url);
+        logger.fine("url = " + url);
         postData.put("userAuthToken", userAuthToken);
         postData.put("syncTime", getPandoraTime());
         String jsonData = new Gson().toJson(postData);
-        logger.info("jsonData = " + jsonData);
+        logger.fine("jsonData = " + jsonData);
         return doPost(url, encrypt(jsonData)).getAsJsonObject();
     }
 
@@ -193,8 +193,8 @@ public class JsonPandoraRadio implements PandoraRadio {
             JsonObject audioUrlMap = songData.get("audioUrlMap").getAsJsonObject();
             JsonObject highQuality = audioUrlMap.get("highQuality").getAsJsonObject();
             String audioUrl = highQuality.get("audioUrl").getAsString();
-            logger.info("audioUrl = " + audioUrl);
-            logger.info("additionalAudioUrl = " + additionalAudioUrl);
+            logger.fine("audioUrl = " + audioUrl);
+            logger.fine("additionalAudioUrl = " + additionalAudioUrl);
 
             String title = songData.get("songName").getAsString();
             String albumDetailUrl = songData.get("albumDetailUrl").getAsString();
@@ -256,7 +256,7 @@ public class JsonPandoraRadio implements PandoraRadio {
             BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
             String line;
             while ((line = reader.readLine()) != null) {
-                logger.info("response = " + line);
+                logger.fine("response = " + line);
                 JsonParser parser = new JsonParser();
                 return parser.parse(line);
             }
