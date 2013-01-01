@@ -14,9 +14,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class JsonPandoraRadio implements PandoraRadio {
-
+    private static final Logger logger = Logger.getLogger(JsonPandoraRadio.class.getName());
     private static final String BLOWFISH_ECB_PKCS5_PADDING = "Blowfish/ECB/PKCS5Padding";
 
     private Long syncTime;
@@ -122,11 +123,11 @@ public class JsonPandoraRadio implements PandoraRadio {
 
     private JsonObject doStandardCall(String method, Map<String, Object> postData, boolean useSsl) {
         String url = String.format((useSsl ? authConfiguration.getBaseUrl() : authConfiguration.getNonTlsBaseUrl()) + "method=%s&auth_token=%s&partner_id=%d&user_id=%s", method, urlEncode(userAuthToken), partnerId, userId);
-        System.out.println("url = " + url);
+        logger.info("url = " + url);
         postData.put("userAuthToken", userAuthToken);
         postData.put("syncTime", getPandoraTime());
         String jsonData = new Gson().toJson(postData);
-        System.out.println("jsonData = " + jsonData);
+        logger.info("jsonData = " + jsonData);
         return doPost(url, encrypt(jsonData)).getAsJsonObject();
     }
 
@@ -192,8 +193,8 @@ public class JsonPandoraRadio implements PandoraRadio {
             JsonObject audioUrlMap = songData.get("audioUrlMap").getAsJsonObject();
             JsonObject highQuality = audioUrlMap.get("highQuality").getAsJsonObject();
             String audioUrl = highQuality.get("audioUrl").getAsString();
-            System.out.println("audioUrl = " + audioUrl);
-            System.out.println("additionalAudioUrl = " + additionalAudioUrl);
+            logger.info("audioUrl = " + audioUrl);
+            logger.info("additionalAudioUrl = " + additionalAudioUrl);
 
             String title = songData.get("songName").getAsString();
             String albumDetailUrl = songData.get("albumDetailUrl").getAsString();
@@ -255,7 +256,7 @@ public class JsonPandoraRadio implements PandoraRadio {
             BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
             String line;
             while ((line = reader.readLine()) != null) {
-                System.out.println("response = " + line);
+                logger.info("response = " + line);
                 JsonParser parser = new JsonParser();
                 return parser.parse(line);
             }

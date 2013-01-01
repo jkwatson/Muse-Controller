@@ -34,9 +34,11 @@ import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class XmlRpc extends org.xmlrpc.android.XMLRPCClient {
-
+    private static final Logger logger = Logger.getLogger(XmlRpc.class.getName());
     public XmlRpc(String url) {
         super(url);
     }
@@ -44,8 +46,8 @@ public class XmlRpc extends org.xmlrpc.android.XMLRPCClient {
     /* This method is extracted from the parent class with slight modifications
       * for sending a request with a predetermined body content. */
     public Object callWithBody(String url, String body) throws XMLRPCException {
-//        System.out.println("url = " + url);
-//        System.out.println("body = " + body);
+//        logger.info("url = " + url);
+//        logger.info("body = " + body);
         postMethod.setURI(URI.create(url));
 
         try {
@@ -108,11 +110,11 @@ public class XmlRpc extends org.xmlrpc.android.XMLRPCClient {
                 throw new XMLRPCException("Bad tag <" + tag + "> in XMLRPC response - neither <params> nor <fault>");
             }
         } catch (XMLRPCException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
             // catch & propagate XMLRPCException/XMLRPCFault
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
             // wrap any other Exception(s) around XMLRPCException
             throw new XMLRPCException(e);
         }

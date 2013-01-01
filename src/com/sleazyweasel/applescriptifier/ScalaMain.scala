@@ -10,8 +10,10 @@ import org.eclipse.jetty.servlet.{ServletHolder, ServletContextHandler}
 import com.apple.dnssd.{RegisterListener, DNSSDRegistration, DNSSDService}
 import scala.concurrent.ops.spawn
 import javax.swing.{JMenuBar, JOptionPane}
+import java.util.logging.{Level, Logger}
 
 object ScalaMain {
+  def logger: Logger  = Logger.getLogger(ScalaMain.getClass.getName)
 
   def main(args: Array[String]) {
     System.setProperty("apple.laf.useScreenMenuBar", "true")
@@ -28,7 +30,7 @@ object ScalaMain {
   private def addUncaughtExceptionHandler() {
     Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler {
       def uncaughtException(thread: Thread, e: Throwable) {
-        e.printStackTrace()
+        logger.log(Level.WARNING, "Exception caught.", e);
         JOptionPane.showMessageDialog(null, e.getMessage, "Error", JOptionPane.ERROR_MESSAGE)
       }
     })
@@ -37,6 +39,7 @@ object ScalaMain {
 
 class ScalaMain {
   private final val PORT: Int = 23233
+  def logger: Logger  = Logger.getLogger(ScalaMain.getClass.getName)
 
   private val preferences: MuseControllerPreferences = new MuseControllerPreferences(Preferences.userNodeForPackage(classOf[ScalaMain]))
 
@@ -72,7 +75,7 @@ class ScalaMain {
     }
     catch {
       case e: Throwable => {
-        e.printStackTrace()
+        logger.log(Level.WARNING, "Exception caught.", e);
       }
     }
   }

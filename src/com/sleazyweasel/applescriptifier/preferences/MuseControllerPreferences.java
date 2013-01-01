@@ -1,10 +1,13 @@
 package com.sleazyweasel.applescriptifier.preferences;
 
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 public class MuseControllerPreferences {
+    private static final Logger logger = Logger.getLogger(MuseControllerPreferences.class.getName());
     private static final String PANDORA_VETO_KEY = "pianobar.veto";
     private static final String SPOTIFY_ENABLE_KEY = "spotify.enable";
     private static final String MUSECONTROL_ENABLE_KEY = "musecontrol.enable";
@@ -113,7 +116,7 @@ public class MuseControllerPreferences {
             }
             return false;
         } catch (BackingStoreException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
             return false;
         }
     }

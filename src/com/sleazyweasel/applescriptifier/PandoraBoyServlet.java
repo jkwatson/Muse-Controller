@@ -8,9 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PandoraBoyServlet extends HttpServlet {
-
+    private static final Logger logger = Logger.getLogger(PandoraBoyServlet.class.getName());
     private static final String QUICK_MIX_STATION_CODE = "QuickMix";
     private final AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
     private final PandoraBoySupport pandoraBoySupport = new PandoraBoySupport(appleScriptTemplate);
@@ -82,7 +84,7 @@ public class PandoraBoyServlet extends HttpServlet {
                 currentStation = QUICK_MIX_STATION_CODE;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
             currentStation = "Unable to get Station from PandoraBoy";
         }
         status.put("currentStation", currentStation);
@@ -92,7 +94,7 @@ public class PandoraBoyServlet extends HttpServlet {
         try {
             currentTrack = appleScriptTemplate.execute(Application.PANDORABOY, "get [name of current track, artist of current track]");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
             currentTrack = Arrays.asList("", "");
         }
         status.put("currentTrack", currentTrack);

@@ -21,8 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerListener {
+    private static final Logger logger = Logger.getLogger(NativeSpotifySupportImpl.class.getName());
 
     private JotifyPool jotifyPool;
     private JotifyPlayer jotifyPlayer;
@@ -42,7 +45,7 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
                     try {
                         jotifyPool.close();
                     } catch (ConnectionException e) {
-                        e.printStackTrace();
+                        logger.log(Level.WARNING, "Exception caught.", e);;
                     }
                 }
             }
@@ -55,7 +58,7 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
                 jotifyPlayer = new JotifyPlayer(getJotifyPool());
                 JotifyBroadcast.getInstance().addPlayerListener(this);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, "Exception caught.", e);;
                 throw new RuntimeException(e);
             }
         }
@@ -87,14 +90,14 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
             pool.login(userName, password);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
             return false;
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.log(Level.WARNING, "Exception caught.", e);;
                 }
             }
         }
@@ -109,13 +112,13 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
             getJotifyPool().login(username, new String(password));
             saveConfig(username, password);
         } catch (ConnectionException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
             return false;
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
             return false;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
             return false;
         }
         return true;
@@ -160,7 +163,7 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
             }
             return results;
         } catch (TimeoutException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
             throw new RuntimeException(e);
         }
     }
@@ -194,12 +197,12 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
         try {
             browsedTracks = getJotifyPool().browse(tracks);
         } catch (TimeoutException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
             this.jotifyPool = null;
             this.jotifyPlayer = null;
             throw new RuntimeException(e);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
             //todo figure out a better way to do this!
             this.jotifyPool = null;
             this.jotifyPlayer = null;
@@ -289,7 +292,7 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
         try {
             return new URL("http://o.scdn.co/image/" + imageCode);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
             return null;
         }
     }
