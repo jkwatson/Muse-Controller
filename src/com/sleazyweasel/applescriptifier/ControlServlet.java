@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class ControlServlet extends HttpServlet {
-
+    private static final Logger logger = Logger.getLogger(ControlServlet.class.getName());
     public static final String CURRENT_VERSION = "2.0";
 
     private AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
@@ -53,15 +54,15 @@ public class ControlServlet extends HttpServlet {
             if (applications.contains(application.getDisplayName()) || !application.hasFullSupport()) {
                 continue;
             }
-            System.out.println("checking: " + application);
+            logger.info("checking: " + application);
             if (Application.MUSECONTROLLER.equals(application)) {
                 if (musicPlayer.isConfigured()) {
-                    System.out.println("adding: " + application);
+                    logger.info("adding: " + application);
                     applications.add(Application.MUSECONTROLLER.getDisplayName());
                 }
             } else {
                 if (appleScriptTemplate.applicationExists(application)) {
-                    System.out.println("adding: " + application);
+                    logger.info("adding: " + application);
                     applications.add(application.getDisplayName());
                 }
             }

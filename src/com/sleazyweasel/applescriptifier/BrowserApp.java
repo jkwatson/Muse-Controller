@@ -48,6 +48,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.text.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -56,6 +58,7 @@ import com.apple.dnssd.*;
 
 class	BrowserApp implements ListSelectionListener, ResolveListener, Runnable
 {
+    private static final Logger logger = Logger.getLogger(BrowserApp.class.getName());
 	static BrowserApp	app;
 	JFrame				frame;
 	DomainListModel		domainList;
@@ -202,8 +205,8 @@ class	BrowserApp implements ListSelectionListener, ResolveListener, Runnable
 		}
 		catch ( Exception e)
 		{
-			e.printStackTrace();
-		}
+            logger.log(Level.WARNING, "Exception caught:", e);
+        }
 	}
 
 	public void	operationFailed( DNSSDService service, int errorCode)
@@ -214,8 +217,8 @@ class	BrowserApp implements ListSelectionListener, ResolveListener, Runnable
 
 	protected static void	terminateWithException( Exception e)
 	{
-		e.printStackTrace();
-		System.exit( -1);
+        logger.log(Level.WARNING, "Exception caught:", e);
+        System.exit( -1);
 	}
 
     public static void main(String s[]) 
@@ -227,6 +230,7 @@ class	BrowserApp implements ListSelectionListener, ResolveListener, Runnable
 
 class	BrowserListModel extends DefaultListModel implements BrowseListener, Runnable
 {
+    private static final Logger logger = Logger.getLogger(BrowserListModel.class.getName());
 	public		BrowserListModel()
 	{
 		addCache = new Vector();
@@ -332,8 +336,8 @@ class	BrowserListModel extends DefaultListModel implements BrowseListener, Runna
 		}
 		catch ( Exception e)
 		{
-			e.printStackTrace();
-		}
+            logger.log(Level.WARNING, "Exception caught:", e);
+        }
 	}		
 
 	protected Vector	removeCache;	// list of serviceNames to remove

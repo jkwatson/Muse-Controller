@@ -16,12 +16,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static layout.TableLayoutConstants.FILL;
 import static layout.TableLayoutConstants.PREFERRED;
 
 public class PandoraUI implements MuseControllerFrame {
-
+    private static final Logger logger = Logger.getLogger(PandoraUI.class.getName());
     private final AtomicBoolean executionLock = new AtomicBoolean(false);
 
     private final Widgets widgets = new Widgets();
@@ -329,7 +331,7 @@ public class PandoraUI implements MuseControllerFrame {
                     try {
                         open(new URI(detailUrl));
                     } catch (URISyntaxException e1) {
-                        e1.printStackTrace();
+                        logger.log(Level.WARNING, "Exception caught:", e1);
                         //do nothing if it doesn't parse?
                     }
                 }
@@ -484,7 +486,7 @@ public class PandoraUI implements MuseControllerFrame {
                     Image scaledImage = icon.getImage().getScaledInstance(130, 130, Image.SCALE_SMOOTH);
                     icon.setImage(scaledImage);
                 } catch (MalformedURLException e) {
-                    e.printStackTrace();
+                    logger.log(Level.WARNING, "Exception caught.", e);
                 }
                 return icon;
             }
@@ -497,7 +499,7 @@ public class PandoraUI implements MuseControllerFrame {
                     //make sure that anyone else gets notified that something should be done.
                     Thread.currentThread().interrupt();
                 } catch (ExecutionException e) {
-                    e.printStackTrace();
+                    logger.log(Level.WARNING, "Exception caught.", e);
                 }
             }
         }.execute();
