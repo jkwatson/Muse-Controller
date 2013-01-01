@@ -32,7 +32,7 @@ class GuiMain extends MuseControllerMain {
 
   private def createPandoraMenuItem(preferences: MuseControllerPreferences, pandoraPlayer: MusicPlayer, menubar: MenuBar, playerSupplier: MusicPlayerSupplier): MenuItem = {
     val pandoraMenuItem = new MenuItem("Pandora")
-    pandoraMenuItem.enabled = preferences.isPianoBarEnabled
+    pandoraMenuItem.enabled = preferences.isPandoraEnabled
     pandoraMenuItem.reactions += {
       case ButtonClicked(`pandoraMenuItem`) => startupPandora(pandoraMenuItem, pandoraPlayer, preferences, menubar, playerSupplier)
     }
@@ -63,7 +63,7 @@ class GuiMain extends MuseControllerMain {
 
       setUpMacApplicationState(preferences, menubar)
 
-      if (preferences.isPianoBarEnabled && preferences.wasPandoraTheLastStreamerOpen) {
+      if (preferences.isPandoraEnabled && preferences.wasPandoraTheLastStreamerOpen) {
         startupPandora(pandoraMenuItem, pandoraPlayer, preferences, menubar, playerSupplier)
       }
       else if (preferences.isSpotifyEnabled && preferences.wasSpotifyTheLastStreamerOpen) {
@@ -104,10 +104,10 @@ class GuiMain extends MuseControllerMain {
     playerSupplier.setCurrentApplication(Application.PANDORAONE)
     if (musicPlayer.isConfigured) {
       try {
-        val pianobarUI = new PandoraUI(musicPlayer, mainMenuBar.peer, pandoraMenuItem.peer, preferences)
-        pianobarUI.initialize()
-        val window = pianobarUI.getWindow
-        setActiveFrame(pianobarUI)
+        val pandoraUI = new PandoraUI(musicPlayer, mainMenuBar.peer, pandoraMenuItem.peer, preferences)
+        pandoraUI.initialize()
+        val window = pandoraUI.getWindow
+        setActiveFrame(pandoraUI)
         pandoraMenuItem.enabled = false;
         window.setVisible(true)
       }
@@ -122,8 +122,8 @@ class GuiMain extends MuseControllerMain {
     }
   }
 
-  private def promptForPandoraPassword(pianobarSupport: MusicPlayer, preferences: MuseControllerPreferences, mainMenuBar: MenuBar, pandoraMenuItem: MenuItem) {
-    val pandoraPasswordUI = new PandoraPasswordUI(pianobarSupport, preferences, mainMenuBar.peer, pandoraMenuItem.peer, this)
+  private def promptForPandoraPassword(musicPlayer: MusicPlayer, preferences: MuseControllerPreferences, mainMenuBar: MenuBar, pandoraMenuItem: MenuItem) {
+    val pandoraPasswordUI = new PandoraPasswordUI(musicPlayer, preferences, mainMenuBar.peer, pandoraMenuItem.peer, this)
     val window = pandoraPasswordUI.getWindow
     setActiveFrame(pandoraPasswordUI)
     window.setLocationRelativeTo(null)

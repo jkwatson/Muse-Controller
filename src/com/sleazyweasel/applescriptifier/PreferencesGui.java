@@ -71,7 +71,7 @@ public class PreferencesGui {
         widgets.saveButton = new JButton("OK");
         widgets.saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                preferences.enablePianoBar(widgets.enablePandoraCheckbox.isSelected());
+                preferences.enablePandora(widgets.enablePandoraCheckbox.isSelected());
                 preferences.enableSpotify(widgets.enableSpotifyCheckbox.isSelected());
                 preferences.enableMuseControl(widgets.enableMuseControlCheckbox.isSelected());
                 try {
@@ -85,7 +85,7 @@ public class PreferencesGui {
     }
 
     private void initEnablePandoraCheckbox() {
-        widgets.enablePandoraCheckbox = new JCheckBox("Enable Pandora Streaming", preferences.isPianoBarEnabled());
+        widgets.enablePandoraCheckbox = new JCheckBox("Enable Pandora Streaming", preferences.isPandoraEnabled());
     }
 
     private void initEnableSpotifyCheckbox() {
