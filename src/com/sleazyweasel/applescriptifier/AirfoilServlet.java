@@ -98,12 +98,12 @@ public class AirfoilServlet extends HttpServlet {
 
     }
 
-    private ApplicationSupport getCurrentApplicationSupport(Map<String, Object> runningStatus, MusicPlayer pianobarSupport) {
+    private ApplicationSupport getCurrentApplicationSupport(Map<String, Object> runningStatus, MusicPlayer musicPlayer) {
         Map<String, Object> state = (Map<String, Object>) runningStatus.get(STATE_KEY);
         Map<String, Object> currentSource = (Map<String, Object>) state.get(CURRENT_SOURCE_KEY);
         String sourceName = (String) currentSource.get(NAME_KEY);
         Application currentApplication = Application.forName(sourceName);
-        return currentApplication.getApplicationSupport(appleScriptTemplate, pianobarSupport);
+        return currentApplication.getApplicationSupport(appleScriptTemplate, musicPlayer);
     }
 
     private void selectApplicationAudioSource(String sourceId, HttpServletResponse response) throws IOException {

@@ -56,7 +56,7 @@ class ScalaMain {
     else if (preferences.wasSpotifyTheLastStreamerOpen()) {
       playerSupplier.setCurrentApplication(Application.SPOTIFY)
     }
-    else if (preferences.isPianoBarEnabled) {
+    else if (preferences.isPandoraEnabled) {
       playerSupplier.setCurrentApplication(Application.PANDORAONE)
     }
 
@@ -99,8 +99,9 @@ class ScalaMain {
     context.addServlet(new ServletHolder(new PulsarServlet), "/pulsar/*")
     context.addServlet(new ServletHolder(new RdioServlet), "/rdio/*")
 
-    val nativePianobarServlet = new MusicPlayerServlet(players)
-    context.addServlet(new ServletHolder(nativePianobarServlet), "/pianobar/*")
+    val musicPlayerServlet = new MusicPlayerServlet(players)
+    context.addServlet(new ServletHolder(musicPlayerServlet), "/pianobar/*")
+    context.addServlet(new ServletHolder(musicPlayerServlet), "/pandora/*")
     context.addServlet(new ServletHolder(new SpotifyServlet), "/spotify/*")
     context.addServlet(new ServletHolder(new ControlServlet(players)), "/control/*")
 

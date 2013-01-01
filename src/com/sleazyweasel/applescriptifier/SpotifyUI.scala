@@ -70,7 +70,14 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.nextButton.reactions += {
       case ButtonClicked(`nextButton`) => doWithLock {
         () =>
-          spotifySupport next()
+          try {
+            spotifySupport next()
+          }
+          catch {
+            case e: IllegalStateException => {
+              JOptionPane.showMessageDialog(widgets.nextButton.peer, "Failed to play song...Spotify is not working right.", "Error", JOptionPane.WARNING_MESSAGE)
+            }
+          }
       }
     }
   }
@@ -221,7 +228,14 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
           () =>
             val selected: AnyRef = models.playlistComboBoxModel.getSelectedItem
             selected match {
-              case item: Playlist => spotifySupport play item
+              case item: Playlist => {
+                try {
+                  spotifySupport play item
+                }
+                catch {
+                  case e: IllegalStateException => JOptionPane.showMessageDialog(widgets.nextButton.peer, "Failed to play song...Spotify is not working right.", "Error", JOptionPane.WARNING_MESSAGE)
+                }
+              }
               case _ => None
             }
         })

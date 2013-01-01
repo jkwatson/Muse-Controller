@@ -5,7 +5,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 public class MuseControllerPreferences {
-    private static final String PIANOBAR_VETO_KEY = "pianobar.veto";
+    private static final String PANDORA_VETO_KEY = "pianobar.veto";
     private static final String SPOTIFY_ENABLE_KEY = "spotify.enable";
     private static final String MUSECONTROL_ENABLE_KEY = "musecontrol.enable";
     private static final String LAST_STREAMER_KEY = "last.streamer";
@@ -21,16 +21,16 @@ public class MuseControllerPreferences {
         this.preferences = preferences;
     }
 
-    public boolean isPianoBarEnabled() {
-        return !preferences.getBoolean(PIANOBAR_VETO_KEY, false);
+    public boolean isPandoraEnabled() {
+        return !preferences.getBoolean(PANDORA_VETO_KEY, false);
     }
 
     public boolean isSpotifyEnabled() {
         return preferences.getBoolean(SPOTIFY_ENABLE_KEY, true);
     }
 
-    public void enablePianoBar(boolean enable) {
-        preferences.putBoolean(PIANOBAR_VETO_KEY, !enable);
+    public void enablePandora(boolean enable) {
+        preferences.putBoolean(PANDORA_VETO_KEY, !enable);
     }
 
     public void enableMuseControl(boolean enable) {
