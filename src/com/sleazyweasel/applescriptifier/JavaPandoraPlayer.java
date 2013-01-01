@@ -7,8 +7,11 @@ import javazoom.jlgui.basicplayer.*;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
+    private static final Logger logger = Logger.getLogger(JavaPandoraPlayer.class.getName());
     private PandoraRadio pandoraRadio;
     private List<Station> stations;
     private Station station;
@@ -39,7 +42,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         try {
             player.setGain(volume);
         } catch (BasicPlayerException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught:", e);
         }
         preferences.setPandoraVolume(volume);
     }
@@ -63,7 +66,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             pandoraRadio = null;
             player = null;
         } catch (BasicPlayerException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);
         }
     }
 
@@ -76,7 +79,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             }
             pandoraRadio.disconnect();
         } catch (BasicPlayerException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);
         }
         player = null;
         pandoraRadio = null;
@@ -97,7 +100,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         player = new BasicPlayer();
         player.addBasicPlayerListener(this);
         pandoraRadio = new JsonPandoraRadio();
-        System.out.println("player.getStatus() = " + player.getStatus());
+        logger.info("player.getStatus() = " + player.getStatus());
         try {
             LoginInfo loginInfo = getLogin();
             pandoraRadio.sync();
@@ -109,7 +112,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             throw b;
         } catch (IOException e) {
             pandoraRadio = null;
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);
             throw new RuntimeException("Failed to log in to Pandora.", e);
         }
     }
@@ -120,13 +123,13 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             try {
                 listener.stateChanged(this, state);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, "Exception caught.", e);
             }
         }
     }
 
     private void validateRadioState() {
-        System.out.println("JavaPandoraPlayer.validateRadioState");
+        logger.info("JavaPandoraPlayer.validateRadioState");
         PandoraRadio pandoraRadio = this.pandoraRadio;
         if (pandoraRadio != null && pandoraRadio.isAlive()) {
             try {
@@ -139,7 +142,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
                         player.stop();
                     }
                 } catch (BasicPlayerException e1) {
-                    e1.printStackTrace();
+                    logger.log(Level.WARNING, "Exception caught:", e1);
                 }
                 player = null;
                 this.pandoraRadio = null;
@@ -169,7 +172,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         Map<Integer, String> stationData = new HashMap<Integer, String>(stations.size());
         int i = 0;
         for (Station station : stations) {
-//            System.out.println("station.getName() = " + station.getName());
+//            logger.info("station.getName() = " + station.getName());
             stationData.put(i++, station.getName());
         }
 
@@ -229,11 +232,11 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         try {
             playlist = pandoraRadio.getPlaylist(station, "mp3-hifi");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);
             try {
                 playlist = pandoraRadio.getPlaylist(station, "mp3");
             } catch (Exception e1) {
-                e1.printStackTrace();
+                logger.log(Level.WARNING, "Exception caught:", e1);
                 station = null;
                 notifyListeners();
                 throw new RuntimeException("Unable to retrieve station information from Pandora. Please contact musecontrol@gmail.com.", e1);
@@ -272,13 +275,13 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
                             }
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        logger.log(Level.WARNING, "Exception caught.", e);
                     } finally {
                         if (inputStream != null) {
                             try {
                                 inputStream.close();
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                logger.log(Level.WARNING, "Exception caught.", e);
                             }
                         }
                     }
@@ -291,12 +294,12 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             player.play();
             applyGain();
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", ioe);
             //this seems to happen when the pandora servers are rejecting our URLs.  maybe just try again?
             next();
         } catch (Exception e) {
             //not sure what I can do here!?
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);
             throw new RuntimeException("Failed to play music.", e);
         }
 
@@ -408,7 +411,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
                 player.resume();
             }
         } catch (BasicPlayerException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);
             throw new RuntimeException("failed to play/pause", e);
         }
         notifyListeners();
@@ -423,11 +426,11 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             try {
                 player.stop();
             } catch (BasicPlayerException e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, "Exception caught.", e);
             }
             play(nextSongToPlay());
         }
-        System.out.println("playlist = " + Arrays.toString(playlist));
+        logger.info("playlist = " + Arrays.toString(playlist));
     }
 
     private Song nextSongToPlay() {
@@ -464,7 +467,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void opened(Object stream, Map properties) {
-        System.out.println("JavaPandoraPlayer.opened");
+        logger.info("JavaPandoraPlayer.opened");
     }
 
     private Long currentFrame = null;
@@ -477,12 +480,12 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         if (currentFrame != null && currentFrame.equals(frame)) {
             frameDupeCount++;
             if (frameDupeCount > 50) {
-                System.out.println("frame = " + frame);
-                System.out.println("replacing player, nexting due to frame check.");
+                logger.info("frame = " + frame);
+                logger.info("replacing player, nexting due to frame check.");
                 try {
                     player.stop();
                 } catch (BasicPlayerException e) {
-                    e.printStackTrace();
+                    logger.log(Level.WARNING, "Exception caught.", e);
                 }
                 player = null;
                 player = new BasicPlayer();
@@ -505,8 +508,8 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void stateUpdated(BasicPlayerEvent event) {
-        System.out.println("JavaPandoraPlayer.stateUpdated");
-        System.out.println("event = " + event);
+        logger.info("JavaPandoraPlayer.stateUpdated");
+        logger.info("event = " + event);
         if (BasicPlayerEvent.EOM == event.getCode()) {
             next();
         }
@@ -514,7 +517,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void setController(BasicController controller) {
-        System.out.println("JavaPandoraPlayer.setController");
+        logger.info("JavaPandoraPlayer.setController");
     }
 
     private class LoginInfo {

@@ -17,8 +17,11 @@ package com.sleazyweasel.pandora;/* Pandoroid Radio - open source pandora.com cl
  */
 
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Song {
+    private static final Logger logger = Logger.getLogger(Song.class.getName());
     private String album;
     private String artist;
     private String artistMusicId;
@@ -64,7 +67,7 @@ public class Song {
             finished = false;
             playlistTime = System.currentTimeMillis() / 1000L;
         } catch (RuntimeException ex) {
-            ex.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught:", ex);
         }
     }
 
@@ -100,6 +103,7 @@ public class Song {
         this.artRadio = artRadio;
         this.trackToken = trackToken;
         playlistTime = System.currentTimeMillis() / 1000L;
+        this.rating = rating;
     }
 
     public boolean isStillValid() {

@@ -10,10 +10,19 @@ import org.eclipse.jetty.servlet.{ServletHolder, ServletContextHandler}
 import com.apple.dnssd.{RegisterListener, DNSSDRegistration, DNSSDService}
 import scala.concurrent.ops.spawn
 import javax.swing.{JMenuBar, JOptionPane}
+import java.util.logging.{SimpleFormatter, FileHandler, Level, Logger}
+import java.io.File
 
 object ScalaMain {
+  def logger: Logger  = Logger.getLogger(ScalaMain.getClass.getName)
 
   def main(args: Array[String]) {
+    val userHomeDirectory: String = System.getProperty("user.home")
+    new File(userHomeDirectory + "/Library/Logs/MuseController/").mkdirs()
+    val fileHandler: FileHandler = new FileHandler("%h/Library/Logs/MuseController/MuseController.log", 1000000, 10, true)
+
+    fileHandler.setFormatter(new SimpleFormatter)
+    Logger.getLogger("com").addHandler(fileHandler)
     System.setProperty("apple.laf.useScreenMenuBar", "true")
 
     println("environment = " + System.getenv)
@@ -28,7 +37,7 @@ object ScalaMain {
   private def addUncaughtExceptionHandler() {
     Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler {
       def uncaughtException(thread: Thread, e: Throwable) {
-        e.printStackTrace()
+        logger.log(Level.WARNING, "Exception caught.", e);
         JOptionPane.showMessageDialog(null, e.getMessage, "Error", JOptionPane.ERROR_MESSAGE)
       }
     })
@@ -37,6 +46,7 @@ object ScalaMain {
 
 class ScalaMain {
   private final val PORT: Int = 23233
+  def logger: Logger  = Logger.getLogger(ScalaMain.getClass.getName)
 
   private val preferences: MuseControllerPreferences = new MuseControllerPreferences(Preferences.userNodeForPackage(classOf[ScalaMain]))
 
@@ -72,7 +82,7 @@ class ScalaMain {
     }
     catch {
       case e: Throwable => {
-        e.printStackTrace()
+        logger.log(Level.WARNING, "Exception caught.", e);
       }
     }
   }

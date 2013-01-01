@@ -5,9 +5,10 @@ import de.felixbruns.jotify.media.Playlist;
 import javax.swing.*;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 public class PlaylistComboBoxModel extends DefaultComboBoxModel {
-
+    private static final Logger logger = Logger.getLogger(PlaylistComboBoxModel.class.getName());
     private final NativeSpotifySupport spotifySupport;
 
     public PlaylistComboBoxModel(NativeSpotifySupport spotifySupport) {
@@ -23,7 +24,7 @@ public class PlaylistComboBoxModel extends DefaultComboBoxModel {
     public void refreshContents() {
         List<Playlist> playlists = spotifySupport.getPlaylists();
         Playlist selectedItem = getSelectedStation();
-        System.out.println("selectedItem = " + selectedItem);
+        logger.info("selectedItem = " + selectedItem);
         removeAllElements();
         for (Playlist playlist : playlists) {
             addElement(playlist);

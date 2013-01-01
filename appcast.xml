@@ -3,7 +3,7 @@
         >
     <channel>
         <title>Muse Controller Changelog</title>
-        <link>http://www.musecontrol.com/sparkle/appcast.xml</link>
+        <link>http://downloads.musecontrol.com/appcast.xml</link>
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
@@ -449,6 +449,20 @@
                        sparkle:version="3.7.3"
                        length="17783841" type="application/octet-stream"
                        sparkle:dsaSignature="MC0CFEkdnflBK6sZ6S7H8knuFKcwZKnZAhUA8oZdjMr8J5V0p+NSYxDgKZj9Fjk="/>
+        </item>
+        <item>
+            <title>Version 3.7.4</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>Minor update:</h2>
+                    <h3>Fixed logging to work under Mountain Lion.<h3>
+                    <h3>Internal code cleanup.<h3>
+                ]]></description>
+            <pubDate>Tue, 01 Jan 2013 15:15:15 +0800</pubDate>
+            <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.7.4.dmg"
+                       sparkle:version="3.7.4"
+                       length="17783841" type="application/octet-stream"
+                       sparkle:dsaSignature="MCwCFBPogglbeCqU//QIVJjuQBASH9NxAhRpkDicvA/4eOKphnKsvcfP7g/pFg=="/>
         </item>
     </channel>
 </rss>

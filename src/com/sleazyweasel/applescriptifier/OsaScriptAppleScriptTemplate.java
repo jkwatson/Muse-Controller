@@ -5,9 +5,10 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
-
+    private static final Logger logger = Logger.getLogger(OsaScriptAppleScriptTemplate.class.getName());
     private <T> T execute(String... commands) {
         List<String> osaCommands = new ArrayList<String>();
         osaCommands.add("osascript");
@@ -18,7 +19,7 @@ public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
             osaCommands.add(command);
         }
         String[] strings = osaCommands.toArray(new String[osaCommands.size()]);
-        System.out.println("command = " + Arrays.toString(strings));
+        logger.info("command = " + Arrays.toString(strings));
         try {
             Process process = Runtime.getRuntime().exec(strings);
             InputStream inputStream = process.getInputStream();
@@ -32,7 +33,7 @@ public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
             if (results.lastIndexOf("\n") > -1) {
                 results.deleteCharAt(results.lastIndexOf("\n"));
             }
-            System.out.println("results = " + results);
+            logger.info("results = " + results);
             return (T) new OsaScriptOutputConverter().convert(results.toString());
         } catch (IOException e) {
             throw new AppleScriptException(e);
@@ -55,7 +56,7 @@ public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
                 " set runningState to count (every process whose name is \"" + application.getName() + "\")",
                 "end tell"};
         String numberOfProcesses = execute(isAirfoilRunningScript);
-        System.out.println("numberOfProcesses = " + numberOfProcesses);
+        logger.info("numberOfProcesses = " + numberOfProcesses);
         return numberOfProcesses != null && Integer.valueOf(numberOfProcesses) > 0;
     }
 

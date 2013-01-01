@@ -1,9 +1,13 @@
 package com.sleazyweasel.sparkle;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Activates the Sparkle Framework
  */
 public class SparkleActivator {
+    private static final Logger logger = Logger.getLogger(SparkleActivator.class.getName());
     /**
      * Native method declaration
      */
@@ -32,7 +36,7 @@ public class SparkleActivator {
         try {
             System.loadLibrary("sparkle_init");
         } catch (Throwable e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
         }
     }
 
@@ -42,7 +46,7 @@ public class SparkleActivator {
      * @throws Exception
      */
     public void start() throws Exception {
-        System.out.println("System.getProperty(\"user.dir\") = " + System.getProperty("user.dir"));
+        logger.info("System.getProperty(\"user.dir\") = " + System.getProperty("user.dir"));
         initSparkle(System.getProperty("user.dir") + "/../../Frameworks/Sparkle.framework", updateAtStartup, checkInterval);
     }
 }

@@ -13,9 +13,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RdioServlet extends HttpServlet {
-
+    private static final Logger logger = Logger.getLogger(RdioServlet.class.getName());
     private final AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
     private final RdioSupport rdioSupport = new RdioSupport(appleScriptTemplate);
 
@@ -84,7 +86,7 @@ public class RdioServlet extends HttpServlet {
             playerState.put("volume", playerData.get(1));
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);;
             List<List<Object>> data = appleScriptTemplate.execute(Application.RDIO, "[get [player position, sound volume]]");
             currentTrack.put("title", "");
             currentTrack.put("artist", "");

@@ -6,9 +6,11 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class SetupMusicPlayerConfigAction implements ActionListener {
-
+    private static final Logger logger = Logger.getLogger(SetupMusicPlayerConfigAction.class.getName());
     private final MusicPlayer musicPlayer;
     private final JTextField usernameField;
     private final JPasswordField passwordField;
@@ -38,7 +40,7 @@ class SetupMusicPlayerConfigAction implements ActionListener {
             main.setActiveFrame(pandoraUI);
             pandoraUI.getWindow().setVisible(true);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);
             JOptionPane.showMessageDialog(parent, "Failed to Configure Pandora", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (BadPandoraPasswordException e) {
             PandoraPasswordUI pandoraPasswordUI = new PandoraPasswordUI(musicPlayer, preferences, mainMenuBar, pandoraMenuItem, main);

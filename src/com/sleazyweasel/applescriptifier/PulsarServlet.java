@@ -10,9 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PulsarServlet extends HttpServlet {
-
+    private static final Logger logger = Logger.getLogger(PulsarServlet.class.getName());
     private final AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
     private final PulsarSupport pulsarSupport = new PulsarSupport(appleScriptTemplate);
 
@@ -72,10 +74,10 @@ public class PulsarServlet extends HttpServlet {
                 currentStation = "";
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);
             currentStation = "Unable to get Station from Pulsar";
         }
-//        System.out.println("currentStation = " + currentStation);
+//        logger.info("currentStation = " + currentStation);
         status.put("currentStation", currentStation);
 
 
@@ -83,7 +85,7 @@ public class PulsarServlet extends HttpServlet {
         try {
             currentTrack = appleScriptTemplate.execute(Application.PULSAR, "get [track title, artist]");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Exception caught.", e);
             currentTrack = Arrays.asList("", "");
         }
 
