@@ -464,5 +464,18 @@
                        length="17783841" type="application/octet-stream"
                        sparkle:dsaSignature="MCwCFBPogglbeCqU//QIVJjuQBASH9NxAhRpkDicvA/4eOKphnKsvcfP7g/pFg=="/>
         </item>
+        <item>
+            <title>Version 3.8.0</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>Minor update:</h2>
+                    <h3>Enabled new experimental option to have Muse Control restart Airfoil automatically.<h3>
+                ]]></description>
+            <pubDate>Tue, 20 Jan 2013 12:12:12 +0800</pubDate>
+            <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.8.0.dmg"
+                       sparkle:version="3.8.0"
+                       length="17783841" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFQCw9kHJkEqz9nQaO8MQttiGrQGeqAIUKUnPJ0ccF7yn03M2DDmn8l7jFhI="/>
+        </item>
     </channel>
 </rss>

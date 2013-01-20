@@ -1,6 +1,7 @@
 package com.sleazyweasel.applescriptifier;
 
 import com.google.gson.Gson;
+import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,9 +17,11 @@ public class AirfoilServlet extends HttpServlet {
     private static final String STATE_KEY = "state";
     private AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
     private final MusicPlayer musicPlayer;
+    private final MuseControllerPreferences preferences;
 
-    public AirfoilServlet(MusicPlayer musicPlayer) {
+    public AirfoilServlet(MusicPlayer musicPlayer, MuseControllerPreferences preferences) {
         this.musicPlayer = musicPlayer;
+        this.preferences = preferences;
     }
 
     @Override
@@ -58,6 +61,9 @@ public class AirfoilServlet extends HttpServlet {
             Map<String, Object> runningStatus = getRunningStatus();
             ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, musicPlayer);
             if (applicationSupport != null) {
+                if (preferences.shouldBounceAirfoilOnPlayPause()) {
+                    bounceAirfoil();
+                }
                 applicationSupport.playPause();
             }
             appendRunningStatus(response, runningStatus);
@@ -96,6 +102,17 @@ public class AirfoilServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
 
+    }
+
+    private void bounceAirfoil() {
+        appleScriptTemplate.execute(Application.AIRFOIL, "disconnect from every speaker");
+        appleScriptTemplate.execute(Application.AIRFOIL, "quit");
+//        appleScriptTemplate.execute(Application.AIRFOIL, "activate");
+        String[] script = {
+                "delay 1",
+                "activate application \"Airfoil\""
+        };
+        appleScriptTemplate.executeBare(script);
     }
 
     private ApplicationSupport getCurrentApplicationSupport(Map<String, Object> runningStatus, MusicPlayer musicPlayer) {
@@ -157,6 +174,7 @@ public class AirfoilServlet extends HttpServlet {
         Map<String, Object> stateMap = new HashMap<String, Object>();
         stateMap.put("running", true);
 
+        //todo this blows up if there is no "current audio source"...
         List data = appleScriptTemplate.execute(Application.AIRFOIL, "[get properties of every speaker, get properties of every application source, get properties of every system source, get properties of current audio source]");
 
         stateMap.put("speakers", data.get(0));

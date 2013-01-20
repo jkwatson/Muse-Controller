@@ -12,6 +12,8 @@ public class MuseControllerPreferences {
     private static final String SPOTIFY_ENABLE_KEY = "spotify.enable";
     private static final String MUSECONTROL_ENABLE_KEY = "musecontrol.enable";
     private static final String LAST_STREAMER_KEY = "last.streamer";
+    private static final String BOUNCE_AIRFOIL_KEY = "bounch.airfoil.when.playpause";
+
     private static final String PANDORA_STREAMER_VALUE = "Pandora";
     private static final String SPOTIFY_STREAMER_VALUE = "Spotify";
     private static final String PREVIOUS_PANDORA_STATION_ID_KEY = "PREVIOUS_PANDORA_STATION_ID_KEY";
@@ -104,6 +106,14 @@ public class MuseControllerPreferences {
 
     public void setSpotifyVolume(float volume) {
         preferences.putFloat(PREVIOUS_SPOTIFY_VOLUME_KEY, volume);
+    }
+
+    public boolean shouldBounceAirfoilOnPlayPause() {
+        return preferences.getBoolean(BOUNCE_AIRFOIL_KEY, false);
+    }
+
+    public void setAirfoilShouldBounceOnPlayPause(boolean bounce) {
+        preferences.putBoolean(BOUNCE_AIRFOIL_KEY, bounce);
     }
 
     private boolean keyExists(String keyToCheck) {
