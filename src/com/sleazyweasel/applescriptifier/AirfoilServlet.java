@@ -98,16 +98,18 @@ public class AirfoilServlet extends HttpServlet {
                 applicationSupport.thumbsDown();
             }
             appendRunningStatus(response, runningStatus);
-        } else {
+        } else if (pathInfo.startsWith("/bounce")) {
+            bounceAirfoil();
+            appendRunningStatus(response, getRunningStatus());
+        }
+        else {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
-
     }
 
     private void bounceAirfoil() {
         appleScriptTemplate.execute(Application.AIRFOIL, "disconnect from every speaker");
         appleScriptTemplate.execute(Application.AIRFOIL, "quit");
-//        appleScriptTemplate.execute(Application.AIRFOIL, "activate");
         String[] script = {
                 "delay 1",
                 "activate application \"Airfoil\""
