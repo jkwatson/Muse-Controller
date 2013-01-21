@@ -43,12 +43,16 @@ public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
     public <T> T execute(Application applicationName, String... scriptLines) {
         List<String> commands = new ArrayList<String>();
         commands.add("tell application \"" + applicationName.getName() + "\"");
+        buildCommand(commands, scriptLines);
+        commands.add("end tell");
+        return (T) execute(commands.toArray(new String[commands.size()]));
+    }
+
+    private void buildCommand(List<String> commands, String[] scriptLines) {
         for (int i = 0; i < scriptLines.length; i++) {
             String scriptLine = scriptLines[i];
             commands.add(scriptLine);
         }
-        commands.add("end tell");
-        return (T) execute(commands.toArray(new String[commands.size()]));
     }
 
     public boolean isRunning(Application application) {
@@ -95,6 +99,11 @@ public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
 
     public void executeKeyCode(Application application, int keyCode) {
         execute(application, "activate", "tell application \"System Events\" to key code " + keyCode);
+    }
+
+    @Override
+    public void executeBare(String... scriptLines) {
+        execute(scriptLines);
     }
 
 }

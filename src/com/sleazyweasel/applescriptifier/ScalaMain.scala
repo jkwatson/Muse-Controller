@@ -72,7 +72,7 @@ class ScalaMain {
 
     main.startupGui(playerSupplier, preferences, spotifyPlayer, pandoraPlayer)
     if (preferences.isMuseControlEnabled) {
-      startupWebServer(playerSupplier)
+      startupWebServer(playerSupplier, preferences)
     }
   }
 
@@ -87,7 +87,7 @@ class ScalaMain {
     }
   }
 
-  private def startupWebServer(players: MusicPlayerSupplier) {
+  private def startupWebServer(player: MusicPlayerSupplier, preferences: MuseControllerPreferences) {
     //big todo: make the port dynamic...search until you find a free one.
     val server = new Server(PORT)
     register(0, 0, InetAddress.getLocalHost.getHostName, "_asrunner._udp", "local.", null, PORT, null, new RegisterListener {
@@ -103,17 +103,17 @@ class ScalaMain {
     context.setContextPath("/")
     server.setHandler(context)
 
-    val airfoilServlet = new AirfoilServlet(players)
+    val airfoilServlet = new AirfoilServlet(player, preferences)
     context.addServlet(new ServletHolder(airfoilServlet), "/airfoil/*")
     context.addServlet(new ServletHolder(new PandoraBoyServlet), "/pandoraboy/*")
     context.addServlet(new ServletHolder(new PulsarServlet), "/pulsar/*")
     context.addServlet(new ServletHolder(new RdioServlet), "/rdio/*")
 
-    val musicPlayerServlet = new MusicPlayerServlet(players)
+    val musicPlayerServlet = new MusicPlayerServlet(player)
     context.addServlet(new ServletHolder(musicPlayerServlet), "/pianobar/*")
     context.addServlet(new ServletHolder(musicPlayerServlet), "/pandora/*")
     context.addServlet(new ServletHolder(new SpotifyServlet), "/spotify/*")
-    context.addServlet(new ServletHolder(new ControlServlet(players)), "/control/*")
+    context.addServlet(new ServletHolder(new ControlServlet(player)), "/control/*")
 
     spawn({
       server.start();
