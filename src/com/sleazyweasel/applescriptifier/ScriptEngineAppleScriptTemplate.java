@@ -32,21 +32,30 @@ public class ScriptEngineAppleScriptTemplate implements AppleScriptTemplate {
         return (T) execute(getEngine(), applicationName, scriptLines);
     }
 
+    @Override
+    public void executeBare(String... scriptLines) {
+        StringBuilder builder = new StringBuilder();
+        buildCommand(builder, scriptLines);
+        execute(builder);
+    }
+
     private <T> T execute(ScriptEngine engine, Application applicationName, String... scriptLines) {
         StringBuilder command = new StringBuilder("tell application \"").append(applicationName.getName()).append("\"\n");
-        for (String scriptLine : scriptLines) {
-            command.append(scriptLine).append("\n");
-        }
+        buildCommand(command, scriptLines);
 
         command.append("end tell\n");
         return (T) execute(engine, command);
     }
 
-    private <T> T execute(ScriptEngine engine, Application applicationName, Bindings bindings, String... scriptLines) {
-        StringBuilder command = new StringBuilder("tell application ").append(applicationName.getName()).append("\n");
+    private void buildCommand(StringBuilder command, String[] scriptLines) {
         for (String scriptLine : scriptLines) {
             command.append(scriptLine).append("\n");
         }
+    }
+
+    private <T> T execute(ScriptEngine engine, Application applicationName, Bindings bindings, String... scriptLines) {
+        StringBuilder command = new StringBuilder("tell application ").append(applicationName.getName()).append("\n");
+        buildCommand(command, scriptLines);
 
         command.append("end tell\n");
         return (T) execute(engine, command);
@@ -58,9 +67,9 @@ public class ScriptEngineAppleScriptTemplate implements AppleScriptTemplate {
         return (T) execute(engine, application, bindings, scriptLines);
     }
 
-    public boolean isRunning(Application airfoil) {
+    public boolean isRunning(Application application) {
         String isAirfoilRunningScript = "tell application \"System Events\"\n" +
-                " set runningState to count (every process whose name is \"" + airfoil.getName() + "\")\n" +
+                " set runningState to count (every process whose name is \"" + application.getName() + "\")\n" +
                 "end tell\n";
         Long numberOfProcesses = execute(isAirfoilRunningScript);
         return numberOfProcesses != null && numberOfProcesses > 0;
