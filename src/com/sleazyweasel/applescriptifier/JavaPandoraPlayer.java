@@ -465,6 +465,12 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         next();
     }
 
+    public void tired() {
+        validateRadioState();
+        pandoraRadio.tired(song);
+        next();
+    }
+
     @Override
     public void opened(Object stream, Map properties) {
         logger.info("JavaPandoraPlayer.opened");

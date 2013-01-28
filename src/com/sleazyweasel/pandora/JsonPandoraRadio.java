@@ -155,6 +155,15 @@ public class JsonPandoraRadio implements PandoraRadio {
     }
 
     @Override
+    public void tired(Song song) {
+        String method = "user.sleepSong";
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("trackToken", song.getTrackToken());
+        JsonObject ratingResult = doStandardCall(method, data, false);
+        checkForError(ratingResult, "failed to sleep song");
+    }
+
+    @Override
     public boolean isAlive() {
         return userAuthToken != null;
     }
