@@ -477,5 +477,19 @@
                        length="17783841" type="application/octet-stream"
                        sparkle:dsaSignature="MCwCFGiasTnHzl0J0ldFysIg1hVq+EWSAhRtyEaK4VLv3kYmnQSUHx1E4SYjCQ=="/>
         </item>
+        <item>
+            <title>Version 3.9.0</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>New Stuff:</h2>
+                    <h3>Added the ability to mark a Pandora song as "Tired"</h3>
+                    <h3>Disabled the Spotify player, as it is not currently functional.</h3>
+                ]]></description>
+            <pubDate>Mon, 28 Jan 2013 21:21:21 -0800</pubDate>
+            <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.9.0.dmg"
+                       sparkle:version="3.9.0"
+                       length="17783841" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFAo2lC8A6Q7OeZCCpweRf0FMLALMAhUAgFytfrs0fPkIay9X8UhFksqEd2g="/>
+        </item>
     </channel>
 </rss>
