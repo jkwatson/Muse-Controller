@@ -20,4 +20,6 @@ public interface PandoraRadio {
     boolean isAlive();
 
     Song[] getPlaylist(Station station, String format);
+
+    void tired(Song song);
 }

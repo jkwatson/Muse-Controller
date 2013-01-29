@@ -425,4 +425,9 @@ public class XmlRpcPandoraRadio implements PandoraRadio {
         return null;
     }
 
+    @Override
+    public void tired(Song song) {
+        throw new UnsupportedOperationException();
+    }
+
 }
