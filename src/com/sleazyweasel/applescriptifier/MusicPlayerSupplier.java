@@ -84,6 +84,11 @@ public class MusicPlayerSupplier implements MusicPlayer {
         return getCurrentMusicPlayer().isAuthorized();
     }
 
+    @Override
+    public void sleep() {
+        getCurrentMusicPlayer().sleep();
+    }
+
     public boolean isPlaying() {
         return getCurrentMusicPlayer().isPlaying();
     }

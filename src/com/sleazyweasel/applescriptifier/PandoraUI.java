@@ -61,6 +61,7 @@ public class PandoraUI implements MuseControllerFrame {
         initNextButton();
         initThumbsUpButton();
         initThumbsDownButton();
+        initSleepButton();
         initVolumeUpButton();
         initVolumeDownButton();
         initImageLabel();
@@ -86,6 +87,7 @@ public class PandoraUI implements MuseControllerFrame {
         widgets.menu.addSeparator();
         widgets.menu.add(initThumbsUpMenuItem());
         widgets.menu.add(initThumbsDownMenuItem());
+        widgets.menu.add(initSleepMenuItem());
         widgets.menu.addSeparator();
         widgets.menu.add(initVolumeUpMenuItem());
         widgets.menu.add(initVolumeDownMenuItem());
@@ -140,6 +142,18 @@ public class PandoraUI implements MuseControllerFrame {
         });
         menuItem.setEnabled(false);
         widgets.thumbsUpMenuItem = menuItem;
+        return menuItem;
+    }
+
+    private JMenuItem initSleepMenuItem() {
+        JMenuItem menuItem = new JMenuItem("Mark as Tired");
+        menuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                musicPlayer.sleep();
+            }
+        });
+        menuItem.setEnabled(false);
+        widgets.sleepMenuItem = menuItem;
         return menuItem;
     }
 
@@ -291,6 +305,19 @@ public class PandoraUI implements MuseControllerFrame {
         });
     }
 
+    private void initSleepButton() {
+        widgets.sleepButton = new JButton(getIcon("Sleep.png"));
+        setButtonDefaults(widgets.sleepButton);
+        widgets.sleepButton.setToolTipText("Mark Song as Tired");
+        widgets.sleepButton.setEnabled(false);
+        widgets.sleepButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                musicPlayer.sleep();
+            }
+        });
+    }
+
     private void initVolumeUpButton() {
         widgets.volumeUpButton = new JButton(getIcon("volume_up.png"));
         setButtonDefaults(widgets.volumeUpButton);
@@ -341,14 +368,15 @@ public class PandoraUI implements MuseControllerFrame {
 
     private void initLayout() {
         JPanel leftButtonPanel = new JPanel(new TableLayout(new double[][]{
-                {PREFERRED, PREFERRED, PREFERRED, PREFERRED, FILL, PREFERRED, PREFERRED}, {FILL, PREFERRED}
+                {PREFERRED, PREFERRED, PREFERRED, PREFERRED, PREFERRED, FILL, PREFERRED, PREFERRED}, {FILL, PREFERRED}
         }));
         leftButtonPanel.add(widgets.playPauseButton, "0,1");
         leftButtonPanel.add(widgets.nextButton, "1,1");
         leftButtonPanel.add(widgets.thumbsUpButton, "2,1");
         leftButtonPanel.add(widgets.thumbsDownButton, "3,1");
-        leftButtonPanel.add(widgets.volumeDownButton, "5,1");
-        leftButtonPanel.add(widgets.volumeUpButton, "6,1");
+        leftButtonPanel.add(widgets.sleepButton, "4,1");
+        leftButtonPanel.add(widgets.volumeDownButton, "6,1");
+        leftButtonPanel.add(widgets.volumeUpButton, "7,1");
 
         int gap = -3;
         JPanel infoPanel = new JPanel(new TableLayout(new double[][]{
@@ -398,6 +426,7 @@ public class PandoraUI implements MuseControllerFrame {
         private JButton nextButton;
         private JButton thumbsUpButton;
         private JButton thumbsDownButton;
+        private JButton sleepButton;
         private JButton volumeUpButton;
         private JButton volumeDownButton;
         private JLabel stationNameLabel;
@@ -411,6 +440,7 @@ public class PandoraUI implements MuseControllerFrame {
         public JMenuItem volumeUpMenuItem;
         public JMenuItem thumbsDownMenuItem;
         public JMenuItem thumbsUpMenuItem;
+        public JMenuItem sleepMenuItem;
         public JMenuItem nextMenuItem;
         public JMenuItem playPauseMenuItem;
         public JMenu menu;
@@ -425,15 +455,17 @@ public class PandoraUI implements MuseControllerFrame {
         public void stateChanged(final MusicPlayer player, MusicPlayerState state) {
             if (acquireLock()) {
                 widgets.playPauseButton.setEnabled(!state.isInputRequested());
-                widgets.nextButton.setEnabled(!state.isInputRequested());
-                widgets.thumbsDownButton.setEnabled(!state.isInputRequested());
+                widgets.nextButton.setEnabled(trackCanBeModified(state));
+                widgets.thumbsDownButton.setEnabled(trackCanBeModified(state));
                 widgets.volumeUpButton.setEnabled(!state.isInputRequested());
                 widgets.volumeDownButton.setEnabled(!state.isInputRequested());
                 widgets.volumeDownMenuItem.setEnabled(!state.isInputRequested());
                 widgets.volumeUpMenuItem.setEnabled(!state.isInputRequested());
-                widgets.thumbsDownMenuItem.setEnabled(!state.isInputRequested());
-                widgets.thumbsUpMenuItem.setEnabled(!state.isInputRequested());
-                widgets.nextMenuItem.setEnabled(!state.isInputRequested());
+                widgets.thumbsDownMenuItem.setEnabled(trackCanBeModified(state));
+                widgets.thumbsUpMenuItem.setEnabled(trackCanBeModified(state));
+                widgets.sleepMenuItem.setEnabled(trackCanBeModified(state));
+                widgets.sleepButton.setEnabled(trackCanBeModified(state));
+                widgets.nextMenuItem.setEnabled(trackCanBeModified(state));
                 widgets.playPauseMenuItem.setEnabled(!state.isInputRequested());
 
                 widgets.stationNameLabel.setText(state.getStation());
@@ -444,7 +476,7 @@ public class PandoraUI implements MuseControllerFrame {
                 models.stationComboBoxModel.refreshContents();
                 models.stationComboBoxModel.setSelectedItem(state.getCurrentStation());
 
-                widgets.thumbsUpButton.setEnabled(!state.isInputRequested() && !state.isCurrentSongIsLoved());
+                widgets.thumbsUpButton.setEnabled(trackCanBeModified(state) && !state.isCurrentSongIsLoved());
 
                 if (state.isPlaying()) {
                     widgets.playPauseButton.setIcon(getIcon("pause.png"));
@@ -472,6 +504,10 @@ public class PandoraUI implements MuseControllerFrame {
 
                 releaseLock();
             }
+        }
+
+        private boolean trackCanBeModified(MusicPlayerState state) {
+            return !state.isInputRequested() && state.getTitle()!= null && !state.getTitle().isEmpty();
         }
     }
 

@@ -38,6 +38,8 @@ public interface MusicPlayer extends ApplicationSupport {
 
     boolean isAuthorized();
 
+    void sleep();
+
     public interface MusicPlayerStateChangeListener {
         void stateChanged(MusicPlayer player, MusicPlayerState state);
     }
