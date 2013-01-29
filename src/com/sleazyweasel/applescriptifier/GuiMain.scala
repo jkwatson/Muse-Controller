@@ -54,21 +54,21 @@ class GuiMain extends MuseControllerMain {
       val menubar = new MenuBar
 
       val pandoraMenuItem = createPandoraMenuItem(preferences, pandoraPlayer, menubar, playerSupplier)
-      val spotifyMenuItem = createSpotifyMenuItem(preferences, spotifyPlayer, menubar, playerSupplier)
+//      val spotifyMenuItem = createSpotifyMenuItem(preferences, spotifyPlayer, menubar, playerSupplier)
 
       val menu = new Menu("Music")
       menu.contents += pandoraMenuItem
-      menu.contents += spotifyMenuItem
+//      menu.contents += spotifyMenuItem
       menubar.contents += menu
 
       setUpMacApplicationState(preferences, menubar)
 
-      if (preferences.isPandoraEnabled && preferences.wasPandoraTheLastStreamerOpen) {
+      if (preferences.isPandoraEnabled) {
         startupPandora(pandoraMenuItem, pandoraPlayer, preferences, menubar, playerSupplier)
       }
-      else if (preferences.isSpotifyEnabled && preferences.wasSpotifyTheLastStreamerOpen) {
-        startupSpotify(spotifyMenuItem, spotifyPlayer, preferences, menubar, playerSupplier)
-      }
+//      else if (preferences.isSpotifyEnabled && preferences.wasSpotifyTheLastStreamerOpen) {
+//        startupSpotify(spotifyMenuItem, spotifyPlayer, preferences, menubar, playerSupplier)
+//      }
       else {
         new Frame pack()
       }
