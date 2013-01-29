@@ -373,6 +373,11 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
         return isSpotifyAuthorized();
     }
 
+    @Override
+    public void sleep() {
+        //no-op...no support for this.
+    }
+
     private void notifyListeners() {
         for (MusicPlayerStateChangeListener listener : listeners) {
             listener.stateChanged(this, getState());

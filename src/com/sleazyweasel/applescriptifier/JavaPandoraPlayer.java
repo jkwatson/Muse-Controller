@@ -1,7 +1,10 @@
 package com.sleazyweasel.applescriptifier;
 
 import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
-import com.sleazyweasel.pandora.*;
+import com.sleazyweasel.pandora.JsonPandoraRadio;
+import com.sleazyweasel.pandora.PandoraRadio;
+import com.sleazyweasel.pandora.Song;
+import com.sleazyweasel.pandora.Station;
 import javazoom.jlgui.basicplayer.*;
 
 import java.io.*;
@@ -40,9 +43,11 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     private void applyGain() {
         try {
-            player.setGain(volume);
+            if (player != null && player.hasGainControl()) {
+                player.setGain(volume);
+            }
         } catch (BasicPlayerException e) {
-            logger.log(Level.WARNING, "Exception caught:", e);
+            logger.log(Level.WARNING, "Exception caught: " + e.getMessage(), e.getCause());
         }
         preferences.setPandoraVolume(volume);
     }
@@ -393,8 +398,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
                 currentInputType = MusicPlayerInputType.NONE;
                 refreshPlaylist();
                 notifyListeners();
-            }
-            else {
+            } else {
                 preferences.setPandoraStationId(null);
             }
         }
@@ -465,7 +469,8 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         next();
     }
 
-    public void tired() {
+    @Override
+    public void sleep() {
         validateRadioState();
         pandoraRadio.tired(song);
         next();
