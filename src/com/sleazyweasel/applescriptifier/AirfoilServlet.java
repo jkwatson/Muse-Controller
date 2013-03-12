@@ -1,7 +1,6 @@
 package com.sleazyweasel.applescriptifier;
 
 import com.google.gson.Gson;
-import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,11 +16,9 @@ public class AirfoilServlet extends HttpServlet {
     private static final String STATE_KEY = "state";
     private AppleScriptTemplate appleScriptTemplate = new AppleScriptTemplateFactory().getActiveTemplate();
     private final MusicPlayer musicPlayer;
-    private final MuseControllerPreferences preferences;
 
-    public AirfoilServlet(MusicPlayer musicPlayer, MuseControllerPreferences preferences) {
+    public AirfoilServlet(MusicPlayer musicPlayer) {
         this.musicPlayer = musicPlayer;
-        this.preferences = preferences;
     }
 
     @Override
@@ -61,9 +58,6 @@ public class AirfoilServlet extends HttpServlet {
             Map<String, Object> runningStatus = getRunningStatus();
             ApplicationSupport applicationSupport = getCurrentApplicationSupport(runningStatus, musicPlayer);
             if (applicationSupport != null) {
-                if (preferences.shouldBounceAirfoilOnPlayPause()) {
-                    bounceAirfoil();
-                }
                 applicationSupport.playPause();
             }
             appendRunningStatus(response, runningStatus);
