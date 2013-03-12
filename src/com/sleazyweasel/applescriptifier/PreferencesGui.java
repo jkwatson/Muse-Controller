@@ -26,20 +26,20 @@ public class PreferencesGui {
     }
 
     private void initLayout() {
-        double[][] columnsThenRows = {{15, FILL, PREFERRED, PREFERRED, 12}, {15, PREFERRED, PREFERRED, PREFERRED, PREFERRED, 5, PREFERRED, 15, PREFERRED, 12}};
+        double[][] columnsThenRows = {{15, FILL, PREFERRED, PREFERRED, 12}, {15, PREFERRED, PREFERRED, 5, PREFERRED, 15, PREFERRED, 12}};
         TableLayout tableLayout = new TableLayout(columnsThenRows);
         Container contentPane = widgets.window.getContentPane();
         contentPane.setLayout(tableLayout);
 
         contentPane.add(widgets.enablePandoraCheckbox, "1, 1");
-        contentPane.add(widgets.enableSpotifyCheckbox, "1, 2");
-        contentPane.add(widgets.enableMuseControlCheckbox, "1, 3");
-        contentPane.add(widgets.bounceAirfoilOnPlayPause, "1, 4");
+//        contentPane.add(widgets.enableSpotifyCheckbox, "1, 2");
+        contentPane.add(widgets.enableMuseControlCheckbox, "1, 2");
+//        contentPane.add(widgets.bounceAirfoilOnPlayPause, "1, 3");
         JPanel labelHolder = new JPanel(new TableLayout(new double[][]{{FILL}, {FILL}}));
         labelHolder.add(new JLabel("(Application must be restarted for changes to take effect)"), "0,0,c,c");
-        contentPane.add(labelHolder, "1,6,3,6");
-        contentPane.add(widgets.saveButton, "2, 8");
-        contentPane.add(widgets.cancelButton, "3, 8");
+        contentPane.add(labelHolder, "1,4,3,4");
+        contentPane.add(widgets.saveButton, "2, 6");
+        contentPane.add(widgets.cancelButton, "3, 6");
         widgets.window.getRootPane().setDefaultButton(widgets.saveButton);
         widgets.window.pack();
         widgets.cancelButton.requestFocus();
@@ -49,9 +49,9 @@ public class PreferencesGui {
         initWindow();
         initCancelButton();
         initEnablePandoraCheckbox();
-        initEnableSpotifyCheckbox();
+//        initEnableSpotifyCheckbox();
         initEnableMuseControlCheckbox();
-        initBounceAirfoilOnPlayPauseCheckbox();
+//        initBounceAirfoilOnPlayPauseCheckbox();
         initSaveButton();
     }
 
@@ -74,9 +74,9 @@ public class PreferencesGui {
         widgets.saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 preferences.enablePandora(widgets.enablePandoraCheckbox.isSelected());
-                preferences.enableSpotify(widgets.enableSpotifyCheckbox.isSelected());
+//                preferences.enableSpotify(widgets.enableSpotifyCheckbox.isSelected());
                 preferences.enableMuseControl(widgets.enableMuseControlCheckbox.isSelected());
-                preferences.setAirfoilShouldBounceOnPlayPause(widgets.bounceAirfoilOnPlayPause.isSelected());
+//                preferences.setAirfoilShouldBounceOnPlayPause(widgets.bounceAirfoilOnPlayPause.isSelected());
                 try {
                     preferences.save();
                 } catch (BackingStoreException e) {
@@ -91,13 +91,13 @@ public class PreferencesGui {
         widgets.enablePandoraCheckbox = new JCheckBox("Enable Pandora Streaming", preferences.isPandoraEnabled());
     }
 
-    private void initEnableSpotifyCheckbox() {
-        widgets.enableSpotifyCheckbox = new JCheckBox("Enable Spotify Streaming", preferences.isSpotifyEnabled());
-    }
+//    private void initEnableSpotifyCheckbox() {
+//        widgets.enableSpotifyCheckbox = new JCheckBox("Enable Spotify Streaming", preferences.isSpotifyEnabled());
+//    }
 
-    private void initBounceAirfoilOnPlayPauseCheckbox() {
-        widgets.bounceAirfoilOnPlayPause = new JCheckBox("<html>Restart Airfoil Automatically from Muse Control <b><font color=\"red\">(EXPERIMENTAL!)</font></b>", preferences.shouldBounceAirfoilOnPlayPause());
-    }
+//    private void initBounceAirfoilOnPlayPauseCheckbox() {
+//        widgets.bounceAirfoilOnPlayPause = new JCheckBox("<html>Restart Airfoil Automatically from Muse Control <b><font color=\"red\">(EXPERIMENTAL!)</font></b>", preferences.shouldBounceAirfoilOnPlayPause());
+//    }
 
     private void initWindow() {
         widgets.window = new JFrame("Preferences");
@@ -110,9 +110,9 @@ public class PreferencesGui {
     private static class Widgets {
         private JFrame window;
         private JCheckBox enablePandoraCheckbox;
-        private JCheckBox enableSpotifyCheckbox;
+//        private JCheckBox enableSpotifyCheckbox;
         private JCheckBox enableMuseControlCheckbox;
-        private JCheckBox bounceAirfoilOnPlayPause;
+//        private JCheckBox bounceAirfoilOnPlayPause;
         private JButton saveButton;
         private JButton cancelButton;
 
