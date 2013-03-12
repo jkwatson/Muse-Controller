@@ -491,5 +491,18 @@
                        length="17783841" type="application/octet-stream"
                        sparkle:dsaSignature="MC0CFAo2lC8A6Q7OeZCCpweRf0FMLALMAhUAgFytfrs0fPkIay9X8UhFksqEd2g="/>
         </item>
+        <item>
+            <title>Version 3.9.1</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>Minor Update:</h2>
+                    <h3>Removed old, unused and unsupported options from the preferences dialog.</h3>
+                ]]></description>
+            <pubDate>Mon, 11 Mar 2013 21:21:21 -0800</pubDate>
+            <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.9.1.dmg"
+                       sparkle:version="3.9.1"
+                       length="17783841" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFQCsptljNP7gYO4qFoZWrgQIrzM9KwIUbV7RlcvSPoUzLsdE/0b69gwYgOE="/>
+        </item>
     </channel>
 </rss>
