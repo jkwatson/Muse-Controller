@@ -39,26 +39,15 @@ class GuiMain extends MuseControllerMain {
     pandoraMenuItem
   }
 
-  private def createSpotifyMenuItem(preferences: MuseControllerPreferences, spotifySupport: NativeSpotifySupport, menubar: MenuBar, playerSupplier: MusicPlayerSupplier): MenuItem = {
-    val spotifyMenuItem = new MenuItem("Spotify")
-    spotifyMenuItem.enabled = true
-    spotifyMenuItem.reactions += {
-      case ButtonClicked(`spotifyMenuItem`) => startupSpotify(spotifyMenuItem, spotifySupport, preferences, menubar, playerSupplier)
-    }
-    spotifyMenuItem
-  }
-
   def startupGui(playerSupplier: MusicPlayerSupplier, preferences: MuseControllerPreferences, spotifyPlayer: NativeSpotifySupport, pandoraPlayer: MusicPlayer) {
 
     Swing.onEDT({
       val menubar = new MenuBar
 
       val pandoraMenuItem = createPandoraMenuItem(preferences, pandoraPlayer, menubar, playerSupplier)
-//      val spotifyMenuItem = createSpotifyMenuItem(preferences, spotifyPlayer, menubar, playerSupplier)
 
       val menu = new Menu("Music")
       menu.contents += pandoraMenuItem
-//      menu.contents += spotifyMenuItem
       menubar.contents += menu
 
       setUpMacApplicationState(preferences, menubar)
@@ -66,9 +55,6 @@ class GuiMain extends MuseControllerMain {
       if (preferences.isPandoraEnabled) {
         startupPandora(pandoraMenuItem, pandoraPlayer, preferences, menubar, playerSupplier)
       }
-//      else if (preferences.isSpotifyEnabled && preferences.wasSpotifyTheLastStreamerOpen) {
-//        startupSpotify(spotifyMenuItem, spotifyPlayer, preferences, menubar, playerSupplier)
-//      }
       else {
         new Frame pack()
       }

@@ -12,7 +12,6 @@ public class MuseControllerPreferences {
     private static final String SPOTIFY_ENABLE_KEY = "spotify.enable";
     private static final String MUSECONTROL_ENABLE_KEY = "musecontrol.enable";
     private static final String LAST_STREAMER_KEY = "last.streamer";
-    private static final String BOUNCE_AIRFOIL_KEY = "bounch.airfoil.when.playpause";
 
     private static final String PANDORA_STREAMER_VALUE = "Pandora";
     private static final String SPOTIFY_STREAMER_VALUE = "Spotify";
@@ -28,10 +27,6 @@ public class MuseControllerPreferences {
 
     public boolean isPandoraEnabled() {
         return !preferences.getBoolean(PANDORA_VETO_KEY, false);
-    }
-
-    public boolean isSpotifyEnabled() {
-        return preferences.getBoolean(SPOTIFY_ENABLE_KEY, true);
     }
 
     public void enablePandora(boolean enable) {
@@ -104,18 +99,6 @@ public class MuseControllerPreferences {
         return preferences.getFloat(PREVIOUS_SPOTIFY_VOLUME_KEY, 1.0f);
     }
 
-    public void setSpotifyVolume(float volume) {
-        preferences.putFloat(PREVIOUS_SPOTIFY_VOLUME_KEY, volume);
-    }
-
-    public boolean shouldBounceAirfoilOnPlayPause() {
-        return preferences.getBoolean(BOUNCE_AIRFOIL_KEY, false);
-    }
-
-    public void setAirfoilShouldBounceOnPlayPause(boolean bounce) {
-        preferences.putBoolean(BOUNCE_AIRFOIL_KEY, bounce);
-    }
-
     private boolean keyExists(String keyToCheck) {
         try {
             String[] keys = preferences.keys();
@@ -126,7 +109,7 @@ public class MuseControllerPreferences {
             }
             return false;
         } catch (BackingStoreException e) {
-            logger.log(Level.WARNING, "Exception caught.", e);;
+            logger.log(Level.WARNING, "Exception caught.", e);
             return false;
         }
     }
