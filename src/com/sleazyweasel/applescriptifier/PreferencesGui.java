@@ -32,9 +32,7 @@ public class PreferencesGui {
         contentPane.setLayout(tableLayout);
 
         contentPane.add(widgets.enablePandoraCheckbox, "1, 1");
-//        contentPane.add(widgets.enableSpotifyCheckbox, "1, 2");
         contentPane.add(widgets.enableMuseControlCheckbox, "1, 2");
-//        contentPane.add(widgets.bounceAirfoilOnPlayPause, "1, 3");
         JPanel labelHolder = new JPanel(new TableLayout(new double[][]{{FILL}, {FILL}}));
         labelHolder.add(new JLabel("(Application must be restarted for changes to take effect)"), "0,0,c,c");
         contentPane.add(labelHolder, "1,4,3,4");
@@ -49,9 +47,7 @@ public class PreferencesGui {
         initWindow();
         initCancelButton();
         initEnablePandoraCheckbox();
-//        initEnableSpotifyCheckbox();
         initEnableMuseControlCheckbox();
-//        initBounceAirfoilOnPlayPauseCheckbox();
         initSaveButton();
     }
 
@@ -74,9 +70,7 @@ public class PreferencesGui {
         widgets.saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 preferences.enablePandora(widgets.enablePandoraCheckbox.isSelected());
-//                preferences.enableSpotify(widgets.enableSpotifyCheckbox.isSelected());
                 preferences.enableMuseControl(widgets.enableMuseControlCheckbox.isSelected());
-//                preferences.setAirfoilShouldBounceOnPlayPause(widgets.bounceAirfoilOnPlayPause.isSelected());
                 try {
                     preferences.save();
                 } catch (BackingStoreException e) {
@@ -90,14 +84,6 @@ public class PreferencesGui {
     private void initEnablePandoraCheckbox() {
         widgets.enablePandoraCheckbox = new JCheckBox("Enable Pandora Streaming", preferences.isPandoraEnabled());
     }
-
-//    private void initEnableSpotifyCheckbox() {
-//        widgets.enableSpotifyCheckbox = new JCheckBox("Enable Spotify Streaming", preferences.isSpotifyEnabled());
-//    }
-
-//    private void initBounceAirfoilOnPlayPauseCheckbox() {
-//        widgets.bounceAirfoilOnPlayPause = new JCheckBox("<html>Restart Airfoil Automatically from Muse Control <b><font color=\"red\">(EXPERIMENTAL!)</font></b>", preferences.shouldBounceAirfoilOnPlayPause());
-//    }
 
     private void initWindow() {
         widgets.window = new JFrame("Preferences");

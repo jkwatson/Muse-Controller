@@ -103,7 +103,7 @@ class ScalaMain {
     context.setContextPath("/")
     server.setHandler(context)
 
-    val airfoilServlet = new AirfoilServlet(player, preferences)
+    val airfoilServlet = new AirfoilServlet(player)
     context.addServlet(new ServletHolder(airfoilServlet), "/airfoil/*")
     context.addServlet(new ServletHolder(new PandoraBoyServlet), "/pandoraboy/*")
     context.addServlet(new ServletHolder(new PulsarServlet), "/pulsar/*")
