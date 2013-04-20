@@ -4,6 +4,8 @@ import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
 import layout.TableLayout;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -64,6 +66,7 @@ public class PandoraUI implements MuseControllerFrame {
         initSleepButton();
         initVolumeUpButton();
         initVolumeDownButton();
+        initVolumeSlider();
         initImageLabel();
         initInfoLabel();
     }
@@ -340,6 +343,23 @@ public class PandoraUI implements MuseControllerFrame {
         });
     }
 
+    private void initVolumeSlider() {
+        widgets.volumeSlider = new JSlider();
+        widgets.volumeSlider.setEnabled(false);
+        widgets.volumeSlider.setMinimum(0);
+        widgets.volumeSlider.setMaximum(100);
+        widgets.volumeSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                musicPlayer.setVolume(getSliderValue());
+            }
+        });
+    }
+
+    private double getSliderValue() {
+        return widgets.volumeSlider.getValue() / 100d;
+    }
+
     private void initImageLabel() {
         widgets.imageLabel = new JLabel();
 //        widgets.imageLabel.setBorder(BorderFactory.createEtchedBorder());
@@ -368,35 +388,39 @@ public class PandoraUI implements MuseControllerFrame {
 
     private void initLayout() {
         JPanel leftButtonPanel = new JPanel(new TableLayout(new double[][]{
-                {PREFERRED, PREFERRED, PREFERRED, PREFERRED, PREFERRED, FILL, PREFERRED, PREFERRED}, {FILL, PREFERRED}
+                {PREFERRED, PREFERRED, PREFERRED, PREFERRED, PREFERRED, FILL, PREFERRED, PREFERRED}, // horizontal
+                {FILL, PREFERRED} // vertical
         }));
         leftButtonPanel.add(widgets.playPauseButton, "0,1");
         leftButtonPanel.add(widgets.nextButton, "1,1");
         leftButtonPanel.add(widgets.thumbsUpButton, "2,1");
         leftButtonPanel.add(widgets.thumbsDownButton, "3,1");
         leftButtonPanel.add(widgets.sleepButton, "4,1");
-        leftButtonPanel.add(widgets.volumeDownButton, "6,1");
-        leftButtonPanel.add(widgets.volumeUpButton, "7,1");
+//        leftButtonPanel.add(widgets.volumeDownButton, "6,1");
+//        leftButtonPanel.add(widgets.volumeUpButton, "7,1");
 
         int gap = -3;
         JPanel infoPanel = new JPanel(new TableLayout(new double[][]{
-                {130, 15, TableLayout.FILL, 30},
-                {20, gap, 20, gap, 20, gap, 20, TableLayout.FILL, 40}
+                {130, 15, TableLayout.FILL, 30}, // horizontal
+                {20, gap, 20, gap, 20, gap, 20, TableLayout.FILL, 40} // vertical
         }));
         infoPanel.add(widgets.artistLabel, "0, 0, L, t");
         infoPanel.add(widgets.infoLabel, "3, 0, R, c");
         infoPanel.add(widgets.songLabel, "0, 2, 3, 2, L, t");
         infoPanel.add(widgets.albumLabel, "0, 4, 3, 4, L, t");
         infoPanel.add(widgets.timeLabel, "0, 6, L, t");
-        infoPanel.add(leftButtonPanel, "0, 8,3,8 L, b");
+        infoPanel.add(leftButtonPanel, "0, 8, 3, 8 L, b");
 
         widgets.window.getContentPane().setLayout(new TableLayout(new double[][]{
-                {15, 130, 15, 300, 15},
-                {15, 30, 15, 130, 15}}
+                {15, 150, 15, 35, 1, 35, 1, 228, 15}, // horizontal
+                {15, 30, 10, 120, 1, 32, 15}}  // vertical
         ));
-        widgets.window.getContentPane().add(widgets.stationComboBox, "1, 1, 3, 1, L");
-        widgets.window.getContentPane().add(infoPanel, "3, 3");
-        widgets.window.getContentPane().add(widgets.imageLabel, "1, 3, L, c");
+        widgets.window.getContentPane().add(widgets.stationComboBox, "1, 1, 7, 1, L");
+        widgets.window.getContentPane().add(infoPanel, "3, 3, 7, 3");
+        widgets.window.getContentPane().add(widgets.imageLabel, "1, 3, 1, 5, L, c");
+        widgets.window.getContentPane().add(widgets.volumeDownButton, "3, 5");
+        widgets.window.getContentPane().add(widgets.volumeUpButton, "5, 5");
+        widgets.window.getContentPane().add(widgets.volumeSlider, "7, 5");
 
         widgets.window.pack();
         widgets.window.setResizable(false);
@@ -410,6 +434,12 @@ public class PandoraUI implements MuseControllerFrame {
         musicPlayer.addListener(new MusicPlayerStateChangeListener());
         musicPlayer.activate();
         musicPlayer.initializeFromSavedUserState(preferences);
+        initWidgetStateFromPlayer();
+    }
+
+    private void initWidgetStateFromPlayer() {
+        double volume = musicPlayer.getState().getVolume();
+        widgets.volumeSlider.setValue((int) (volume * 100));
     }
 
     public void close() {
@@ -429,6 +459,7 @@ public class PandoraUI implements MuseControllerFrame {
         private JButton sleepButton;
         private JButton volumeUpButton;
         private JButton volumeDownButton;
+        private JSlider volumeSlider;
         private JLabel stationNameLabel;
         private JLabel artistLabel;
         private JLabel albumLabel;
@@ -461,6 +492,8 @@ public class PandoraUI implements MuseControllerFrame {
                 widgets.volumeDownButton.setEnabled(!state.isInputRequested());
                 widgets.volumeDownMenuItem.setEnabled(!state.isInputRequested());
                 widgets.volumeUpMenuItem.setEnabled(!state.isInputRequested());
+                widgets.volumeSlider.setEnabled(!state.isInputRequested());
+                widgets.volumeSlider.setValue((int) (state.getVolume() * 100));
                 widgets.thumbsDownMenuItem.setEnabled(trackCanBeModified(state));
                 widgets.thumbsUpMenuItem.setEnabled(trackCanBeModified(state));
                 widgets.sleepMenuItem.setEnabled(trackCanBeModified(state));
@@ -519,7 +552,7 @@ public class PandoraUI implements MuseControllerFrame {
                 try {
                     URL imageUrl = new URL(albumArtUrl);
                     icon = new ImageIcon(imageUrl);
-                    Image scaledImage = icon.getImage().getScaledInstance(130, 130, Image.SCALE_SMOOTH);
+                    Image scaledImage = icon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
                     icon.setImage(scaledImage);
                 } catch (MalformedURLException e) {
                     logger.log(Level.WARNING, "Exception caught.", e);
