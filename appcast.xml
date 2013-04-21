@@ -504,5 +504,19 @@
                        length="17783841" type="application/octet-stream"
                        sparkle:dsaSignature="MC0CFQCsptljNP7gYO4qFoZWrgQIrzM9KwIUbV7RlcvSPoUzLsdE/0b69gwYgOE="/>
         </item>
+     <item>
+            <title>Version 3.10.0</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>Minor Update:</h2>
+                    <h3>Added a new volume slider at the request of Russ.</h3>
+                    <h3>Slightly increased the size of the album art.</h3>
+                ]]></description>
+            <pubDate>Sat, 04 Apr 2013 17:17:17 +0800</pubDate>
+            <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.10.0.dmg"
+                       sparkle:version="3.10.0"
+                       length="17783841" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFQDXbPryfx5sfWV78uj3Er3mzoQf3AIUIhYQX3hDw0OquoaRWc0ZG47no58="/>
+        </item>
     </channel>
 </rss>
