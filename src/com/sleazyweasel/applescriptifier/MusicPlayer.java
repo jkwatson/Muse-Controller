@@ -40,6 +40,8 @@ public interface MusicPlayer extends ApplicationSupport {
 
     void sleep();
 
+    void setVolume(double volume);
+
     public interface MusicPlayerStateChangeListener {
         void stateChanged(MusicPlayer player, MusicPlayerState state);
     }

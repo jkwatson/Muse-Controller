@@ -29,7 +29,7 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
 
     private JotifyPool jotifyPool;
     private JotifyPlayer jotifyPlayer;
-    private float volume;
+    private double volume;
     private Status playerStatus;
     private Track currentTrack;
     private int currentPlayerPosition;
@@ -234,9 +234,9 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
     }
 
     @Override
-    public void setVolume(float volume) {
+    public void setVolume(double volume) {
         this.volume = volume;
-        getJotifyPlayer().controlVolume(volume);
+        getJotifyPlayer().controlVolume((float) volume);
     }
 
     @Override
@@ -377,6 +377,7 @@ public class NativeSpotifySupportImpl implements NativeSpotifySupport, PlayerLis
     public void sleep() {
         //no-op...no support for this.
     }
+
 
     private void notifyListeners() {
         for (MusicPlayerStateChangeListener listener : listeners) {
