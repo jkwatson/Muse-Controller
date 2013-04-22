@@ -27,6 +27,4 @@ public interface NativeSpotifySupport extends MusicPlayer {
     Image image(String imageCode);
 
     URL imageUrl(String imageCode);
-
-    void setVolume(float volume);
 }

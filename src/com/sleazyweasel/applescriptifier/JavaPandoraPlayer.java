@@ -41,6 +41,21 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         applyGain();
     }
 
+    @Override
+    public void volumeDown() {
+        volume = volume - 0.1d;
+        if (volume < 0.0d) {
+            volume = 0.0d;
+        }
+        applyGain();
+    }
+
+    @Override
+    public void setVolume(double volume) {
+        this.volume = volume;
+        applyGain();
+    }
+
     private void applyGain() {
         try {
             if (player != null && player.hasGainControl()) {
@@ -50,15 +65,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             logger.log(Level.WARNING, "Exception caught: " + e.getMessage(), e.getCause());
         }
         preferences.setPandoraVolume(volume);
-    }
-
-    @Override
-    public void volumeDown() {
-        volume = volume - 0.1d;
-        if (volume < 0.0d) {
-            volume = 0.0d;
-        }
-        applyGain();
+        notifyListeners();
     }
 
     @Override
@@ -160,13 +167,13 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         }
     }
 
+
     private PandoraRadio getRadio() {
         if (pandoraRadio == null || !pandoraRadio.isAlive()) {
             activate();
         }
         return pandoraRadio;
     }
-
 
     @Override
     public MusicPlayerState getState() {
@@ -437,6 +444,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         logger.info("playlist = " + Arrays.toString(playlist));
     }
 
+
     private Song nextSongToPlay() {
         ++currentSongPointer;
         Song songToPlay = playlist[currentSongPointer];
@@ -447,7 +455,6 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
         return songToPlay;
     }
-
 
     @Override
     public void previous() {
@@ -519,8 +526,8 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
 
     @Override
     public void stateUpdated(BasicPlayerEvent event) {
-        logger.info("JavaPandoraPlayer.stateUpdated");
-        logger.info("event = " + event);
+//        logger.info("JavaPandoraPlayer.stateUpdated");
+//        logger.info("event = " + event);
         if (BasicPlayerEvent.EOM == event.getCode()) {
             next();
         }

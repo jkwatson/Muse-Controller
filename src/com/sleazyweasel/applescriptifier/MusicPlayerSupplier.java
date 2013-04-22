@@ -89,6 +89,11 @@ public class MusicPlayerSupplier implements MusicPlayer {
         getCurrentMusicPlayer().sleep();
     }
 
+    @Override
+    public void setVolume(double volume) {
+        getCurrentMusicPlayer().setVolume(volume);
+    }
+
     public boolean isPlaying() {
         return getCurrentMusicPlayer().isPlaying();
     }
