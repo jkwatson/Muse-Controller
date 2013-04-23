@@ -2,6 +2,7 @@ package com.sleazyweasel.applescriptifier;
 
 import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
 import layout.TableLayout;
+import layout.TableLayoutConstraints;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -59,6 +60,8 @@ public class PandoraUI implements MuseControllerFrame {
         initAlbumLabel();
         initSongLabel();
         initTimeLabel();
+        initDurationLabel();
+        initTimeProgressIndicator();
         initPlayPauseButton();
         initNextButton();
         initThumbsUpButton();
@@ -255,6 +258,16 @@ public class PandoraUI implements MuseControllerFrame {
         widgets.timeLabel.setForeground(new Color(102, 102, 102));
     }
 
+    private void initDurationLabel() {
+        widgets.durationLabel = new JLabel();
+        widgets.durationLabel.setFont(Font.decode("Lucida Grande-Bold-12"));
+        widgets.durationLabel.setForeground(new Color(102, 102, 102));
+    }
+
+    private void initTimeProgressIndicator() {
+        widgets.timeProgressBar = new JProgressBar(0, 10000);
+    }
+
     private void initPlayPauseButton() {
         widgets.playPauseButton = new JButton(getIcon("playpause.png"));
         setButtonDefaults(widgets.playPauseButton);
@@ -399,26 +412,36 @@ public class PandoraUI implements MuseControllerFrame {
 
         int gap = -3;
         JPanel infoPanel = new JPanel(new TableLayout(new double[][]{
-                {FILL, 15, FILL, 30}, // horizontal
-                {20, gap, 20, gap, 20, gap, 20, TableLayout.FILL, 40} // vertical
+                {35, 25, FILL, 15, FILL, 10, 35}, // horizontal
+                {20, gap, 20, gap, 20, 8} // vertical
         }));
-        infoPanel.add(widgets.artistLabel, "0, 0, L, t");
-        infoPanel.add(widgets.infoLabel, "3, 0, R, c");
-        infoPanel.add(widgets.songLabel, "0, 2, 3, 2, L, t");
-        infoPanel.add(widgets.albumLabel, "0, 4, 3, 4, L, t");
-        infoPanel.add(widgets.timeLabel, "0, 6, L, t");
-        infoPanel.add(leftButtonPanel, "0, 8, 3, 8 c, b");
+        infoPanel.add(widgets.artistLabel, "0, 0, 6, 0, L, t");
+        infoPanel.add(widgets.infoLabel, "6, 0, R, c");
+        infoPanel.add(widgets.songLabel, "0, 2, 6, 2, L, t");
+        infoPanel.add(widgets.albumLabel, "0, 4, 6, 4, L, t");
 
         widgets.window.getContentPane().setLayout(new TableLayout(new double[][]{
-                {15, 150, 15, 35, 1, 228, 1, 35, 15}, // horizontal
-                {15, 30, 10, 120, 1, 32, 15}}  // vertical
+                {15, 150, 15, 35, 5, FILL, 5, 35, 15}, // horizontal
+                {15, 30, 10, 70, 1, 12, 5, 32, 2, 32, 15}}  // vertical
         ));
         widgets.window.getContentPane().add(widgets.stationComboBox, "1, 1, 7, 1, L");
         widgets.window.getContentPane().add(infoPanel, "3, 3, 7, 3");
-        widgets.window.getContentPane().add(widgets.imageLabel, "1, 3, 1, 5, L, c");
-        widgets.window.getContentPane().add(widgets.volumeDownButton, "3, 5");
-        widgets.window.getContentPane().add(widgets.volumeSlider, "5, 5");
-        widgets.window.getContentPane().add(widgets.volumeUpButton, "7, 5");
+        widgets.window.getContentPane().add(widgets.imageLabel, "1, 3, 1, 9, L, c");
+
+
+        JPanel progressPanel = new JPanel(new TableLayout(new double[][] {
+                {FILL}, //horizontal
+                {4, 4, 4}  //vertical
+        }));
+        progressPanel.add(widgets.timeProgressBar, "0, 1");
+
+        widgets.window.getContentPane().add(widgets.timeLabel, "3, 5, l, c");
+        widgets.window.getContentPane().add(progressPanel, "5, 5");
+        widgets.window.getContentPane().add(widgets.durationLabel, "7, 5, r, c");
+        widgets.window.getContentPane().add(leftButtonPanel, "3, 7, 7, 7");
+        widgets.window.getContentPane().add(widgets.volumeDownButton, "3, 9");
+        widgets.window.getContentPane().add(widgets.volumeSlider, "5, 9");
+        widgets.window.getContentPane().add(widgets.volumeUpButton, "7, 9");
 
         widgets.window.pack();
         widgets.window.setResizable(false);
@@ -464,15 +487,17 @@ public class PandoraUI implements MuseControllerFrame {
         private JLabel songLabel;
         private JLabel imageLabel;
         private JLabel timeLabel;
+        private JLabel durationLabel;
         private JLabel infoLabel;
-        public JMenuItem volumeDownMenuItem;
-        public JMenuItem volumeUpMenuItem;
-        public JMenuItem thumbsDownMenuItem;
-        public JMenuItem thumbsUpMenuItem;
-        public JMenuItem sleepMenuItem;
-        public JMenuItem nextMenuItem;
-        public JMenuItem playPauseMenuItem;
-        public JMenu menu;
+        private JMenuItem volumeDownMenuItem;
+        private JMenuItem volumeUpMenuItem;
+        private JMenuItem thumbsDownMenuItem;
+        private JMenuItem thumbsUpMenuItem;
+        private JMenuItem sleepMenuItem;
+        private JMenuItem nextMenuItem;
+        private JMenuItem playPauseMenuItem;
+        private JMenu menu;
+        private JProgressBar timeProgressBar;
     }
 
     private static class Models {
@@ -503,7 +528,14 @@ public class PandoraUI implements MuseControllerFrame {
                 widgets.artistLabel.setText(state.getArtist());
                 widgets.albumLabel.setText(state.getAlbum());
                 widgets.songLabel.setText(state.getTitle());
-                widgets.timeLabel.setText(state.getCurrentTimeInTrack());
+                widgets.timeLabel.setText(formatTime(state.getCurrentTime()));
+                if (state.getCurrentTime() == 0 || state.getDuration() == 0) {
+                    widgets.timeProgressBar.setValue(0);
+                }
+                else {
+                    widgets.timeProgressBar.setValue((int) (((float) state.getCurrentTime() / (float) state.getDuration()) * 10000f));
+                }
+                widgets.durationLabel.setText(formatTime(state.getDuration()));
                 models.stationComboBoxModel.refreshContents();
                 models.stationComboBoxModel.setSelectedItem(state.getCurrentStation());
 
@@ -540,6 +572,19 @@ public class PandoraUI implements MuseControllerFrame {
         private boolean trackCanBeModified(MusicPlayerState state) {
             return !state.isInputRequested() && state.getTitle()!= null && !state.getTitle().isEmpty();
         }
+    }
+
+    private String formatTime(int currentTime) {
+        if (currentTime == 0) {
+            return "";
+        }
+        int minutes = currentTime / 60;
+        int seconds = currentTime % 60;
+        String secondsString = String.valueOf(seconds);
+        if (secondsString.length() == 1) {
+            secondsString = "0" + secondsString;
+        }
+        return minutes + ":" + secondsString;
     }
 
     private void setAlbumImage(final String albumArtUrl) {
