@@ -435,9 +435,9 @@ public class PandoraUI implements MuseControllerFrame {
         }));
         progressPanel.add(widgets.timeProgressBar, "0, 1");
 
-        widgets.window.getContentPane().add(widgets.timeLabel, "3, 5, l, c");
+        widgets.window.getContentPane().add(widgets.timeLabel, "3, 5, c, c");
         widgets.window.getContentPane().add(progressPanel, "5, 5");
-        widgets.window.getContentPane().add(widgets.durationLabel, "7, 5, r, c");
+        widgets.window.getContentPane().add(widgets.durationLabel, "7, 5, c, c");
         widgets.window.getContentPane().add(leftButtonPanel, "3, 7, 7, 7");
         widgets.window.getContentPane().add(widgets.volumeDownButton, "3, 9");
         widgets.window.getContentPane().add(widgets.volumeSlider, "5, 9");
