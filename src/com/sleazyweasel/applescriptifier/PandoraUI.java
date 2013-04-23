@@ -388,20 +388,18 @@ public class PandoraUI implements MuseControllerFrame {
 
     private void initLayout() {
         JPanel leftButtonPanel = new JPanel(new TableLayout(new double[][]{
-                {PREFERRED, PREFERRED, PREFERRED, PREFERRED, PREFERRED, FILL, PREFERRED, PREFERRED}, // horizontal
+                {FILL, PREFERRED, PREFERRED, PREFERRED, PREFERRED, PREFERRED, FILL, PREFERRED, PREFERRED}, // horizontal
                 {FILL, PREFERRED} // vertical
         }));
-        leftButtonPanel.add(widgets.playPauseButton, "0,1");
-        leftButtonPanel.add(widgets.nextButton, "1,1");
-        leftButtonPanel.add(widgets.thumbsUpButton, "2,1");
-        leftButtonPanel.add(widgets.thumbsDownButton, "3,1");
-        leftButtonPanel.add(widgets.sleepButton, "4,1");
-//        leftButtonPanel.add(widgets.volumeDownButton, "6,1");
-//        leftButtonPanel.add(widgets.volumeUpButton, "7,1");
+        leftButtonPanel.add(widgets.playPauseButton, "1,1");
+        leftButtonPanel.add(widgets.nextButton, "2,1");
+        leftButtonPanel.add(widgets.thumbsUpButton, "3,1");
+        leftButtonPanel.add(widgets.thumbsDownButton, "4,1");
+        leftButtonPanel.add(widgets.sleepButton, "5,1");
 
         int gap = -3;
         JPanel infoPanel = new JPanel(new TableLayout(new double[][]{
-                {130, 15, TableLayout.FILL, 30}, // horizontal
+                {FILL, 15, FILL, 30}, // horizontal
                 {20, gap, 20, gap, 20, gap, 20, TableLayout.FILL, 40} // vertical
         }));
         infoPanel.add(widgets.artistLabel, "0, 0, L, t");
@@ -409,18 +407,18 @@ public class PandoraUI implements MuseControllerFrame {
         infoPanel.add(widgets.songLabel, "0, 2, 3, 2, L, t");
         infoPanel.add(widgets.albumLabel, "0, 4, 3, 4, L, t");
         infoPanel.add(widgets.timeLabel, "0, 6, L, t");
-        infoPanel.add(leftButtonPanel, "0, 8, 3, 8 L, b");
+        infoPanel.add(leftButtonPanel, "0, 8, 3, 8 c, b");
 
         widgets.window.getContentPane().setLayout(new TableLayout(new double[][]{
-                {15, 150, 15, 35, 1, 35, 1, 228, 15}, // horizontal
+                {15, 150, 15, 35, 1, 228, 1, 35, 15}, // horizontal
                 {15, 30, 10, 120, 1, 32, 15}}  // vertical
         ));
         widgets.window.getContentPane().add(widgets.stationComboBox, "1, 1, 7, 1, L");
         widgets.window.getContentPane().add(infoPanel, "3, 3, 7, 3");
         widgets.window.getContentPane().add(widgets.imageLabel, "1, 3, 1, 5, L, c");
         widgets.window.getContentPane().add(widgets.volumeDownButton, "3, 5");
-        widgets.window.getContentPane().add(widgets.volumeUpButton, "5, 5");
-        widgets.window.getContentPane().add(widgets.volumeSlider, "7, 5");
+        widgets.window.getContentPane().add(widgets.volumeSlider, "5, 5");
+        widgets.window.getContentPane().add(widgets.volumeUpButton, "7, 5");
 
         widgets.window.pack();
         widgets.window.setResizable(false);
