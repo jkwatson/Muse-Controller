@@ -106,20 +106,32 @@ public class MusicPlayerState {
         return null;
     }
 
+    public int getCurrentTime() {
+        if (currentTimeInTrack != null && currentTimeInTrack.length() > 0) {
+            String[] parts = currentTimeInTrack.split("/");
+            String totalTimePart = parts[0];
+            return parseTime(totalTimePart);
+        }
+        return 0;
+    }
+
     public int getDuration() {
         if (currentTimeInTrack != null && currentTimeInTrack.length() > 0) {
             String[] parts = currentTimeInTrack.split("/");
             if (parts.length > 1) {
                 String totalTimePart = parts[1];
-                String[] minutesAndSeconds = totalTimePart.split(":");
-                int minutes = Integer.parseInt(minutesAndSeconds[0]);
-                int seconds = Integer.parseInt(minutesAndSeconds[1]);
-                return minutes * 60 + seconds;
+                return parseTime(totalTimePart);
             }
-        } else {
-            return 0;
         }
         return 0;
+    }
+
+    //todo this is ridiculous...why are we storying the formatted data, instead of the ints?
+    private int parseTime(String totalTimePart) {
+        String[] minutesAndSeconds = totalTimePart.split(":");
+        int minutes = Integer.parseInt(minutesAndSeconds[0]);
+        int seconds = Integer.parseInt(minutesAndSeconds[1]);
+        return minutes * 60 + seconds;
     }
 
     public double getVolume() {

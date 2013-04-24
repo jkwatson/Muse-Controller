@@ -504,7 +504,7 @@
                        length="17783841" type="application/octet-stream"
                        sparkle:dsaSignature="MC0CFQCsptljNP7gYO4qFoZWrgQIrzM9KwIUbV7RlcvSPoUzLsdE/0b69gwYgOE="/>
         </item>
-     <item>
+        <item>
             <title>Version 3.10.0</title>
             <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
             <description><![CDATA[
@@ -517,6 +517,21 @@
                        sparkle:version="3.10.0"
                        length="17783841" type="application/octet-stream"
                        sparkle:dsaSignature="MC0CFQDXbPryfx5sfWV78uj3Er3mzoQf3AIUIhYQX3hDw0OquoaRWc0ZG47no58="/>
+        </item>
+        <item>
+            <title>Version 3.11.0</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>Update:</h2>
+                    <h3>Rearranged the Pandora UI a bit.</h3>
+                    <h3>Added a progress meter for the playing track.</h3>
+                    <h3>Added the total track time to the display.</h3>
+                ]]></description>
+            <pubDate>Tue, 23 Apr 2013 21:21:21 +0800</pubDate>
+            <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.11.0.dmg"
+                       sparkle:version="3.11.0"
+                       length="17783841" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFQDg5zj4ZS53TFxowfbRz203NbkmYQIUQJOXOhADY5kEBxEJyOVkglDuZho="/>
         </item>
     </channel>
 </rss>

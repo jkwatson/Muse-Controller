@@ -7,6 +7,8 @@ import com.sleazyweasel.pandora.Song;
 import com.sleazyweasel.pandora.Station;
 import javazoom.jlgui.basicplayer.*;
 
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioSystem;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -14,6 +16,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
+
+    public static class MusePlayer extends BasicPlayer {
+    }
+
+
     private static final Logger logger = Logger.getLogger(JavaPandoraPlayer.class.getName());
     private PandoraRadio pandoraRadio;
     private List<Station> stations;
@@ -21,9 +28,10 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     private Song song;
     private Song[] playlist;
     private int currentSongPointer = -1;
-    private BasicPlayer player;
+    private MusePlayer player;
     private List<MusicPlayerStateChangeListener> listeners = new ArrayList<MusicPlayerStateChangeListener>();
     private int currentTime;
+    private long totalTime;
     private double volume = 0.5d;
     private MusicPlayerInputType currentInputType = MusicPlayerInputType.CHOOSE_STATION;
     private final MuseControllerPreferences preferences;
@@ -109,7 +117,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         if (pandoraRadio != null && player != null) {
             return;
         }
-        player = new BasicPlayer();
+        player = new MusePlayer();
         player.addBasicPlayerListener(this);
         pandoraRadio = new JsonPandoraRadio();
         logger.info("player.getStatus() = " + player.getStatus());
@@ -207,14 +215,18 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             albumArtUrl = song.getAlbumCoverUrl();
             detailUrl = song.getAlbumDetailURL();
             //todo figure out how to get total track time.
-            currentTimeInTrack = formatCurrentTime();
+            currentTimeInTrack = formatTime(currentTime);
+            if (totalTime > 0) {
+                String totalTimeAsString = formatTime((int) (totalTime / 1000));
+                currentTimeInTrack += "/" + totalTimeAsString;
+            }
         }
 
         boolean isPlaying = isPlaying();
         return new MusicPlayerState(currentSongIsLoved, title, artist, stationName, album, currentInputType, stationData, albumArtUrl, currentTimeInTrack, isPlaying, detailUrl, volume);
     }
 
-    private String formatCurrentTime() {
+    private String formatTime(int currentTime) {
         int minutes = currentTime / 60;
         int seconds = currentTime % 60;
         String secondsString = String.valueOf(seconds);
@@ -262,7 +274,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         try {
             final URL url = new URL(song.getAudioUrl());
             final InputStream inputStream = url.openStream();
-            File tempFile = File.createTempFile("pandora", ".mp3");
+            final File tempFile = File.createTempFile("pandora", ".mp3");
             tempFile.deleteOnExit();
             final OutputStream bigBuffer = new FileOutputStream(tempFile);
             final Object monitor = new Object();
@@ -286,6 +298,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
                                 }
                             }
                         }
+
                     } catch (IOException e) {
                         logger.log(Level.WARNING, "Exception caught.", e);
                     } finally {
@@ -295,6 +308,12 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
                             } catch (IOException e) {
                                 logger.log(Level.WARNING, "Exception caught.", e);
                             }
+                        }
+                        try {
+                            AudioFileFormat format = AudioSystem.getAudioFileFormat(tempFile);
+                            totalTime = getTimeLengthEstimation(format.properties());
+                        } catch (Exception e) {
+                            logger.log(Level.INFO, "skipping audio file properties due to error.", e);
                         }
                     }
                 }
@@ -431,6 +450,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     @Override
     public void next() {
         currentTime = 0;
+        totalTime = 0;
         currentFrame = null;
         frameDupeCount = 0;
         if (station != null && playlist != null && playlist.length > 1) {
@@ -464,22 +484,28 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     @Override
     public void thumbsUp() {
         validateRadioState();
-        pandoraRadio.rate(song, true);
-        song = new Song(song, 1);
-        notifyListeners();
+        if (song != null) {
+            pandoraRadio.rate(song, true);
+            song = new Song(song, 1);
+            notifyListeners();
+        }
     }
 
     @Override
     public void thumbsDown() {
         validateRadioState();
-        pandoraRadio.rate(song, false);
+        if (song != null) {
+            pandoraRadio.rate(song, false);
+        }
         next();
     }
 
     @Override
     public void sleep() {
         validateRadioState();
-        pandoraRadio.tired(song);
+        if (song != null) {
+            pandoraRadio.tired(song);
+        }
         next();
     }
 
@@ -505,8 +531,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
                 } catch (BasicPlayerException e) {
                     logger.log(Level.WARNING, "Exception caught.", e);
                 }
-                player = null;
-                player = new BasicPlayer();
+                player = new MusePlayer();
                 player.addBasicPlayerListener(this);
                 next();
             }
@@ -523,6 +548,57 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             notifyListeners();
         }
     }
+
+    public long getTimeLengthEstimation(Map properties)
+    {
+        long milliseconds = -1;
+        int byteslength = -1;
+        if (properties != null)
+        {
+            if (properties.containsKey("audio.length.bytes"))
+            {
+                byteslength = (Integer) properties.get("audio.length.bytes");
+            }
+            if (properties.containsKey("duration"))
+            {
+                milliseconds = (int) (((Long) properties.get("duration")).longValue()) / 1000;
+            }
+            else
+            {
+                // Try to compute duration
+                int bitspersample = -1;
+                int channels = -1;
+                float samplerate = -1.0f;
+                int framesize = -1;
+                if (properties.containsKey("audio.samplesize.bits"))
+                {
+                    bitspersample = (Integer) properties.get("audio.samplesize.bits");
+                }
+                if (properties.containsKey("audio.channels"))
+                {
+                    channels = (Integer) properties.get("audio.channels");
+                }
+                if (properties.containsKey("audio.samplerate.hz"))
+                {
+                    samplerate = (Float) properties.get("audio.samplerate.hz");
+                }
+                if (properties.containsKey("audio.framesize.bytes"))
+                {
+                    framesize = (Integer) properties.get("audio.framesize.bytes");
+                }
+                if (bitspersample > 0)
+                {
+                    milliseconds = (int) (1000.0f * byteslength / (samplerate * channels * (bitspersample / 8)));
+                }
+                else
+                {
+                    milliseconds = (int) (1000.0f * byteslength / (samplerate * framesize));
+                }
+            }
+        }
+        return milliseconds;
+    }
+
 
     @Override
     public void stateUpdated(BasicPlayerEvent event) {
