@@ -7,7 +7,7 @@ import com.apple.eawt.AppEvent.PreferencesEvent
 import scala.swing.event.ButtonClicked
 import swing._
 
-class GuiMain extends MuseControllerMain {
+class GuiMain extends MuseControllerMain with SpotifyPasswordUIModule {
   private var activeFrame: MuseControllerFrame = null
 
   def setActiveFrame(frame: MuseControllerFrame) {
@@ -40,7 +40,6 @@ class GuiMain extends MuseControllerMain {
   }
 
   def startupGui(playerSupplier: MusicPlayerSupplier, preferences: MuseControllerPreferences, spotifyPlayer: NativeSpotifySupport, pandoraPlayer: MusicPlayer) {
-
     Swing.onEDT({
       val menubar = new MenuBar
 
