@@ -198,26 +198,11 @@ Zip of the Sparkle framework and the public key) -->
         </classpath>
     </taskdef>
 
-    <target name="compile.module.applescriptifier.production.scala"
-            depends="compile.module.applescriptifier.production">
+    <target name="compile.module.applescriptifier.production.scala">
         <mkdir dir="${applescriptifier.output.dir}"/>
         <scalac srcref="applescriptifier.module.sourcepath"
                 destdir="${applescriptifier.output.dir}"
                 classpathref="applescriptifier.module.production.classpath"/>
-    </target>
-
-    <target name="compile.module.applescriptifier.production"
-            description="Compile module applescriptifier; production classes">
-        <mkdir dir="${applescriptifier.output.dir}"/>
-        <javac destdir="${applescriptifier.output.dir}" debug="${compiler.debug}" target="1.6" srcdir="src"
-               nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
-            <compilerarg line="${compiler.args.applescriptifier}"/>
-            <!--<bootclasspath refid="applescriptifier.module.bootclasspath"/>-->
-            <classpath refid="applescriptifier.module.production.classpath"/>
-            <src refid="applescriptifier.module.sourcepath"/>
-            <patternset refid="excluded.from.compilation.applescriptifier"/>
-        </javac>
-
         <copy todir="${applescriptifier.output.dir}">
             <fileset dir="${module.applescriptifier.basedir}/src">
                 <patternset refid="compiler.resources"/>
@@ -226,7 +211,27 @@ Zip of the Sparkle framework and the public key) -->
         </copy>
     </target>
 
-    <target name="compile.module.applescriptifier.tests" depends="compile.module.applescriptifier.production"
+    <!--<target name="compile.module.applescriptifier.production" depends="compile.module.applescriptifier.production.scala"-->
+    <!--description="Compile module applescriptifier; production classes">-->
+    <!--<mkdir dir="${applescriptifier.output.dir}"/>-->
+    <!--<javac destdir="${applescriptifier.output.dir}" debug="${compiler.debug}" target="1.6" srcdir="src"-->
+    <!--nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">-->
+    <!--<compilerarg line="${compiler.args.applescriptifier}"/>-->
+    <!--&lt;!&ndash;<bootclasspath refid="applescriptifier.module.bootclasspath"/>&ndash;&gt;-->
+    <!--<classpath refid="applescriptifier.module.production.classpath"/>-->
+    <!--<src refid="applescriptifier.module.sourcepath"/>-->
+    <!--<patternset refid="excluded.from.compilation.applescriptifier"/>-->
+    <!--</javac>-->
+
+    <!--<copy todir="${applescriptifier.output.dir}">-->
+    <!--<fileset dir="${module.applescriptifier.basedir}/src">-->
+    <!--<patternset refid="compiler.resources"/>-->
+    <!--<type type="file"/>-->
+    <!--</fileset>-->
+    <!--</copy>-->
+    <!--</target>-->
+
+    <target name="compile.module.applescriptifier.tests" depends="compile.module.applescriptifier.production.scala"
             description="compile module applescriptifier; test classes" unless="skip.tests"/>
 
     <target name="clean.module.applescriptifier" description="cleanup module">

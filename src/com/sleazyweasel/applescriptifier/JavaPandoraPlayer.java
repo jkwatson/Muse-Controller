@@ -246,7 +246,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         if (station != null) {
             preferences.setPandoraStationId(station.getId());
         } else {
-            preferences.setPandoraStationId(null);
+            preferences.setPandoraStationId(-1);
         }
         notifyListeners();
     }
@@ -415,17 +415,17 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     public void initializeFromSavedUserState(MuseControllerPreferences preferences) {
         Long stationId = preferences.getPreviousPandoraStationId();
         Double volume = preferences.getPreviousPandoraVolume();
-        if (volume != null) {
+        if (volume != -1) {
             this.volume = volume;
         }
-        if (stationId != null) {
+        if (stationId != -1) {
             station = pandoraRadio.getStationById(stationId);
             if (station != null) {
                 currentInputType = MusicPlayerInputType.NONE;
                 refreshPlaylist();
                 notifyListeners();
             } else {
-                preferences.setPandoraStationId(null);
+                preferences.setPandoraStationId(-1);
             }
         }
     }
@@ -549,49 +549,36 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         }
     }
 
-    public long getTimeLengthEstimation(Map properties)
-    {
+    public long getTimeLengthEstimation(Map properties) {
         long milliseconds = -1;
         int byteslength = -1;
-        if (properties != null)
-        {
-            if (properties.containsKey("audio.length.bytes"))
-            {
+        if (properties != null) {
+            if (properties.containsKey("audio.length.bytes")) {
                 byteslength = (Integer) properties.get("audio.length.bytes");
             }
-            if (properties.containsKey("duration"))
-            {
+            if (properties.containsKey("duration")) {
                 milliseconds = (int) (((Long) properties.get("duration")).longValue()) / 1000;
-            }
-            else
-            {
+            } else {
                 // Try to compute duration
                 int bitspersample = -1;
                 int channels = -1;
                 float samplerate = -1.0f;
                 int framesize = -1;
-                if (properties.containsKey("audio.samplesize.bits"))
-                {
+                if (properties.containsKey("audio.samplesize.bits")) {
                     bitspersample = (Integer) properties.get("audio.samplesize.bits");
                 }
-                if (properties.containsKey("audio.channels"))
-                {
+                if (properties.containsKey("audio.channels")) {
                     channels = (Integer) properties.get("audio.channels");
                 }
-                if (properties.containsKey("audio.samplerate.hz"))
-                {
+                if (properties.containsKey("audio.samplerate.hz")) {
                     samplerate = (Float) properties.get("audio.samplerate.hz");
                 }
-                if (properties.containsKey("audio.framesize.bytes"))
-                {
+                if (properties.containsKey("audio.framesize.bytes")) {
                     framesize = (Integer) properties.get("audio.framesize.bytes");
                 }
-                if (bitspersample > 0)
-                {
+                if (bitspersample > 0) {
                     milliseconds = (int) (1000.0f * byteslength / (samplerate * channels * (bitspersample / 8)));
-                }
-                else
-                {
+                } else {
                     milliseconds = (int) (1000.0f * byteslength / (samplerate * framesize));
                 }
             }
