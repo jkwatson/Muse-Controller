@@ -32,46 +32,37 @@ public class PandoraBoyServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
         if (pathInfo.startsWith("/status")) {
             appendStatus(response);
-        }
-        else if (pathInfo.startsWith("/setStation")) {
+        } else if (pathInfo.startsWith("/setStation")) {
             String station = req.getParameter("station");
             setStation(station);
             appendStatus(response);
-        }
-        else if (pathInfo.startsWith("/playpause")) {
+        } else if (pathInfo.startsWith("/playpause")) {
             pandoraBoySupport.playPause();
             appendStatus(response);
-        }
-        else if (pathInfo.startsWith("/next")) {
+        } else if (pathInfo.startsWith("/next")) {
             pandoraBoySupport.next();
             appendStatus(response);
-        }
-        else if (pathInfo.startsWith("/thumbsUp")) {
+        } else if (pathInfo.startsWith("/thumbsUp")) {
             pandoraBoySupport.thumbsUp();
             appendStatus(response);
-        }
-        else if (pathInfo.startsWith("/thumbsDown")) {
+        } else if (pathInfo.startsWith("/thumbsDown")) {
             pandoraBoySupport.thumbsDown();
             appendStatus(response);
-        }
-        else if (pathInfo.startsWith("/create")) {
+        } else if (pathInfo.startsWith("/create")) {
             String stationName = req.getParameter("station");
-            appleScriptTemplate.execute(Application.PANDORABOY, "create station \"" + stationName + "\"");
-        }
-        else if (pathInfo.startsWith("/reset")) {
-            appleScriptTemplate.executeKeyStrokeWithCommandKey(Application.PANDORABOY, "r");
-        }
-        else {
+            appleScriptTemplate.execute(Application.PANDORABOY(), "create station \"" + stationName + "\"");
+        } else if (pathInfo.startsWith("/reset")) {
+            appleScriptTemplate.executeKeyStrokeWithCommandKey(Application.PANDORABOY(), "r");
+        } else {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
     private void setStation(String station) {
         if (QUICK_MIX_STATION_CODE.equals(station)) {
-            appleScriptTemplate.execute(Application.PANDORABOY, "set current station to (quickmix station)");
-        }
-        else {
-            appleScriptTemplate.execute(Application.PANDORABOY, "set current station to item 1 of (every station whose name is \"" + station+ "\")");
+            appleScriptTemplate.execute(Application.PANDORABOY(), "set current station to (quickmix station)");
+        } else {
+            appleScriptTemplate.execute(Application.PANDORABOY(), "set current station to item 1 of (every station whose name is \"" + station + "\")");
         }
     }
 
@@ -79,12 +70,13 @@ public class PandoraBoyServlet extends HttpServlet {
         Map<String, Object> status = new HashMap<String, Object>();
         Object currentStation;
         try {
-            currentStation = appleScriptTemplate.execute(Application.PANDORABOY, "get name of current station");
-            if (((String)currentStation).contains(QUICK_MIX_STATION_CODE)) {
+            currentStation = appleScriptTemplate.execute(Application.PANDORABOY(), "get name of current station");
+            if (((String) currentStation).contains(QUICK_MIX_STATION_CODE)) {
                 currentStation = QUICK_MIX_STATION_CODE;
             }
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Exception caught.", e);;
+            logger.log(Level.WARNING, "Exception caught.", e);
+            ;
             currentStation = "Unable to get Station from PandoraBoy";
         }
         status.put("currentStation", currentStation);
@@ -92,16 +84,17 @@ public class PandoraBoyServlet extends HttpServlet {
 
         List<String> currentTrack;
         try {
-            currentTrack = appleScriptTemplate.execute(Application.PANDORABOY, "get [name of current track, artist of current track]");
+            currentTrack = appleScriptTemplate.execute(Application.PANDORABOY(), "get [name of current track, artist of current track]");
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Exception caught.", e);;
+            logger.log(Level.WARNING, "Exception caught.", e);
+            ;
             currentTrack = Arrays.asList("", "");
         }
         status.put("currentTrack", currentTrack);
-        LinkedHashSet<String> stations = new LinkedHashSet<String>(appleScriptTemplate.<List<String>>execute(Application.PANDORABOY, "get name of every station"));
+        LinkedHashSet<String> stations = new LinkedHashSet<String>(appleScriptTemplate.<List<String>>execute(Application.PANDORABOY(), "get name of every station"));
         stations.add(QUICK_MIX_STATION_CODE);
         status.put("stations", stations);
-        String uglyStuff = appleScriptTemplate.execute(Application.PANDORABOY, "get player state");
+        String uglyStuff = appleScriptTemplate.execute(Application.PANDORABOY(), "get player state");
         status.put("status", uglyStuff.contains("play") ? "playing" : "stopped");
         status.put("version", ControlServlet.CURRENT_VERSION);
         String json = new Gson().toJson(status);

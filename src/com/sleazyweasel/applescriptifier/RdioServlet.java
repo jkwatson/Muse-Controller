@@ -52,7 +52,7 @@ public class RdioServlet extends HttpServlet {
                 Thread.interrupted();
                 return;
             }
-            appleScriptTemplate.execute(Application.RDIO, imageCommand);
+            appleScriptTemplate.execute(Application.RDIO(), imageCommand);
             BufferedImage image = ImageIO.read(new File("/tmp/rdio.tiff"));
             response.setContentType("image/png");
             ImageIO.write(image, "PNG", response.getOutputStream());
@@ -72,7 +72,7 @@ public class RdioServlet extends HttpServlet {
         Map<String, Object> currentTrack = new HashMap<String, Object>();
         Map<String, Object> playerState = new HashMap<String, Object>();
         try {
-            List<List<Object>> data = appleScriptTemplate.execute(Application.RDIO, "[get [name, artist, album, duration, rdio url] of current track, get [player position, sound volume]]");
+            List<List<Object>> data = appleScriptTemplate.execute(Application.RDIO(), "[get [name, artist, album, duration, rdio url] of current track, get [player position, sound volume]]");
             List<Object> trackData = data.get(0);
             currentTrack.put("title", trackData.get(0));
             currentTrack.put("artist", trackData.get(1));
@@ -86,8 +86,9 @@ public class RdioServlet extends HttpServlet {
             playerState.put("volume", playerData.get(1));
 
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Exception caught.", e);;
-            List<List<Object>> data = appleScriptTemplate.execute(Application.RDIO, "[get [player position, sound volume]]");
+            logger.log(Level.WARNING, "Exception caught.", e);
+            ;
+            List<List<Object>> data = appleScriptTemplate.execute(Application.RDIO(), "[get [player position, sound volume]]");
             currentTrack.put("title", "");
             currentTrack.put("artist", "");
             currentTrack.put("album", "");
@@ -99,7 +100,7 @@ public class RdioServlet extends HttpServlet {
             playerState.put("volume", playerData.get(1));
         }
         try {
-            String running = appleScriptTemplate.execute(Application.RDIO, "get player state as string");
+            String running = appleScriptTemplate.execute(Application.RDIO(), "get player state as string");
             playerState.put("playing", "playing".equalsIgnoreCase(running) ? "YES" : "NO");
         } catch (Exception e) {
             playerState.put("playing", "NO");

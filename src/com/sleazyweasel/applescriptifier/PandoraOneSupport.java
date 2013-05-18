@@ -8,21 +8,21 @@ public class PandoraOneSupport implements ApplicationSupport {
     }
 
     public void playPause() {
-        appleScriptTemplate.executeKeyCode(Application.PANDORAONE, AppleScriptTemplate.SPACE);
+        appleScriptTemplate.executeKeyCode(Application.PANDORAONE(), AppleScriptTemplate.SPACE);
     }
 
     public void next() {
-        appleScriptTemplate.executeKeyCode(Application.PANDORAONE, AppleScriptTemplate.RIGHT_ARROW);
+        appleScriptTemplate.executeKeyCode(Application.PANDORAONE(), AppleScriptTemplate.RIGHT_ARROW);
     }
 
     public void previous() {
     }
 
     public void thumbsUp() {
-        appleScriptTemplate.executeKeyStroke(Application.PANDORAONE, AppleScriptTemplate.PLUS);
+        appleScriptTemplate.executeKeyStroke(Application.PANDORAONE(), AppleScriptTemplate.PLUS);
     }
 
     public void thumbsDown() {
-        appleScriptTemplate.executeKeyStroke(Application.PANDORAONE, AppleScriptTemplate.MINUS);
+        appleScriptTemplate.executeKeyStroke(Application.PANDORAONE(), AppleScriptTemplate.MINUS);
     }
 }

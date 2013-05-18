@@ -12,15 +12,15 @@ public class SpotifySupport implements ApplicationSupport {
     }
 
     public void playPause() {
-        appleScriptTemplate.execute(Application.SPOTIFY, "playpause");
+        appleScriptTemplate.execute(Application.SPOTIFY(), "playpause");
     }
 
     public void next() {
-        appleScriptTemplate.execute(Application.SPOTIFY, "next track");
+        appleScriptTemplate.execute(Application.SPOTIFY(), "next track");
     }
 
     public void previous() {
-        appleScriptTemplate.execute(Application.SPOTIFY, "previous track");
+        appleScriptTemplate.execute(Application.SPOTIFY(), "previous track");
     }
 
     public void thumbsUp() {
@@ -30,18 +30,18 @@ public class SpotifySupport implements ApplicationSupport {
     }
 
     public Map<String, Object> getStatus() {
-        boolean isRunning = appleScriptTemplate.isRunning(Application.SPOTIFY);
+        boolean isRunning = appleScriptTemplate.isRunning(Application.SPOTIFY());
         Map<String, Object> playerState = new HashMap<String, Object>();
         Map<String, Object> currentTrack = new HashMap<String, Object>();
 
         if (isRunning) {
-            List results = appleScriptTemplate.execute(Application.SPOTIFY, "[get player state as string, get sound volume, get player position]");
+            List results = appleScriptTemplate.execute(Application.SPOTIFY(), "[get player state as string, get sound volume, get player position]");
             playerState.put("playing", "playing".equals(results.get(0)) ? "YES" : "NO");
             playerState.put("volume", results.get(1));
             playerState.put("playerPosition", results.get(2));
 
             try {
-                List songInfo = appleScriptTemplate.execute(Application.SPOTIFY, "get [name, artist, album, duration, spotify url] of current track");
+                List songInfo = appleScriptTemplate.execute(Application.SPOTIFY(), "get [name, artist, album, duration, spotify url] of current track");
                 currentTrack.put("title", songInfo.get(0));
                 currentTrack.put("artist", songInfo.get(1));
                 currentTrack.put("album", songInfo.get(2));
@@ -65,6 +65,6 @@ public class SpotifySupport implements ApplicationSupport {
     }
 
     public void setVolume(Integer volume) {
-        appleScriptTemplate.execute(Application.SPOTIFY, "set sound volume to " + volume);
+        appleScriptTemplate.execute(Application.SPOTIFY(), "set sound volume to " + volume);
     }
 }
