@@ -11,8 +11,6 @@ public class ApplicationTest {
 
     @Test
     public void testValues() throws Exception {
-        new Application("", "", "", true, true, true, true, true, true) {
-        };
         List<Application> values = Application.values();
         assertNotNull(values);
         assertFalse(values.isEmpty());
