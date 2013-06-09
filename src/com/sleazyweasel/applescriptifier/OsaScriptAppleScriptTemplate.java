@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
     private static final Logger logger = Logger.getLogger(OsaScriptAppleScriptTemplate.class.getName());
+
     private <T> T execute(String... commands) {
         List<String> osaCommands = new ArrayList<String>();
         osaCommands.add("osascript");
@@ -42,7 +43,7 @@ public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
 
     public <T> T execute(Application applicationName, String... scriptLines) {
         List<String> commands = new ArrayList<String>();
-        commands.add("tell application \"" + applicationName.getName() + "\"");
+        commands.add("tell application \"" + applicationName.name() + "\"");
         buildCommand(commands, scriptLines);
         commands.add("end tell");
         return (T) execute(commands.toArray(new String[commands.size()]));
@@ -57,7 +58,7 @@ public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
 
     public boolean isRunning(Application application) {
         String[] isAirfoilRunningScript = new String[]{"tell application \"System Events\"",
-                " set runningState to count (every process whose name is \"" + application.getName() + "\")",
+                " set runningState to count (every process whose name is \"" + application.name() + "\")",
                 "end tell"};
         String numberOfProcesses = execute(isAirfoilRunningScript);
         logger.info("numberOfProcesses = " + numberOfProcesses);
@@ -65,13 +66,13 @@ public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
     }
 
     public void startApplication(Application application) {
-        String startScript = "tell application \"" + application.getName() + "\" to activate";
+        String startScript = "tell application \"" + application.name() + "\" to activate";
         execute(startScript);
     }
 
     public boolean applicationExists(Application application) {
         //this is a bad, bad hack. fix it.
-        if (application.equals(Application.MUSECONTROLLER)) {
+        if (application.equals(Application.MUSECONTROLLER())) {
             String userHome = System.getProperty("user.home");
             File pianoBarConfigDirectory = new File(userHome + "/.config/pianobar");
             if (!pianoBarConfigDirectory.isDirectory()) {
@@ -80,7 +81,7 @@ public class OsaScriptAppleScriptTemplate implements AppleScriptTemplate {
         }
         String[] query = new String[]{"try",
                 "  tell application \"Finder\"",
-                "    return application file id \"" + application.getIdentifier() + "\"",
+                "    return application file id \"" + application.identifier() + "\"",
                 "  end tell",
                 "on error err_msg number err_num",
                 "  return null",

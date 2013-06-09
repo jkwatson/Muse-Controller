@@ -42,7 +42,7 @@ public class SpotifyServlet extends HttpServlet {
         } else if (pathInfo.startsWith("/artwork")) {
             File tempFile = File.createTempFile("spotify", ".tiff");
             tempFile.deleteOnExit();
-            appleScriptTemplate.execute(Application.SPOTIFY, getImageCommand(tempFile));
+            appleScriptTemplate.execute(Application.SPOTIFY(), getImageCommand(tempFile));
             BufferedImage image = ImageIO.read(tempFile);
             response.setContentType("image/png");
             ImageIO.write(image, "PNG", response.getOutputStream());

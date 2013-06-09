@@ -50,20 +50,21 @@ public class ControlServlet extends HttpServlet {
     }
 
     private synchronized void updateApplications() {
-        for (Application application : Application.values()) {
-            if (applications.contains(application.getDisplayName()) || !application.hasFullSupport()) {
+        List<Application> possibleApplications = Application.values();
+        for (Application application : possibleApplications) {
+            if (applications.contains(application.displayName()) || !application.fullSupport()) {
                 continue;
             }
             logger.info("checking: " + application);
-            if (Application.MUSECONTROLLER.equals(application)) {
+            if (Application.MUSECONTROLLER().equals(application)) {
                 if (musicPlayer.isConfigured()) {
                     logger.info("adding: " + application);
-                    applications.add(Application.MUSECONTROLLER.getDisplayName());
+                    applications.add(Application.MUSECONTROLLER().displayName());
                 }
             } else {
                 if (appleScriptTemplate.applicationExists(application)) {
                     logger.info("adding: " + application);
-                    applications.add(application.getDisplayName());
+                    applications.add(application.displayName());
                 }
             }
         }

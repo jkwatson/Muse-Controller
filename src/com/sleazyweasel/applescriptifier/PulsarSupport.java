@@ -8,15 +8,15 @@ public class PulsarSupport implements ApplicationSupport {
     }
 
     public void playPause() {
-        appleScriptTemplate.execute(Application.PULSAR, "playpause");
+        appleScriptTemplate.execute(Application.PULSAR(), "playpause");
     }
 
     public void next() {
-        appleScriptTemplate.execute(Application.PULSAR, "next");
+        appleScriptTemplate.execute(Application.PULSAR(), "next");
     }
 
     public void previous() {
-        appleScriptTemplate.execute(Application.PULSAR, "previous");
+        appleScriptTemplate.execute(Application.PULSAR(), "previous");
     }
 
     public void thumbsUp() {
