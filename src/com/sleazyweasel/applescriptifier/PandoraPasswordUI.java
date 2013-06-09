@@ -56,19 +56,12 @@ public class PandoraPasswordUI implements MuseControllerFrame {
 
     private void initOkButton() {
         widgets.okButton = new JButton("OK");
-        widgets.okButton.addActionListener(new SetupMusicPlayerConfigAction(widgets.window, musicPlayer, widgets.usernameField, widgets.passwordField, preferences, mainMenuBar, pandoraMenuItem, main));
+        widgets.okButton.addActionListener(new SetupMusicPlayerConfigAction(widgets.window, musicPlayer, widgets.usernameField, widgets.passwordField, preferences, mainMenuBar, pandoraMenuItem, widgets.neverShowAgainCheckbox, main));
     }
 
     private void initCancelButton() {
         widgets.cancelButton = new JButton("Cancel");
-        widgets.cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                widgets.window.dispose();
-                if (widgets.neverShowAgainCheckbox.isSelected()) {
-                    preferences.enablePandora(false);
-                }
-            }
-        });
+        widgets.cancelButton.addActionListener(new DisablePandoraAction());
     }
 
     public JFrame getWindow() {
@@ -108,4 +101,12 @@ public class PandoraPasswordUI implements MuseControllerFrame {
         private JButton cancelButton;
     }
 
+    private class DisablePandoraAction implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            widgets.window.dispose();
+            if (widgets.neverShowAgainCheckbox.isSelected()) {
+                preferences.enablePandora(false);
+            }
+        }
+    }
 }

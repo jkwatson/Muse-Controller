@@ -13,12 +13,20 @@ object SetupMusicPlayerConfigAction {
 }
 
 class SetupMusicPlayerConfigAction(val parent: JFrame, val musicPlayer: MusicPlayer, val usernameField: JTextField,
-                                   val passwordField: JPasswordField, val preferences: MuseControllerPreferences, val mainMenuBar: JMenuBar, val pandoraMenuItem: JMenuItem, val main: MuseControllerMain)
+                                   val passwordField: JPasswordField, val preferences: MuseControllerPreferences, val mainMenuBar: JMenuBar, val pandoraMenuItem: JMenuItem, val neverShowAgainCheckbox: JCheckBox,
+                                   val main: MuseControllerMain)
   extends ActionListener {
 
   def actionPerformed(event: ActionEvent) {
+    if (neverShowAgainCheckbox.isSelected) {
+      preferences.enablePandora(enable = false)
+      parent.dispose()
+      return
+    }
+
     try {
       musicPlayer.saveConfig(usernameField.getText, passwordField.getPassword)
+      preferences.enablePandora(enable = true)
       parent.dispose()
       val pandoraUI: PandoraUI = new PandoraUI(musicPlayer, mainMenuBar, pandoraMenuItem, preferences)
       pandoraUI.initialize()
