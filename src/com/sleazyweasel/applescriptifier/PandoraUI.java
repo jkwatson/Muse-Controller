@@ -99,7 +99,6 @@ public class PandoraUI implements MuseControllerFrame {
         widgets.menu.addSeparator();
         widgets.menu.add(initRestartPandoraMenuItem());
 
-        mainMenuBar.add(widgets.menu);
     }
 
     private JMenuItem initVolumeDownMenuItem() {
@@ -454,6 +453,7 @@ public class PandoraUI implements MuseControllerFrame {
         musicPlayer.addListener(new MusicPlayerStateChangeListener());
         musicPlayer.activate();
         musicPlayer.initializeFromSavedUserState(preferences);
+        mainMenuBar.add(widgets.menu);
         initWidgetStateFromPlayer();
     }
 
