@@ -533,5 +533,20 @@
                        length="17783841" type="application/octet-stream"
                        sparkle:dsaSignature="MC0CFQDg5zj4ZS53TFxowfbRz203NbkmYQIUQJOXOhADY5kEBxEJyOVkglDuZho="/>
         </item>
+        <item>
+            <title>Version 3.12.0</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>Update:</h2>
+                    <h3>Fixed Pandora login interface to work properly in the case when you don't want to use Pandora.</h3>
+                    <h3>Lots of internal work (mostly conversions to Scala). Please let me know if you see any bugs from this.</h3>
+                    <h3>Fixed the Pandora Control menu to not repeatedly show up if Pandora login fails.</h3>
+                ]]></description>
+            <pubDate>Sun, 09 Jun 2013 14:14:14 +0800</pubDate>
+            <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.12.0.dmg"
+                       sparkle:version="3.12.0"
+                       length="17893015" type="application/octet-stream"
+                       sparkle:dsaSignature="MC0CFASXcVlqivNMxphdskaKxtWHlxSHAhUA3MAy3bqMUA3IfyOQmTgj/66NTNw="/>
+        </item>
     </channel>
 </rss>
