@@ -534,7 +534,7 @@
                        sparkle:dsaSignature="MC0CFQDg5zj4ZS53TFxowfbRz203NbkmYQIUQJOXOhADY5kEBxEJyOVkglDuZho="/>
         </item>
         <item>
-            <title>Version 3.12.0</title>
+            <title>Version 3.12.1</title>
             <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
             <description><![CDATA[
                     <h2>Update:</h2>
@@ -543,10 +543,10 @@
                     <h3>Fixed the Pandora Control menu to not repeatedly show up if Pandora login fails.</h3>
                 ]]></description>
             <pubDate>Sun, 09 Jun 2013 14:14:14 +0800</pubDate>
-            <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.12.0.dmg"
-                       sparkle:version="3.12.0"
-                       length="17893015" type="application/octet-stream"
-                       sparkle:dsaSignature="MC0CFASXcVlqivNMxphdskaKxtWHlxSHAhUA3MAy3bqMUA3IfyOQmTgj/66NTNw="/>
+            <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.12.1.dmg"
+                       sparkle:version="3.12.1"
+                       length="18032681" type="application/octet-stream"
+                       sparkle:dsaSignature="MC4CFQDcjZ+ztPYwlacirKTVloaffCLhqQIVAKmxr+ym5iNtVX950yTjk5qL8wj9"/>
         </item>
     </channel>
 </rss>
