@@ -40,7 +40,7 @@ public class ScriptEngineAppleScriptTemplate implements AppleScriptTemplate {
     }
 
     private <T> T execute(ScriptEngine engine, Application applicationName, String... scriptLines) {
-        StringBuilder command = new StringBuilder("tell application \"").append(applicationName.getName()).append("\"\n");
+        StringBuilder command = new StringBuilder("tell application \"").append(applicationName.name()).append("\"\n");
         buildCommand(command, scriptLines);
 
         command.append("end tell\n");
@@ -54,7 +54,7 @@ public class ScriptEngineAppleScriptTemplate implements AppleScriptTemplate {
     }
 
     private <T> T execute(ScriptEngine engine, Application applicationName, Bindings bindings, String... scriptLines) {
-        StringBuilder command = new StringBuilder("tell application ").append(applicationName.getName()).append("\n");
+        StringBuilder command = new StringBuilder("tell application ").append(applicationName.name()).append("\n");
         buildCommand(command, scriptLines);
 
         command.append("end tell\n");
@@ -69,21 +69,21 @@ public class ScriptEngineAppleScriptTemplate implements AppleScriptTemplate {
 
     public boolean isRunning(Application application) {
         String isAirfoilRunningScript = "tell application \"System Events\"\n" +
-                " set runningState to count (every process whose name is \"" + application.getName() + "\")\n" +
+                " set runningState to count (every process whose name is \"" + application.name() + "\")\n" +
                 "end tell\n";
         Long numberOfProcesses = execute(isAirfoilRunningScript);
         return numberOfProcesses != null && numberOfProcesses > 0;
     }
 
     public void startApplication(Application application) {
-        String startScript = "tell application \"" + application.getName() + "\" to activate";
+        String startScript = "tell application \"" + application.name() + "\" to activate";
         execute(startScript);
     }
 
     public boolean applicationExists(Application application) {
         String query = "try\n" +
                 "  tell application \"Finder\"\n" +
-                "    return application file id \"" + application.getIdentifier() + "\"\n" +
+                "    return application file id \"" + application.identifier() + "\"\n" +
                 "  end tell\n" +
                 "on error err_msg number err_num\n" +
                 "  return null\n" +

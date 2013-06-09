@@ -21,12 +21,12 @@ public class StationComboBoxModel extends DefaultComboBoxModel {
         List<StationChoice> stationChoices = musicPlayer.getState().getStationChoices();
         Object selectedItem = getSelectedItem();
         for (StationChoice stationChoice : stationChoices) {
-            Object existingItem = getElementAt(stationChoice.getKey());
+            Object existingItem = getElementAt(stationChoice.key());
             if (existingItem == null) {
-                insertElementAt(stationChoice, stationChoice.getKey());
+                insertElementAt(stationChoice, stationChoice.key());
             } else if (!existingItem.equals(stationChoice)) {
-                removeElementAt(stationChoice.getKey());
-                insertElementAt(stationChoice, stationChoice.getKey());
+                removeElementAt(stationChoice.key());
+                insertElementAt(stationChoice, stationChoice.key());
             }
         }
         setSelectedItem(selectedItem);

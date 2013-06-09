@@ -9,7 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,25 +36,21 @@ public class PulsarServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
         if (pathInfo.startsWith("/status")) {
             appendStatus(response);
-        }
-        else if (pathInfo.startsWith("/playpause")) {
+        } else if (pathInfo.startsWith("/playpause")) {
             pulsarSupport.playPause();
             appendStatus(response);
-        }
-        else if (pathInfo.startsWith("/next")) {
+        } else if (pathInfo.startsWith("/next")) {
             pulsarSupport.next();
             appendStatus(response);
-        }
-        else if (pathInfo.startsWith("/previous")) {
+        } else if (pathInfo.startsWith("/previous")) {
             pulsarSupport.previous();
             appendStatus(response);
-        }
-        else if (pathInfo.startsWith("/stationlogo")) {
+        } else if (pathInfo.startsWith("/stationlogo")) {
             Object image;
             try {
-                image = appleScriptTemplate.execute(Application.PULSAR, "get raw channel logo");
+                image = appleScriptTemplate.execute(Application.PULSAR(), "get raw channel logo");
             } catch (Exception e) {
-                image = appleScriptTemplate.execute(Application.PULSAR, "get channel logo");
+                image = appleScriptTemplate.execute(Application.PULSAR(), "get channel logo");
             }
             if (image instanceof BufferedImage) {
                 BufferedImage thing = (BufferedImage) image;
@@ -59,8 +58,7 @@ public class PulsarServlet extends HttpServlet {
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
-        }
-        else {
+        } else {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
@@ -69,7 +67,7 @@ public class PulsarServlet extends HttpServlet {
         Map<String, Object> status = new HashMap<String, Object>();
         String currentStation;
         try {
-            currentStation = appleScriptTemplate.execute(Application.PULSAR, "get channel name");
+            currentStation = appleScriptTemplate.execute(Application.PULSAR(), "get channel name");
             if (currentStation.contains("<NSAppleEventDescriptor")) {
                 currentStation = "";
             }
@@ -83,7 +81,7 @@ public class PulsarServlet extends HttpServlet {
 
         List<String> currentTrack;
         try {
-            currentTrack = appleScriptTemplate.execute(Application.PULSAR, "get [track title, artist]");
+            currentTrack = appleScriptTemplate.execute(Application.PULSAR(), "get [track title, artist]");
         } catch (Exception e) {
             logger.log(Level.WARNING, "Exception caught.", e);
             currentTrack = Arrays.asList("", "");

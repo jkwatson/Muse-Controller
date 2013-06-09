@@ -3,7 +3,7 @@
     <!-- Set this property value to your application name.
 Do not include the .app extension -->
     <property name="app.name" value="Muse Controller"/>
-    <property name="BUILD_NUMBER" value="3.11.0"/>
+    <property name="BUILD_NUMBER" value="3.12.1"/>
     <property name="image_name" value="${app.name} ${BUILD_NUMBER}"/>
     <property file="applescriptifier.properties"/>
     <echo message="basedir = ${basedir}"/>
@@ -198,15 +198,14 @@ Zip of the Sparkle framework and the public key) -->
         </classpath>
     </taskdef>
 
-    <target name="compile.module.applescriptifier.production.scala"
-            depends="compile.module.applescriptifier.production">
+    <target name="compile.module.applescriptifier.production.scala">
         <mkdir dir="${applescriptifier.output.dir}"/>
         <scalac srcref="applescriptifier.module.sourcepath"
                 destdir="${applescriptifier.output.dir}"
                 classpathref="applescriptifier.module.production.classpath"/>
     </target>
 
-    <target name="compile.module.applescriptifier.production"
+    <target name="compile.module.applescriptifier.production" depends="compile.module.applescriptifier.production.scala"
             description="Compile module applescriptifier; production classes">
         <mkdir dir="${applescriptifier.output.dir}"/>
         <javac destdir="${applescriptifier.output.dir}" debug="${compiler.debug}" target="1.6" srcdir="src"

@@ -322,7 +322,7 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
   def close() {
     spotifySupport.close()
     spotifyMenuItem.setEnabled(true)
-    spotifySupport.setListener(null);
+    spotifySupport.setListener(null)
     widgets.window.dispose()
   }
 
@@ -332,26 +332,26 @@ class SpotifyUI(spotifySupport: NativeSpotifySupport, mainMenuBar: JMenuBar, spo
     widgets.artistLabel.text = track.getArtist.getName
     widgets.infoLabel.peer.putClientProperty("URL", track.getLink.asString())
     widgets.infoLabel.visible = true
-    widgets.playButton.enabled = false;
-    widgets.pauseButton.enabled = true;
-    widgets.nextButton.enabled = true;
-    widgets.previousButton.enabled = true;
+    widgets.playButton.enabled = false
+    widgets.pauseButton.enabled = true
+    widgets.nextButton.enabled = true
+    widgets.previousButton.enabled = true
     val imageUrl: URL = spotifySupport.imageUrl(track.getCover)
     print(imageUrl)
     val unscaledIcon: ImageIcon = new ImageIcon(imageUrl)
-    widgets.imageLabel.icon = new ImageIcon(unscaledIcon.getImage.getScaledInstance(130, 130, Image.SCALE_SMOOTH));
+    widgets.imageLabel.icon = new ImageIcon(unscaledIcon.getImage.getScaledInstance(130, 130, Image.SCALE_SMOOTH))
   }
 
   override def playerStatusChanged(status: Status) {
     if (status == Status.PAUSE) {
-      widgets.playButton.enabled = true;
-      widgets.pauseButton.enabled = false;
-      widgets.nextButton.enabled = true;
+      widgets.playButton.enabled = true
+      widgets.pauseButton.enabled = false
+      widgets.nextButton.enabled = true
     }
     else {
-      widgets.playButton.enabled = false;
-      widgets.pauseButton.enabled = true;
-      widgets.nextButton.enabled = true;
+      widgets.playButton.enabled = false
+      widgets.pauseButton.enabled = true
+      widgets.nextButton.enabled = true
     }
   }
 
@@ -365,17 +365,17 @@ object SpotifyUI {
   private class Widgets {
     var window: JFrame = null
     var playlistComboBox: JComboBox = null
-    var trackNameLabel: Label = null;
-    var artistLabel: Label = null;
-    var albumLabel: Label = null;
-    var playButton: Button = null;
-    var nextButton: Button = null;
-    var previousButton: Button = null;
-    var pauseButton: Button = null;
-    var infoLabel: Label = null;
-    var imageLabel: Label = null;
-    var volumeSlider: Slider = null;
-    var refreshPlaylistsButton: Button = null;
+    var trackNameLabel: Label = null
+    var artistLabel: Label = null
+    var albumLabel: Label = null
+    var playButton: Button = null
+    var nextButton: Button = null
+    var previousButton: Button = null
+    var pauseButton: Button = null
+    var infoLabel: Label = null
+    var imageLabel: Label = null
+    var volumeSlider: Slider = null
+    var refreshPlaylistsButton: Button = null
   }
 
   private class Models {

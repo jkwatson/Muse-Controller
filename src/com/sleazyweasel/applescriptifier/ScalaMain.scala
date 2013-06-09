@@ -14,7 +14,7 @@ import java.util.logging.{SimpleFormatter, FileHandler, Level, Logger}
 import java.io.File
 
 object ScalaMain {
-  def logger: Logger  = Logger.getLogger(ScalaMain.getClass.getName)
+  def logger: Logger = Logger.getLogger(ScalaMain.getClass.getName)
 
   def main(args: Array[String]) {
     val userHomeDirectory: String = System.getProperty("user.home")
@@ -37,7 +37,7 @@ object ScalaMain {
   private def addUncaughtExceptionHandler() {
     Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler {
       def uncaughtException(thread: Thread, e: Throwable) {
-        logger.log(Level.WARNING, "Exception caught.", e);
+        logger.log(Level.WARNING, "Exception caught.", e)
         JOptionPane.showMessageDialog(null, e.getMessage, "Error", JOptionPane.ERROR_MESSAGE)
       }
     })
@@ -46,7 +46,8 @@ object ScalaMain {
 
 class ScalaMain {
   private final val PORT: Int = 23233
-  def logger: Logger  = Logger.getLogger(ScalaMain.getClass.getName)
+
+  def logger: Logger = Logger.getLogger(ScalaMain.getClass.getName)
 
   private val preferences: MuseControllerPreferences = new MuseControllerPreferences(Preferences.userNodeForPackage(classOf[ScalaMain]))
 
@@ -82,7 +83,7 @@ class ScalaMain {
     }
     catch {
       case e: Throwable => {
-        logger.log(Level.WARNING, "Exception caught.", e);
+        logger.log(Level.WARNING, "Exception caught.", e)
       }
     }
   }
@@ -116,7 +117,7 @@ class ScalaMain {
     context.addServlet(new ServletHolder(new ControlServlet(player)), "/control/*")
 
     spawn({
-      server.start();
+      server.start()
     })
   }
 }

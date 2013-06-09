@@ -14,21 +14,21 @@ public class MusicPlayerSupplierTest {
         MusicPlayer.MusicPlayerStateChangeListener listener = mock(MusicPlayer.MusicPlayerStateChangeListener.class);
 
         MusicPlayerSupplier testClass = new MusicPlayerSupplier();
-        testClass.addMusicPlayer(Application.RDIO, rdioPlayer);
-        testClass.addMusicPlayer(Application.PANDORABOY, pandoraPlayer);
+        testClass.addMusicPlayer(Application.RDIO(), rdioPlayer);
+        testClass.addMusicPlayer(Application.PANDORABOY(), pandoraPlayer);
 
-        testClass.setCurrentApplication(Application.RDIO);
+        testClass.setCurrentApplication(Application.RDIO());
         verify(rdioPlayer, never()).addListener(any(MusicPlayer.MusicPlayerStateChangeListener.class));
         verify(pandoraPlayer, never()).addListener(any(MusicPlayer.MusicPlayerStateChangeListener.class));
 
         testClass.addListener(listener);
         verify(rdioPlayer).addListener(listener);
 
-        testClass.setCurrentApplication(Application.PANDORABOY);
+        testClass.setCurrentApplication(Application.PANDORABOY());
         verify(rdioPlayer).removeListener(listener);
         verify(pandoraPlayer).addListener(listener);
 
-        testClass.setCurrentApplication(Application.RDIO);
+        testClass.setCurrentApplication(Application.RDIO());
         verify(pandoraPlayer).removeListener(listener);
         verify(rdioPlayer, times(2)).addListener(listener);
 

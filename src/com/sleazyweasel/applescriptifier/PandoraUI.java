@@ -2,7 +2,6 @@ package com.sleazyweasel.applescriptifier;
 
 import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences;
 import layout.TableLayout;
-import layout.TableLayoutConstraints;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -100,7 +99,6 @@ public class PandoraUI implements MuseControllerFrame {
         widgets.menu.addSeparator();
         widgets.menu.add(initRestartPandoraMenuItem());
 
-        mainMenuBar.add(widgets.menu);
     }
 
     private JMenuItem initVolumeDownMenuItem() {
@@ -206,7 +204,7 @@ public class PandoraUI implements MuseControllerFrame {
                     musicPlayer.askToChooseStation();
                     StationChoice selectedItem = models.stationComboBoxModel.getSelectedStation();
                     if (selectedItem != null) {
-                        musicPlayer.selectStation(selectedItem.getKey());
+                        musicPlayer.selectStation(selectedItem.key());
                     }
                     releaseLock();
                 }
@@ -218,7 +216,7 @@ public class PandoraUI implements MuseControllerFrame {
                 Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (value != null) {
                     StationChoice stationChoice = (StationChoice) value;
-                    setText(stationChoice.getStationName());
+                    setText(stationChoice.stationName());
                 } else {
                     setText("Choose a station");
                 }
@@ -429,7 +427,7 @@ public class PandoraUI implements MuseControllerFrame {
         widgets.window.getContentPane().add(widgets.imageLabel, "1, 3, 1, 9, L, c");
 
 
-        JPanel progressPanel = new JPanel(new TableLayout(new double[][] {
+        JPanel progressPanel = new JPanel(new TableLayout(new double[][]{
                 {FILL}, //horizontal
                 {4, 4, 4}  //vertical
         }));
@@ -455,6 +453,7 @@ public class PandoraUI implements MuseControllerFrame {
         musicPlayer.addListener(new MusicPlayerStateChangeListener());
         musicPlayer.activate();
         musicPlayer.initializeFromSavedUserState(preferences);
+        mainMenuBar.add(widgets.menu);
         initWidgetStateFromPlayer();
     }
 
@@ -531,8 +530,7 @@ public class PandoraUI implements MuseControllerFrame {
                 widgets.timeLabel.setText(formatTime(state.getCurrentTime()));
                 if (state.getCurrentTime() == 0 || state.getDuration() == 0) {
                     widgets.timeProgressBar.setValue(0);
-                }
-                else {
+                } else {
                     widgets.timeProgressBar.setValue((int) (((float) state.getCurrentTime() / (float) state.getDuration()) * 10000f));
                 }
                 widgets.durationLabel.setText(formatTime(state.getDuration()));
@@ -570,7 +568,7 @@ public class PandoraUI implements MuseControllerFrame {
         }
 
         private boolean trackCanBeModified(MusicPlayerState state) {
-            return !state.isInputRequested() && state.getTitle()!= null && !state.getTitle().isEmpty();
+            return !state.isInputRequested() && state.getTitle() != null && !state.getTitle().isEmpty();
         }
     }
 

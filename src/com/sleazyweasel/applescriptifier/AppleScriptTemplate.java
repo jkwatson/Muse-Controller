@@ -1,7 +1,5 @@
 package com.sleazyweasel.applescriptifier;
 
-import java.util.List;
-
 public interface AppleScriptTemplate {
     public static int SPACE = 49;
     public static String PLUS = "+";

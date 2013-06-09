@@ -8,15 +8,15 @@ public class RdioSupport implements ApplicationSupport {
     }
 
     public void playPause() {
-        appleScriptTemplate.execute(Application.RDIO, "playpause");
+        appleScriptTemplate.execute(Application.RDIO(), "playpause");
     }
 
     public void next() {
-        appleScriptTemplate.execute(Application.RDIO, "next track");
+        appleScriptTemplate.execute(Application.RDIO(), "next track");
     }
 
     public void previous() {
-        appleScriptTemplate.execute(Application.RDIO, "previous track");
+        appleScriptTemplate.execute(Application.RDIO(), "previous track");
     }
 
     public void thumbsUp() {
@@ -26,6 +26,6 @@ public class RdioSupport implements ApplicationSupport {
     }
 
     public void setVolume(Integer volume) {
-        appleScriptTemplate.execute(Application.RDIO, "set sound volume to " + volume);
+        appleScriptTemplate.execute(Application.RDIO(), "set sound volume to " + volume);
     }
 }

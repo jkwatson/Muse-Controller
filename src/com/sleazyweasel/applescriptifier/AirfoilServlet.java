@@ -95,15 +95,14 @@ public class AirfoilServlet extends HttpServlet {
         } else if (pathInfo.startsWith("/bounce")) {
             bounceAirfoil();
             appendRunningStatus(response, getRunningStatus());
-        }
-        else {
+        } else {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
     private void bounceAirfoil() {
-        appleScriptTemplate.execute(Application.AIRFOIL, "disconnect from every speaker");
-        appleScriptTemplate.execute(Application.AIRFOIL, "quit");
+        appleScriptTemplate.execute(Application.AIRFOIL(), "disconnect from every speaker");
+        appleScriptTemplate.execute(Application.AIRFOIL(), "quit");
         String[] script = {
                 "delay 1",
                 "activate application \"Airfoil\""
@@ -120,7 +119,7 @@ public class AirfoilServlet extends HttpServlet {
     }
 
     private void selectApplicationAudioSource(String sourceId, HttpServletResponse response) throws IOException {
-        appleScriptTemplate.execute(Application.AIRFOIL,
+        appleScriptTemplate.execute(Application.AIRFOIL(),
                 "try",
                 "   set current audio source to item 1 of (every application source whose id is " + sourceId + ")",
                 "on error",
@@ -134,30 +133,30 @@ public class AirfoilServlet extends HttpServlet {
     }
 
     private void startApplication(HttpServletResponse response) throws IOException {
-        appleScriptTemplate.startApplication(Application.AIRFOIL);
+        appleScriptTemplate.startApplication(Application.AIRFOIL());
         appendRunningStatus(response, getRunningStatus());
     }
 
     private void updateSpeakerVolume(HttpServletResponse response, String speakerId, float vol) throws IOException {
         String setScript = "set the volume of (every speaker whose id is \"" + speakerId + "\") to " + vol + "";
-        appleScriptTemplate.execute(Application.AIRFOIL, setScript);
+        appleScriptTemplate.execute(Application.AIRFOIL(), setScript);
         appendRunningStatus(response, getRunningStatus());
     }
 
     private void updateSpeakerStatus(HttpServletResponse response, String speakerId, boolean connect) throws IOException {
         if (connect) {
-            appleScriptTemplate.execute(Application.AIRFOIL, "connect to item 1 of (every speaker whose id is \"" + speakerId + "\")");
+            appleScriptTemplate.execute(Application.AIRFOIL(), "connect to item 1 of (every speaker whose id is \"" + speakerId + "\")");
         } else {
-            appleScriptTemplate.execute(Application.AIRFOIL, "disconnect from item 1 of (every speaker whose id is \"" + speakerId + "\")");
+            appleScriptTemplate.execute(Application.AIRFOIL(), "disconnect from item 1 of (every speaker whose id is \"" + speakerId + "\")");
         }
         appendRunningStatus(response, getRunningStatus());
     }
 
     private void appendStatus(HttpServletResponse response) throws IOException {
-        boolean isRunning = appleScriptTemplate.isRunning(Application.AIRFOIL);
+        boolean isRunning = appleScriptTemplate.isRunning(Application.AIRFOIL());
 
         if (!isRunning) {
-            response.getWriter().append("{\"app\":\"").append(Application.AIRFOIL.getName()).append("\",\"state\":{\"running\":false}}");
+            response.getWriter().append("{\"app\":\"").append(Application.AIRFOIL().name()).append("\",\"state\":{\"running\":false}}");
         } else {
             appendRunningStatus(response, getRunningStatus());
         }
@@ -166,12 +165,12 @@ public class AirfoilServlet extends HttpServlet {
 
     private Map<String, Object> getRunningStatus() throws IOException {
         Map<String, Object> output = new HashMap<String, Object>();
-        output.put("app", Application.AIRFOIL.getName());
+        output.put("app", Application.AIRFOIL().name());
         Map<String, Object> stateMap = new HashMap<String, Object>();
         stateMap.put("running", true);
 
         //todo this blows up if there is no "current audio source"...
-        List data = appleScriptTemplate.execute(Application.AIRFOIL, "[get properties of every speaker, get properties of every application source, get properties of every system source, get properties of current audio source]");
+        List data = appleScriptTemplate.execute(Application.AIRFOIL(), "[get properties of every speaker, get properties of every application source, get properties of every system source, get properties of current audio source]");
 
         stateMap.put("speakers", data.get(0));
         List<Map<String, Object>> sources = (List<Map<String, Object>>) data.get(1);
@@ -188,11 +187,11 @@ public class AirfoilServlet extends HttpServlet {
         Map<String, Object> currentSource = (Map<String, Object>) data.get(3);
         String sourceName = (String) currentSource.get(NAME_KEY);
         Application currentApplication = Application.forName(sourceName);
-        currentSource.put("playPause", currentApplication.hasPlayPauseSupport());
-        currentSource.put("previous", currentApplication.hasPreviousSupport());
-        currentSource.put("next", currentApplication.hasNextSupport());
-        currentSource.put("thumbsUp", currentApplication.hasThumbsUpSupport());
-        currentSource.put("thumbsDown", currentApplication.hasThumbsDownSupport());
+        currentSource.put("playPause", currentApplication.playPauseSupport());
+        currentSource.put("previous", currentApplication.previousSupport());
+        currentSource.put("next", currentApplication.nextSupport());
+        currentSource.put("thumbsUp", currentApplication.thumbsUpSupport());
+        currentSource.put("thumbsDown", currentApplication.thumbsDownSupport());
 
         stateMap.put(CURRENT_SOURCE_KEY, currentSource);
         stateMap.put("version", ControlServlet.CURRENT_VERSION);
