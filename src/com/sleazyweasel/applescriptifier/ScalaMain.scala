@@ -106,7 +106,6 @@ class ScalaMain {
 
     val airfoilServlet = new AirfoilServlet(player)
     context.addServlet(new ServletHolder(airfoilServlet), "/airfoil/*")
-    context.addServlet(new ServletHolder(new PandoraBoyServlet), "/pandoraboy/*")
     context.addServlet(new ServletHolder(new PulsarServlet), "/pulsar/*")
     context.addServlet(new ServletHolder(new RdioServlet), "/rdio/*")
 

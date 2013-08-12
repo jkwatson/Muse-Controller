@@ -15,7 +15,6 @@ public class MusicPlayerSupplierTest {
 
         MusicPlayerSupplier testClass = new MusicPlayerSupplier();
         testClass.addMusicPlayer(Application.RDIO(), rdioPlayer);
-        testClass.addMusicPlayer(Application.PANDORABOY(), pandoraPlayer);
 
         testClass.setCurrentApplication(Application.RDIO());
         verify(rdioPlayer, never()).addListener(any(MusicPlayer.MusicPlayerStateChangeListener.class));
@@ -24,7 +23,6 @@ public class MusicPlayerSupplierTest {
         testClass.addListener(listener);
         verify(rdioPlayer).addListener(listener);
 
-        testClass.setCurrentApplication(Application.PANDORABOY());
         verify(rdioPlayer).removeListener(listener);
         verify(pandoraPlayer).addListener(listener);
 
