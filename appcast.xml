@@ -549,19 +549,20 @@
                        sparkle:dsaSignature="MC4CFQDcjZ+ztPYwlacirKTVloaffCLhqQIVAKmxr+ym5iNtVX950yTjk5qL8wj9"/>
         </item>
         <item>
-            <title>Version 3.12.2</title>
+            <title>Version 3.13.0</title>
             <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
             <description><![CDATA[
                     <h2>Update:</h2>
+                    <h3>Eliminated the harsh buzz when quitting the app while the music is playing.</h3>
                     <h3>Removed support for Pandoraboy, which no longer works.</h3>
-                    <h3>A few miscellaneous bugfixes:</h3>
+                    <h3>Miscellaneous bugfix:</h3>
                     <ul>
                       <li>Fixed Spotify to not report "null" as the track name when not running</li>
                     </ul>
                 ]]></description>
             <pubDate>Sun, 11 Aug 2013 19:19:19 +0800</pubDate>
-            <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.12.2.dmg"
-                       sparkle:version="3.12.2"
+            <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.13.0.dmg"
+                       sparkle:version="3.13.0"
                        length="18032681" type="application/octet-stream"
                        sparkle:dsaSignature=""/>
         </item>
