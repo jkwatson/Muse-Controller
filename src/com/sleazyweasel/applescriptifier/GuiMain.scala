@@ -1,9 +1,9 @@
 package com.sleazyweasel.applescriptifier
 
-import com.apple.eawt.PreferencesHandler
+import com.apple.eawt.{QuitResponse, QuitHandler, AppEventListener, PreferencesHandler}
 import com.sleazyweasel.applescriptifier.preferences.MuseControllerPreferences
 import javax.swing._
-import com.apple.eawt.AppEvent.PreferencesEvent
+import com.apple.eawt.AppEvent.{QuitEvent, PreferencesEvent}
 import scala.swing.event.ButtonClicked
 import swing._
 
@@ -17,8 +17,18 @@ class GuiMain extends MuseControllerMain with SpotifyPasswordUIModule {
     activeFrame = frame
   }
 
-  private def setUpMacApplicationState(preferences: MuseControllerPreferences, menubar: MenuBar) {
+  private def setUpMacApplicationState(preferences: MuseControllerPreferences, menubar: MenuBar, pandoraPlayer: MusicPlayer) {
     val macApp = com.apple.eawt.Application.getApplication
+    macApp.setQuitHandler(new QuitHandler {
+      def handleQuitRequestWith(quitEvent: QuitEvent, quitResponse: QuitResponse) {
+        if (pandoraPlayer.isPlaying) {
+          //this is to stop the harsh 'buzz' when the player gets killed.
+          pandoraPlayer.playPause()
+          Thread.sleep(400)
+        }
+        quitResponse.performQuit()
+      }
+    })
     macApp.setPreferencesHandler(new PreferencesHandler {
       def handlePreferences(preferencesEvent: PreferencesEvent) {
         val preferencesGui: PreferencesGui = new PreferencesGui(preferences)
@@ -49,7 +59,7 @@ class GuiMain extends MuseControllerMain with SpotifyPasswordUIModule {
       menu.contents += pandoraMenuItem
       menubar.contents += menu
 
-      setUpMacApplicationState(preferences, menubar)
+      setUpMacApplicationState(preferences, menubar, pandoraPlayer)
 
       if (preferences.isPandoraEnabled) {
         startupPandora(pandoraMenuItem, pandoraPlayer, preferences, menubar, playerSupplier)
