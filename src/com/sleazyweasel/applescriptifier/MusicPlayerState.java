@@ -1,7 +1,6 @@
 package com.sleazyweasel.applescriptifier;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -88,11 +87,15 @@ public class MusicPlayerState {
 
     public List<StationChoice> getStationChoices() {
         List<StationChoice> choices = new ArrayList<StationChoice>();
-        List<Integer> list = new ArrayList<Integer>(stations.keySet());
-        Collections.sort(list);
-        for (Integer integer : list) {
-            choices.add(new StationChoice(integer, stations.get(integer)));
+        for (Map.Entry<Integer, String> stationEntry : stations.entrySet()) {
+            choices.add(new StationChoice(stationEntry.getKey(), stationEntry.getValue()));
         }
+
+//        List<Integer> list = new ArrayList<Integer>(stations.keySet());
+//        Collections.sort(list);
+//        for (Integer integer : list) {
+//            choices.add(new StationChoice(integer, stations.get(integer)));
+//        }
         return choices;
     }
 
@@ -126,7 +129,7 @@ public class MusicPlayerState {
         return 0;
     }
 
-    //todo this is ridiculous...why are we storying the formatted data, instead of the ints?
+    //todo this is ridiculous...why are we storing the formatted data, instead of the ints?
     private int parseTime(String totalTimePart) {
         String[] minutesAndSeconds = totalTimePart.split(":");
         int minutes = Integer.parseInt(minutesAndSeconds[0]);

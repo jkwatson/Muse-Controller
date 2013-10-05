@@ -125,7 +125,7 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             LoginInfo loginInfo = getLogin();
             pandoraRadio.sync();
             pandoraRadio.connect(loginInfo.userName, loginInfo.password);
-            stations = pandoraRadio.getStations();
+            stations = sort(pandoraRadio.getStations());
             notifyListeners();
         } catch (BadPandoraPasswordException b) {
             pandoraRadio = null;
@@ -136,6 +136,19 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
             throw new RuntimeException("Failed to log in to Pandora.", e);
         }
     }
+
+    private List<Station> sort(List<Station> stations) {
+        List<Station> toBeSorted = new ArrayList<Station>(stations);
+        Collections.sort(toBeSorted, new Comparator<Station>() {
+            @Override
+            public int compare(Station o1, Station o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+
+        return toBeSorted;
+    }
+
 
     private void notifyListeners() {
         MusicPlayerState state = getState();
@@ -187,9 +200,10 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
     public MusicPlayerState getState() {
         PandoraRadio radio = getRadio();
         if (stations == null) {
-            stations = radio.getStations();
+            stations = sort(radio.getStations());
         }
-        Map<Integer, String> stationData = new HashMap<Integer, String>(stations.size());
+
+        Map<Integer, String> stationData = new LinkedHashMap<Integer, String>(stations.size());
         int i = 0;
         for (Station station : stations) {
 //            logger.info("station.getName() = " + station.getName());
