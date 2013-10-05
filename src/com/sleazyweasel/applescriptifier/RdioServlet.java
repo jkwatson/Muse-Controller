@@ -68,7 +68,6 @@ public class RdioServlet extends HttpServlet {
     }
 
     private void appendStatus(HttpServletResponse response) throws IOException {
-
         Map<String, Object> currentTrack = new HashMap<String, Object>();
         Map<String, Object> playerState = new HashMap<String, Object>();
         try {
@@ -87,7 +86,6 @@ public class RdioServlet extends HttpServlet {
 
         } catch (Exception e) {
             logger.log(Level.WARNING, "Exception caught.", e);
-            ;
             List<List<Object>> data = appleScriptTemplate.execute(Application.RDIO(), "[get [player position, sound volume]]");
             currentTrack.put("title", "");
             currentTrack.put("artist", "");
