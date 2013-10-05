@@ -564,7 +564,7 @@
             <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.13.0.dmg"
                        sparkle:version="3.13.0"
                        length="18032681" type="application/octet-stream"
-                       sparkle:dsaSignature=""/>
+                       sparkle:dsaSignature="MCwCFEh2FgX/n/2jqeCFQrtTSjQclMamAhRMph8/3kmWP+4lZkfyjoKaUfjCkg=="/>
         </item>
     </channel>
 </rss>
