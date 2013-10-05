@@ -33,6 +33,11 @@ public class SpotifySupport implements ApplicationSupport {
         boolean isRunning = appleScriptTemplate.isRunning(Application.SPOTIFY());
         Map<String, Object> playerState = new HashMap<String, Object>();
         Map<String, Object> currentTrack = new HashMap<String, Object>();
+        currentTrack.put("title", "");
+        currentTrack.put("artist", "");
+        currentTrack.put("album", "");
+        currentTrack.put("duration", "");
+        currentTrack.put("spotifyUrl", "");
 
         if (isRunning) {
             List results = appleScriptTemplate.execute(Application.SPOTIFY(), "[get player state as string, get sound volume, get player position]");
@@ -49,11 +54,7 @@ public class SpotifySupport implements ApplicationSupport {
                 currentTrack.put("spotifyUrl", songInfo.get(4));
             } catch (AppleScriptException e) {
                 //this happens when there is no current track
-                currentTrack.put("title", "");
-                currentTrack.put("artist", "");
-                currentTrack.put("album", "");
-                currentTrack.put("duration", "");
-                currentTrack.put("spotifyUrl", "");
+
             }
         }
         HashMap<String, Object> status = new HashMap<String, Object>();

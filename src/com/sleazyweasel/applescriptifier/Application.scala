@@ -5,31 +5,30 @@ import scala.collection.JavaConversions._
 
 object Application {
 
-  val AIRFOIL = new Application("Airfoil", "Airfoil", "com.rogueamoeba.Airfoil", true, false, false, false, false, false) {}
-  val PANDORABOY = new Application("PandoraBoy", "PandoraBoy", "com.frozensilicon.PandoraBoy", true, true, true, false, true, true) {}
-  val PULSAR = new Application("Pulsar", "Pulsar", "com.rogueamoeba.Pulsar", true, true, true, true, false, false) {}
-  val ITUNES = new Application("iTunes", "iTunes", "com.apple.iTunes", false, true, true, true, false, false) {}
-  val PANDORAONE = new Application("Pandora", "Pandora", "com.pandora.desktop.FB9956FD96E03239939108614098AD95535EE674.1", false, true, true, false, true, true) {}
-  val RDIO = new Application("Rdio", "Rdio", "com.rdio.desktop", true, true, true, true, false, false) {}
-  val MUSECONTROLLER = new Application("Muse Controller", "Muse Controller", "com.sleazyweasel.MuseController", true, true, true, false, true, true) {}
-  val SPOTIFY = new Application("Spotify", "Spotify", "com.spotify.client", true, true, true, true, false, false) {}
-  val OTHER = new Application("Other", "Other", "unknown", false, false, false, false, false, false) {}
+  val AIRFOIL = new Application("Airfoil", "Airfoil", "com.rogueamoeba.Airfoil", true, false, false, false, false, false)
+  val PULSAR = new Application("Pulsar", "Pulsar", "com.rogueamoeba.Pulsar", true, true, true, true, false, false)
+  val ITUNES = new Application("iTunes", "iTunes", "com.apple.iTunes", false, true, true, true, false, false)
+  val PANDORAONE = new Application("Pandora", "Pandora", "com.pandora.desktop.FB9956FD96E03239939108614098AD95535EE674.1", false, true, true, false, true, true)
+  val RDIO = new Application("Rdio", "Rdio", "com.rdio.desktop", true, true, true, true, false, false)
+  val MUSECONTROLLER = new Application("Muse Controller", "Muse Controller", "com.sleazyweasel.MuseController", true, true, true, false, true, true)
+  val SPOTIFY = new Application("Spotify", "Spotify", "com.spotify.client", true, true, true, true, false, false)
+  val MUSE = new Application("Muse", "Muse", "com.industriousone.PandoraMusicality", false, true, true, false, false, false)
+  val OTHER = new Application("Other", "Other", "unknown", false, false, false, false, false, false)
 
   def values = seqAsJavaList(allSupportedApplications)
 
-  def allSupportedApplications = List(AIRFOIL, PANDORABOY, PULSAR, ITUNES, PANDORAONE, RDIO, MUSECONTROLLER, SPOTIFY)
+  def allSupportedApplications = List(AIRFOIL, PULSAR, ITUNES, PANDORAONE, RDIO, MUSECONTROLLER, SPOTIFY, MUSE)
 
   def forName(name: String): Application = {
     allSupportedApplications.find(a => a.name.equalsIgnoreCase(name)).getOrElse(OTHER)
   }
 }
 
-abstract sealed class Application(val name: String, val displayName: String, val identifier: String, val fullSupport: Boolean, val playPauseSupport: Boolean,
-                                  val nextSupport: Boolean, val previousSupport: Boolean, val thumbsUpSupport: Boolean, val thumbsDownSupport: Boolean) {
+sealed case class Application(name: String, displayName: String, identifier: String, fullSupport: Boolean, playPauseSupport: Boolean,
+                                  nextSupport: Boolean, previousSupport: Boolean, thumbsUpSupport: Boolean, thumbsDownSupport: Boolean) {
+
   def getApplicationSupport(appleScriptTemplate: AppleScriptTemplate, musicPlayer: MusicPlayer): ApplicationSupport = {
     this match {
-      case PANDORABOY =>
-        new PandoraBoySupport(appleScriptTemplate)
       case PULSAR =>
         new PulsarSupport(appleScriptTemplate)
       case ITUNES =>
@@ -42,6 +41,8 @@ abstract sealed class Application(val name: String, val displayName: String, val
         musicPlayer
       case SPOTIFY =>
         new SpotifySupport(appleScriptTemplate)
+      case MUSE =>
+        new MuseSupport(appleScriptTemplate)
       case _ =>
         null
     }
