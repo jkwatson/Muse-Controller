@@ -90,12 +90,6 @@ public class MusicPlayerState {
         for (Map.Entry<Integer, String> stationEntry : stations.entrySet()) {
             choices.add(new StationChoice(stationEntry.getKey(), stationEntry.getValue()));
         }
-
-//        List<Integer> list = new ArrayList<Integer>(stations.keySet());
-//        Collections.sort(list);
-//        for (Integer integer : list) {
-//            choices.add(new StationChoice(integer, stations.get(integer)));
-//        }
         return choices;
     }
 
