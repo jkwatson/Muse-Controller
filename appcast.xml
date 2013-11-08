@@ -579,5 +579,18 @@
                        length="18032681" type="application/octet-stream"
                        sparkle:dsaSignature="MC4CFQD2D3SARfoDEKHExmengyKNZxZLKwIVAJ1no1VFfW9qVRXzDqbHHQ0QexW3"/>
         </item>
+        <item>
+            <title>Version 3.13.2</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>Update:</h2>
+                    <h3>Put the QuickMix station back at the top of the list.</h3>
+                ]]></description>
+            <pubDate>Thu, 07 Nov 2013 18:18:18 +0800</pubDate>
+            <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.13.2.dmg"
+                       sparkle:version="3.13.2"
+                       length="18032681" type="application/octet-stream"
+                       sparkle:dsaSignature="MCwCFCVqBQlres3D+LLmOkjv0gs+kd4TAhQQSdMYj0rTFwN2MqVdNbfQffFOFg=="/>
+        </item>
     </channel>
 </rss>

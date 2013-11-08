@@ -142,6 +142,9 @@ public class JavaPandoraPlayer implements MusicPlayer, BasicPlayerListener {
         Collections.sort(toBeSorted, new Comparator<Station>() {
             @Override
             public int compare(Station o1, Station o2) {
+                if (o1.isQuickMix()) {
+                    return -1;
+                }
                 return o1.getName().compareTo(o2.getName());
             }
         });
