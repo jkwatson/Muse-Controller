@@ -592,5 +592,18 @@
                        length="18032681" type="application/octet-stream"
                        sparkle:dsaSignature="MCwCFCVqBQlres3D+LLmOkjv0gs+kd4TAhQQSdMYj0rTFwN2MqVdNbfQffFOFg=="/>
         </item>
+        <item>
+            <title>Version 3.13.3</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>Update:</h2>
+                    <h3>Fix code signing to work correctly in Mavericks</h3>
+                ]]></description>
+            <pubDate>Thu, 07 Nov 2013 21:21:21 +0800</pubDate>
+            <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.13.3.dmg"
+                       sparkle:version="3.13.3"
+                       length="18032681" type="application/octet-stream"
+                       sparkle:dsaSignature="MCwCFDCeIj5hKP8IWS31xQSePG/RNvN9AhQY2pJNVaZuaRaWWGLMjrI8X0bKtw=="/>
+        </item>
     </channel>
 </rss>

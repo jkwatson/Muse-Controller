@@ -3,7 +3,7 @@
     <!-- Set this property value to your application name.
 Do not include the .app extension -->
     <property name="app.name" value="Muse Controller"/>
-    <property name="BUILD_NUMBER" value="3.13.2"/>
+    <property name="BUILD_NUMBER" value="3.13.3"/>
     <property name="image_name" value="${app.name} ${BUILD_NUMBER}"/>
     <property file="applescriptifier.properties"/>
     <echo message="basedir = ${basedir}"/>
@@ -256,6 +256,7 @@ Zip of the Sparkle framework and the public key) -->
                     bundleid="com.sleazyweasel.MuseController"
                     build="${BUILD_NUMBER}"
                     version="${BUILD_NUMBER}"
+                    jvmversion="1.6+"
                 >
             <jarfilelist id="mainjar" dir="." files="applescriptifier.jar"/>
             <jarfileset dir="lib"/>
@@ -266,6 +267,12 @@ Zip of the Sparkle framework and the public key) -->
     </target>
 
     <target name="bundle-and-sign" depends="bundle-sparkle">
+        <exec executable="codesign">
+            <arg value="-f"/>
+            <arg value="-s"/>
+            <arg value="John Watson Code Signing"/>
+            <arg value="release/Muse Controller.app/Contents/Frameworks/Sparkle.framework/Versions/A"/>
+        </exec>
         <exec executable="codesign">
             <arg value="-f"/>
             <arg value="-s"/>
@@ -327,6 +334,7 @@ to the URL where your appcast XML file is located -->
         <delete file="${macosx.app}/${app.name}.app/${sparkle.path}/Headers"/>
         <delete file="${macosx.app}/${app.name}.app/${sparkle.path}/Resources"/>
         <delete file="${macosx.app}/${app.name}.app/${sparkle.path}/Sparkle"/>
+        <delete dir="${macosx.app}/${app.name}.app/Contents/Frameworks/__MACOSX"/>
         <!-- The Ant unzip task does not preserve symlinks, so we
       recreate them -->
         <symlink link="${macosx.app}/${app.name}.app/${sparkle.path}/Versions/Current"
