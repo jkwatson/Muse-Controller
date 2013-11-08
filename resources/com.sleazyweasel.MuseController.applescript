@@ -18,6 +18,7 @@ tell application id "com.sleazyweasel.MuseController"
 					save in ("/tmp/imagedata.tiff") as TIFF
 				end tell
 				close imagedata
+				quit
 			end tell
 			
 			set imgfd to open for access "/tmp/imagedata.tiff"
@@ -25,7 +26,7 @@ tell application id "com.sleazyweasel.MuseController"
 			
 			set my_info to {item 2 of linedata, item 3 of linedata, item 4 of linedata, item 5 of linedata, tiffdata}
 			return my_info
-		on error
+		on error errStr number errorNumber
 			set my_info to {"", "", "", 0, missing value}
 			return my_info
 		end try
