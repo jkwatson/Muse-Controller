@@ -566,5 +566,18 @@
                        length="18032681" type="application/octet-stream"
                        sparkle:dsaSignature="MCwCFEh2FgX/n/2jqeCFQrtTSjQclMamAhRMph8/3kmWP+4lZkfyjoKaUfjCkg=="/>
         </item>
+        <item>
+            <title>Version 3.13.1</title>
+            <sparkle:minimumSystemVersion>10.6.7</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+                    <h2>Update:</h2>
+                    <h3>Fixed the Pandora station list to be sorted alphabetically.</h3>
+                ]]></description>
+            <pubDate>Sat, 26 Oct 2013 17:17:17 +0800</pubDate>
+            <enclosure url="http://downloads.musecontrol.com/Muse Controller 3.13.1.dmg"
+                       sparkle:version="3.13.1"
+                       length="18032681" type="application/octet-stream"
+                       sparkle:dsaSignature="MC4CFQD2D3SARfoDEKHExmengyKNZxZLKwIVAJ1no1VFfW9qVRXzDqbHHQ0QexW3"/>
+        </item>
     </channel>
 </rss>

@@ -3,7 +3,7 @@
     <!-- Set this property value to your application name.
 Do not include the .app extension -->
     <property name="app.name" value="Muse Controller"/>
-    <property name="BUILD_NUMBER" value="3.13.0"/>
+    <property name="BUILD_NUMBER" value="3.13.1"/>
     <property name="image_name" value="${app.name} ${BUILD_NUMBER}"/>
     <property file="applescriptifier.properties"/>
     <echo message="basedir = ${basedir}"/>
